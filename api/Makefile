@@ -99,6 +99,12 @@ build-rest-container:
 	cd $(BUILD_DIR) && \
 	docker build . --no-cache --build-arg name=$(PROJECT_NAME)-rest -t $(PROJECT_NAME)-rest:latest -t $(PROJECT_NAME)-rest:$(VERSION)
 
+gen-mocks:
+	mockgen -source internal/domain/post/usecase.go -destination mocks/domain/post/usecase.go -package post
+	mockgen -source internal/domain/post/repository.go -destination mocks/domain/post/repository.go -package post
+	mockgen -source internal/domain/post/generator.go -destination mocks/domain/post/generator.go -package post
+	mockgen -source internal/pkg/syncmap/syncmap.go -destination mocks/pkg/syncmap/syncmap.go -package syncmap
+
 protoc: tools-install
 	protoc -I proto -I $(shell brew --prefix)/opt/protobuf/include \
 	-I modules/github.com/googleapis/googleapis \
