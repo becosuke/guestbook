@@ -1,4 +1,4 @@
-package boundary
+package controller
 
 import (
 	"github.com/becosuke/guestbook/api/internal/domain/post"
