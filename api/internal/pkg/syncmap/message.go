@@ -1,21 +1,21 @@
 package syncmap
 
 type Message struct {
-	serial int64
-	body   string
+	key   string
+	value string
 }
 
-func NewMessage(serial int64, body string) *Message {
+func NewMessage(key string, value string) *Message {
 	return &Message{
-		serial: serial,
-		body:   body,
+		key:   key,
+		value: value,
 	}
 }
 
-func (m Message) Serial() int64 {
-	return m.serial
+func (m Message) Key() string {
+	return m.key
 }
 
-func (m Message) Body() string {
-	return m.body
+func (m Message) Value() string {
+	return m.value
 }
