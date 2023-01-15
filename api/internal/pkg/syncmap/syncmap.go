@@ -6,9 +6,9 @@ import (
 
 type Syncmap interface {
 	LoadOrStore(message *Message) (*Message, bool, error)
-	Load(serial int64) (*Message, error)
+	Load(key string) (*Message, error)
 	Store(message *Message) (*Message, error)
-	Delete(serial int64) error
+	Delete(key string) error
 }
 
 func NewSyncmap() Syncmap {
@@ -25,22 +25,22 @@ func (impl *syncmapImpl) LoadOrStore(message *Message) (*Message, bool, error) {
 	if message == nil {
 		return nil, false, ErrSyncmapInvalidArgument
 	}
-	actual, loaded := impl.syncmap.LoadOrStore(message.Serial(), message.Body())
+	actual, loaded := impl.syncmap.LoadOrStore(message.Key(), message.Value())
 	if loaded {
 		asserted, ok := actual.(string)
 		if !ok {
 			return nil, loaded, ErrSyncmapInvalidData
 		}
-		return NewMessage(message.Serial(), asserted), loaded, nil
+		return NewMessage(message.Key(), asserted), loaded, nil
 	}
-	return NewMessage(message.Serial(), message.Body()), loaded, nil
+	return NewMessage(message.Key(), message.Value()), loaded, nil
 }
 
-func (impl *syncmapImpl) Load(serial int64) (*Message, error) {
-	if serial == 0 {
+func (impl *syncmapImpl) Load(key string) (*Message, error) {
+	if key == "" {
 		return nil, ErrSyncmapInvalidArgument
 	}
-	actual, ok := impl.syncmap.Load(serial)
+	actual, ok := impl.syncmap.Load(key)
 	if !ok {
 		return nil, ErrSyncmapNotFound
 	}
@@ -48,21 +48,21 @@ func (impl *syncmapImpl) Load(serial int64) (*Message, error) {
 	if !ok {
 		return nil, ErrSyncmapInvalidData
 	}
-	return NewMessage(serial, asserted), nil
+	return NewMessage(key, asserted), nil
 }
 
 func (impl *syncmapImpl) Store(message *Message) (*Message, error) {
 	if message == nil {
 		return nil, ErrSyncmapInvalidArgument
 	}
-	impl.syncmap.Store(message.Serial(), message.Body())
-	return NewMessage(message.Serial(), message.Body()), nil
+	impl.syncmap.Store(message.Key(), message.Value())
+	return NewMessage(message.Key(), message.Value()), nil
 }
 
-func (impl *syncmapImpl) Delete(serial int64) error {
-	if serial == 0 {
+func (impl *syncmapImpl) Delete(key string) error {
+	if key == "" {
 		return ErrSyncmapInvalidArgument
 	}
-	impl.syncmap.Delete(serial)
+	impl.syncmap.Delete(key)
 	return nil
 }
