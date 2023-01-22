@@ -12,29 +12,29 @@ import "validate/validate.proto";
 service GuestbookService {
   rpc GetPost (GetPostRequest) returns (Post) {
     option (google.api.http) = {
-      get: "/v1/post/{serial}"
+      get: "/api/v1/post/{serial}"
     };
   }
   rpc CreatePost (CreatePostRequest) returns (Post) {
     option (google.api.http) = {
-      post: "/v1/post"
+      post: "/api/v1/post"
       body: "*"
     };
   }
   rpc UpdatePost (UpdatePostRequest) returns (Post) {
     option (google.api.http) = {
-      put: "/v1/post/{post.serial}"
+      put: "/api/v1/post/{post.serial}"
       body: "*"
     };
   }
   rpc DeletePost (DeletePostRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/v1/post/{serial}"
+      delete: "/api/v1/post/{serial}"
     };
   }
   rpc ListPosts (ListPostsRequest) returns (ListPostsResponse) {
     option (google.api.http) = {
-      get: "/v1/posts/list/{page_size}/{page_token}"
+      get: "/api/v1/posts/list/{page_size}/{page_token}"
     };
   }
 }

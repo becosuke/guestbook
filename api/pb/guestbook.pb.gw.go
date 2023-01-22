@@ -323,7 +323,7 @@ func RegisterGuestbookServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.GuestbookService/GetPost", runtime.WithHTTPPathPattern("/v1/post/{serial}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.GuestbookService/GetPost", runtime.WithHTTPPathPattern("/api/v1/post/{serial}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -348,7 +348,7 @@ func RegisterGuestbookServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.GuestbookService/CreatePost", runtime.WithHTTPPathPattern("/v1/post"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.GuestbookService/CreatePost", runtime.WithHTTPPathPattern("/api/v1/post"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -373,7 +373,7 @@ func RegisterGuestbookServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.GuestbookService/UpdatePost", runtime.WithHTTPPathPattern("/v1/post/{post.serial}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.GuestbookService/UpdatePost", runtime.WithHTTPPathPattern("/api/v1/post/{post.serial}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -398,7 +398,7 @@ func RegisterGuestbookServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.GuestbookService/DeletePost", runtime.WithHTTPPathPattern("/v1/post/{serial}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.GuestbookService/DeletePost", runtime.WithHTTPPathPattern("/api/v1/post/{serial}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -423,7 +423,7 @@ func RegisterGuestbookServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.GuestbookService/ListPosts", runtime.WithHTTPPathPattern("/v1/posts/list/{page_size}/{page_token}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.GuestbookService/ListPosts", runtime.WithHTTPPathPattern("/api/v1/posts/list/{page_size}/{page_token}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -487,7 +487,7 @@ func RegisterGuestbookServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/pb.GuestbookService/GetPost", runtime.WithHTTPPathPattern("/v1/post/{serial}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/pb.GuestbookService/GetPost", runtime.WithHTTPPathPattern("/api/v1/post/{serial}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -509,7 +509,7 @@ func RegisterGuestbookServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/pb.GuestbookService/CreatePost", runtime.WithHTTPPathPattern("/v1/post"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/pb.GuestbookService/CreatePost", runtime.WithHTTPPathPattern("/api/v1/post"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -531,7 +531,7 @@ func RegisterGuestbookServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/pb.GuestbookService/UpdatePost", runtime.WithHTTPPathPattern("/v1/post/{post.serial}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/pb.GuestbookService/UpdatePost", runtime.WithHTTPPathPattern("/api/v1/post/{post.serial}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -553,7 +553,7 @@ func RegisterGuestbookServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/pb.GuestbookService/DeletePost", runtime.WithHTTPPathPattern("/v1/post/{serial}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/pb.GuestbookService/DeletePost", runtime.WithHTTPPathPattern("/api/v1/post/{serial}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -575,7 +575,7 @@ func RegisterGuestbookServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/pb.GuestbookService/ListPosts", runtime.WithHTTPPathPattern("/v1/posts/list/{page_size}/{page_token}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/pb.GuestbookService/ListPosts", runtime.WithHTTPPathPattern("/api/v1/posts/list/{page_size}/{page_token}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -595,15 +595,15 @@ func RegisterGuestbookServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 }
 
 var (
-	pattern_GuestbookService_GetPost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "post", "serial"}, ""))
+	pattern_GuestbookService_GetPost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "post", "serial"}, ""))
 
-	pattern_GuestbookService_CreatePost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "post"}, ""))
+	pattern_GuestbookService_CreatePost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "post"}, ""))
 
-	pattern_GuestbookService_UpdatePost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "post", "post.serial"}, ""))
+	pattern_GuestbookService_UpdatePost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "post", "post.serial"}, ""))
 
-	pattern_GuestbookService_DeletePost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "post", "serial"}, ""))
+	pattern_GuestbookService_DeletePost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "post", "serial"}, ""))
 
-	pattern_GuestbookService_ListPosts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"v1", "posts", "list", "page_size", "page_token"}, ""))
+	pattern_GuestbookService_ListPosts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"api", "v1", "posts", "list", "page_size", "page_token"}, ""))
 )
 
 var (
