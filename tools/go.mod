@@ -1,4 +1,4 @@
-module github.com/becosuke/guestbook/api/tools
+module github.com/becosuke/guestbook/tools
 
 go 1.18
 
