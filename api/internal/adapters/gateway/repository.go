@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
-	"github.com/becosuke/guestbook/api/internal/pkg/syncmap"
+	"github.com/becosuke/guestbook/api/internal/drivers/syncmap"
 	"github.com/becosuke/guestbook/api/internal/registry/config"
 	"github.com/pkg/errors"
 	"strconv"
@@ -32,7 +32,7 @@ type repositoryImpl struct {
 }
 
 func (impl *repositoryImpl) Get(ctx context.Context, serial *domain.Serial) (*domain.Post, error) {
-	message, err := impl.store.Load(fmt.Sprintf("%d", serial.Int64()))
+	message, err := impl.store.Load(ctx, fmt.Sprintf("%d", serial.Int64()))
 	if err != nil {
 		switch {
 		case errors.Is(err, syncmap.ErrSyncmapNotFound):
@@ -54,7 +54,7 @@ func (impl *repositoryImpl) Range(ctx context.Context, pageOption *domain.PageOp
 
 func (impl *repositoryImpl) Create(ctx context.Context, post *domain.Post) (*domain.Serial, error) {
 	serial := impl.generator.GenerateSerial()
-	_, loaded, err := impl.store.LoadOrStore(impl.ToMessage(domain.NewPost(serial, post.Body())))
+	_, loaded, err := impl.store.LoadOrStore(ctx, impl.ToMessage(domain.NewPost(serial, post.Body())))
 	if err != nil {
 		switch {
 		case errors.Is(err, syncmap.ErrSyncmapInvalidArgument):
@@ -72,7 +72,7 @@ func (impl *repositoryImpl) Create(ctx context.Context, post *domain.Post) (*dom
 }
 
 func (impl *repositoryImpl) Update(ctx context.Context, post *domain.Post) error {
-	_, err := impl.store.Load(fmt.Sprintf("%d", post.Serial().Int64()))
+	_, err := impl.store.Load(ctx, fmt.Sprintf("%d", post.Serial().Int64()))
 	if err == nil {
 		switch {
 		case errors.Is(err, syncmap.ErrSyncmapNotFound):
@@ -83,7 +83,7 @@ func (impl *repositoryImpl) Update(ctx context.Context, post *domain.Post) error
 			return ErrRepositoryInvalidData
 		}
 	}
-	_, err = impl.store.Store(impl.ToMessage(post))
+	_, err = impl.store.Store(ctx, impl.ToMessage(post))
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -91,7 +91,7 @@ func (impl *repositoryImpl) Update(ctx context.Context, post *domain.Post) error
 }
 
 func (impl *repositoryImpl) Delete(ctx context.Context, serial *domain.Serial) error {
-	err := impl.store.Delete(fmt.Sprintf("%d", serial.Int64()))
+	err := impl.store.Delete(ctx, fmt.Sprintf("%d", serial.Int64()))
 	return errors.WithStack(err)
 }
 

@@ -1,16 +1,17 @@
 package injection
 
 import (
-	"github.com/becosuke/guestbook/api/internal/adapters/boundary"
+	"context"
 	"github.com/becosuke/guestbook/api/internal/adapters/controller"
 	"github.com/becosuke/guestbook/api/internal/adapters/gateway"
 	"github.com/becosuke/guestbook/api/internal/application/usecase"
 	"github.com/becosuke/guestbook/api/internal/domain/post"
 	"github.com/becosuke/guestbook/api/internal/drivers/grpcserver"
-	"github.com/becosuke/guestbook/api/internal/pkg/logger"
-	"github.com/becosuke/guestbook/api/internal/pkg/syncmap"
+	"github.com/becosuke/guestbook/api/internal/drivers/syncmap"
 	"github.com/becosuke/guestbook/api/internal/registry/config"
-	"github.com/becosuke/guestbook/api/pb"
+	"github.com/becosuke/guestbook/pb"
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"log"
 	"sync"
@@ -18,11 +19,12 @@ import (
 
 type Injection interface {
 	InjectConfig() *config.Config
-	InjectLogger() logger.Logger
+	InjectLogger() *zap.Logger
+	InjectAuthFunc() grpc_auth.AuthFunc
 	InjectGrpcServer() *grpc.Server
 	InjectController() pb.GuestbookServiceServer
 	InjectUsecase() post.Usecase
-	InjectBoundary() boundary.Boundary
+	InjectBoundary() controller.Boundary
 	InjectRepository() post.Repository
 	InjectGenerator() post.Generator
 	InjectSyncmap() syncmap.Syncmap
@@ -35,11 +37,11 @@ func NewInjection(serviceName, version string) Injection {
 type injectionImpl struct {
 	container struct {
 		Config                 *config.Config
-		Logger                 logger.Logger
+		Logger                 *zap.Logger
 		GrpcServer             *grpc.Server
 		GuestbookServiceServer pb.GuestbookServiceServer
 		Usecase                post.Usecase
-		Boundary               boundary.Boundary
+		Boundary               controller.Boundary
 		Repository             post.Repository
 		Generator              post.Generator
 		Syncmap                syncmap.Syncmap
@@ -60,17 +62,23 @@ func (i *injectionImpl) InjectConfig() *config.Config {
 	return i.container.Config
 }
 
-func (i *injectionImpl) InjectLogger() logger.Logger {
+func (i *injectionImpl) InjectLogger() *zap.Logger {
 	actual, _ := i.store.LoadOrStore("logger", &sync.Once{})
 	once, ok := actual.(*sync.Once)
 	if ok {
 		once.Do(func() {
-			l, err := logger.NewLogger(
-				i.InjectConfig().LogLevel,
-				i.serviceName,
-				i.version,
-				i.InjectConfig().Environment.String(),
-			)
+			cfg := zap.NewProductionConfig()
+			cfg.Level = zap.NewAtomicLevelAt(i.InjectConfig().LogLevel)
+			cfg.DisableStacktrace = true
+			cfg.Sampling = nil
+			cfg.OutputPaths = []string{"stdout"}
+			cfg.ErrorOutputPaths = []string{"stderr"}
+			cfg.InitialFields = map[string]interface{}{
+				"service": i.serviceName,
+				"version": i.version,
+				"env":     i.InjectConfig().Environment.String(),
+			}
+			l, err := cfg.Build()
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -80,12 +88,18 @@ func (i *injectionImpl) InjectLogger() logger.Logger {
 	return i.container.Logger
 }
 
+func (i *injectionImpl) InjectAuthFunc() grpc_auth.AuthFunc {
+	return func(ctx context.Context) (context.Context, error) {
+		return ctx, nil
+	}
+}
+
 func (i *injectionImpl) InjectGrpcServer() *grpc.Server {
 	actual, _ := i.store.LoadOrStore("grpcServer", &sync.Once{})
 	once, ok := actual.(*sync.Once)
 	if ok {
 		once.Do(func() {
-			i.container.GrpcServer = grpcserver.NewGrpcServer()
+			i.container.GrpcServer = grpcserver.NewGrpcServer(i.InjectLogger(), i.InjectAuthFunc())
 		})
 	}
 	return i.container.GrpcServer
@@ -117,12 +131,12 @@ func (i *injectionImpl) InjectUsecase() post.Usecase {
 	return i.container.Usecase
 }
 
-func (i *injectionImpl) InjectBoundary() boundary.Boundary {
+func (i *injectionImpl) InjectBoundary() controller.Boundary {
 	actual, _ := i.store.LoadOrStore("boundary", &sync.Once{})
 	once, ok := actual.(*sync.Once)
 	if ok {
 		once.Do(func() {
-			i.container.Boundary = boundary.NewBoundary()
+			i.container.Boundary = controller.NewBoundary()
 		})
 	}
 	return i.container.Boundary
