@@ -3,9 +3,9 @@ package controller
 import (
 	"context"
 	"github.com/becosuke/guestbook/api/internal/domain/post"
-	"github.com/becosuke/guestbook/api/internal/pkg/syncmap"
+	"github.com/becosuke/guestbook/api/internal/drivers/syncmap"
 	"github.com/becosuke/guestbook/api/internal/registry/config"
-	"github.com/becosuke/guestbook/api/pb"
+	"github.com/becosuke/guestbook/pb"
 	"github.com/mennanov/fmutils"
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/types/known/emptypb"
