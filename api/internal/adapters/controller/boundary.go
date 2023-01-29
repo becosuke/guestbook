@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/becosuke/guestbook/api/internal/domain/post"
-	"github.com/becosuke/guestbook/api/pb"
+	"github.com/becosuke/guestbook/pb"
 )
 
 type Boundary interface {

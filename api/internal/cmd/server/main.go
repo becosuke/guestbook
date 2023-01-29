@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/becosuke/guestbook/api/internal/registry/injection"
-	"github.com/becosuke/guestbook/api/pb"
+	"github.com/becosuke/guestbook/pb"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/reflection"
@@ -32,7 +32,9 @@ func run() int {
 	in := injection.NewInjection(serviceName, version)
 	config := in.InjectConfig()
 	logger := in.InjectLogger()
-	defer logger.Sync()
+	defer func() {
+		_ = logger.Sync()
+	}()
 
 	grpcServer := in.InjectGrpcServer()
 	controller := in.InjectController()
