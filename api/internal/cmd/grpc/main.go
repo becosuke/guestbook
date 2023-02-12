@@ -48,7 +48,7 @@ func run() int {
 	signal.Notify(interrupt, syscall.SIGTERM, os.Interrupt)
 	defer signal.Stop(interrupt)
 
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", config.GrpcPort))
+	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", config.GrpcHost, config.GrpcPort))
 	if err != nil {
 		logger.Error("grpc server: failed to listen", zap.Error(err))
 		return exitError
@@ -58,7 +58,7 @@ func run() int {
 	eg.Go(func() error {
 		return grpcServer.Serve(listener)
 	})
-	logger.Info("grpc server: serving", zap.Int("port", config.GrpcPort))
+	logger.Info("grpc server: serving", zap.String("host", config.GrpcHost), zap.Int("port", config.GrpcPort))
 
 	select {
 	case <-interrupt:

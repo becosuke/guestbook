@@ -1,9 +1,10 @@
+GO_VERSION := 1.18.10
+GO_BINARY := go$(GO_VERSION)
+
 PROJECT_REPOSITORY=github.com/becosuke/guestbook/api
 PROJECT_NAME=guestbook-api
 COMMAND_DIR=internal/cmd
 BUILD_DIR=build
-GO_VERSION=1.18.10
-GO_BINARY=go$(GO_VERSION)
 
 CODE_DIRS ?= $(shell $(GO_BINARY) list ./internal/... | grep -v pkg)
 TEST_DIRS ?= $(shell $(GO_BINARY) list ./tests/...)
@@ -33,9 +34,15 @@ fmt:
 imports:
 	@find ./internal -iname "*.go" -not -path "./pkg/**" | xargs goimports -w -local $(PROJECT_REPOSITORY)
 
-run: mod
-	$(GO_BINARY) run -ldflags "-X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-server" \
-	$(PROJECT_REPOSITORY)/$(COMMAND_DIR)/server
+run: mod run-grpc run-rest
+
+run-grpc:
+	$(GO_BINARY) run -ldflags "-X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-grpc" \
+	$(PROJECT_REPOSITORY)/$(COMMAND_DIR)/grpc
+
+run-rest:
+	$(GO_BINARY) run -ldflags "-X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-rest" \
+	$(PROJECT_REPOSITORY)/$(COMMAND_DIR)/rest
 
 .PHONY: test
 test: unit-test functional-test
@@ -49,28 +56,38 @@ functional-test:
 .PHONY: clean
 clean:
 	$(GO_BINARY) clean
-	rm -f $(BUILD_DIR)/server
+	rm -f $(BUILD_DIR)/roneinfo.zip $(BUILD_DIR)/ca-certificates.crt $(BUILD_DIR)/$(PROJECT_NAME)-grpc $(BUILD_DIR)/$(PROJECT_NAME)-rest
 
 clean-test:
 	$(GO_BINARY) clean -testcache
 
 .PHONY: build
-build: update-build-dependencies build-server
+build: clean update-build-dependencies build-grpc build-rest
 
 update-build-dependencies:
 	docker run --rm -v $(shell pwd):/root golang:1.18.10-alpine sh -c 'cp /usr/local/go/lib/time/zoneinfo.zip /root/build/zoneinfo.zip && cp /etc/ssl/certs/ca-certificates.crt /root/build/ca-certificates.crt'
 
-.PHONY: build-server
-build-server: build-server-binary build-server-container
+build-grpc: build-grpc-binary build-grpc-container
 
-build-server-binary:
+build-grpc-binary:
 	CGO_ENABLED=0 GOOS=linux $(GO_BINARY) build -a -installsuffix cgo \
-	-ldflags "-w -X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-server" \
-	-o $(BUILD_DIR)/$(PROJECT_NAME)-server $(COMMAND_DIR)/server/main.go
+	-ldflags "-w -X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-grpc" \
+	-o $(BUILD_DIR)/$(PROJECT_NAME)-grpc $(COMMAND_DIR)/grpc/main.go
 
-build-server-container:
+build-grpc-container:
 	cd $(BUILD_DIR) && \
-	docker build . --no-cache --build-arg name=$(PROJECT_NAME)-server -t $(PROJECT_NAME)-server:latest -t $(PROJECT_NAME)-server:$(VERSION)
+	docker build . --no-cache --build-arg name=$(PROJECT_NAME)-grpc -t $(PROJECT_NAME)-grpc:latest -t $(PROJECT_NAME)-grpc:$(VERSION)
+
+build-rest: build-rest-binary build-rest-container
+
+build-rest-binary:
+	CGO_ENABLED=0 GOOS=linux $(GO_BINARY) build -a -installsuffix cgo \
+	-ldflags "-w -X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-rest" \
+	-o $(BUILD_DIR)/$(PROJECT_NAME)-rest $(COMMAND_DIR)/rest/main.go
+
+build-rest-container:
+	cd $(BUILD_DIR) && \
+	docker build . --no-cache --build-arg name=$(PROJECT_NAME)-rest -t $(PROJECT_NAME)-rest:latest -t $(PROJECT_NAME)-rest:$(VERSION)
 
 gen-mocks:
 	mockgen -source internal/domain/post/usecase.go -destination mocks/domain/post/usecase.go -package post

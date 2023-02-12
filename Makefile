@@ -1,3 +1,6 @@
+GO_VERSION := 1.18.10
+GO_BINARY := go$(GO_VERSION)
+
 .PHONY: build
 build: build-api
 
@@ -20,4 +23,19 @@ tools-install: tools-tidy
 	@for tool in $$(sed -n 's/[ \f\n\r\t]*_ "\(.*\)"/\1/p' tools/tools.go); do GOBIN=$(shell pwd)/bin go install $${tool}@latest; done
 
 tools-tidy:
-	@cd tools && go mod tidy
+	@cd tools && $(GO_BINARY)go mod tidy
+
+mod-tidy:
+	@cd pb $(GO_BINARY) mod tidy
+
+example-get:
+	curl -v 'http://localhost:50080/api/v1/post/100'
+
+example-post:
+	curl -v -X POST -H 'Content-Type: application/json' -d '{"post": {"body": "example"}}' 'http://localhost:50080/api/v1/post'
+
+example-put:
+	curl -v -X PUT -H 'Content-Type: application/json' -d '{"post": {"body":"example-value"}}' 'http://localhost:50080/api/v1/post/100'
+
+example-delete:
+	curl -v -X DELETE 'http://localhost:50080/api/v1/post/100'
