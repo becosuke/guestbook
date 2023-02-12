@@ -6,12 +6,6 @@ import (
 	"strconv"
 )
 
-const (
-	KeyString   = "key"
-	ValueString = "value"
-	Endpoint    = "/kvstore"
-)
-
 type Config struct {
 	constConfig
 	envConfig
@@ -24,25 +18,19 @@ func NewConfig() *Config {
 	}
 }
 
-type constConfig struct {
-	KeyString   string
-	ValueString string
-	Endpoint    string
-}
+type constConfig struct{}
 
 type envConfig struct {
 	Environment Environment
 	LogLevel    zapcore.Level
+	GrpcHost    string
 	GrpcPort    int
-	HttpPort    int
+	RestHost    string
+	RestPort    int
 }
 
 func newConstConfig() constConfig {
-	return constConfig{
-		KeyString:   KeyString,
-		ValueString: ValueString,
-		Endpoint:    Endpoint,
-	}
+	return constConfig{}
 }
 
 func newEnvConfig() envConfig {
@@ -50,8 +38,8 @@ func newEnvConfig() envConfig {
 	if !ok {
 		environmentString = "development"
 	}
-	environment := NewEnvironment(environmentString)
-	if environment == EnvUnknown {
+	environment, err := NewEnvironment(environmentString)
+	if err != nil {
 		environment = EnvDevelopment
 	}
 
@@ -59,8 +47,15 @@ func newEnvConfig() envConfig {
 	if !ok {
 		logLevelString = "info"
 	}
-	logLevel := zapcore.InfoLevel
-	_ = logLevel.Set(logLevelString)
+	logLevel, err := zapcore.ParseLevel(logLevelString)
+	if err != nil {
+		logLevel = zapcore.InfoLevel
+	}
+
+	grpcHost, ok := os.LookupEnv("GRPC_HOST")
+	if !ok {
+		grpcHost = ""
+	}
 
 	grpcPortString, ok := os.LookupEnv("GRPC_PORT")
 	if !ok {
@@ -71,19 +66,26 @@ func newEnvConfig() envConfig {
 		grpcPort = 50051
 	}
 
-	httpPortString, ok := os.LookupEnv("HTTP_PORT")
+	restHost, ok := os.LookupEnv("REST_HOST")
 	if !ok {
-		httpPortString = "50080"
+		restHost = ""
 	}
-	httpPort, err := strconv.Atoi(httpPortString)
+
+	restPortString, ok := os.LookupEnv("REST_PORT")
+	if !ok {
+		restPortString = "50080"
+	}
+	restPort, err := strconv.Atoi(restPortString)
 	if err != nil {
-		httpPort = 50080
+		restPort = 50080
 	}
 
 	return envConfig{
 		Environment: environment,
 		LogLevel:    logLevel,
+		GrpcHost:    grpcHost,
 		GrpcPort:    grpcPort,
-		HttpPort:    httpPort,
+		RestHost:    restHost,
+		RestPort:    restPort,
 	}
 }

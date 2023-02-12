@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	ErrSyncmapNotFound        = errors.New("not exists")
-	ErrSyncmapInvalidData     = errors.New("returns invalid data")
-	ErrSyncmapInvalidArgument = errors.New("invalid argument")
+	ErrNotFound        = errors.New("not exists")
+	ErrInvalidData     = errors.New("returns invalid data")
+	ErrInvalidArgument = errors.New("invalid argument")
 )

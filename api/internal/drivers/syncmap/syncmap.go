@@ -24,13 +24,13 @@ type syncmapImpl struct {
 
 func (impl *syncmapImpl) LoadOrStore(_ context.Context, message *Message) (*Message, bool, error) {
 	if message == nil {
-		return nil, false, ErrSyncmapInvalidArgument
+		return nil, false, ErrInvalidArgument
 	}
 	actual, loaded := impl.syncmap.LoadOrStore(message.Key(), message.Value())
 	if loaded {
 		asserted, ok := actual.(string)
 		if !ok {
-			return nil, loaded, ErrSyncmapInvalidData
+			return nil, loaded, ErrInvalidData
 		}
 		return NewMessage(message.Key(), asserted), loaded, nil
 	}
@@ -39,22 +39,22 @@ func (impl *syncmapImpl) LoadOrStore(_ context.Context, message *Message) (*Mess
 
 func (impl *syncmapImpl) Load(_ context.Context, key string) (*Message, error) {
 	if key == "" {
-		return nil, ErrSyncmapInvalidArgument
+		return nil, ErrInvalidArgument
 	}
 	actual, ok := impl.syncmap.Load(key)
 	if !ok {
-		return nil, ErrSyncmapNotFound
+		return nil, ErrNotFound
 	}
 	asserted, ok := actual.(string)
 	if !ok {
-		return nil, ErrSyncmapInvalidData
+		return nil, ErrInvalidData
 	}
 	return NewMessage(key, asserted), nil
 }
 
 func (impl *syncmapImpl) Store(_ context.Context, message *Message) (*Message, error) {
 	if message == nil {
-		return nil, ErrSyncmapInvalidArgument
+		return nil, ErrInvalidArgument
 	}
 	impl.syncmap.Store(message.Key(), message.Value())
 	return NewMessage(message.Key(), message.Value()), nil
@@ -62,7 +62,7 @@ func (impl *syncmapImpl) Store(_ context.Context, message *Message) (*Message, e
 
 func (impl *syncmapImpl) Delete(_ context.Context, key string) error {
 	if key == "" {
-		return ErrSyncmapInvalidArgument
+		return ErrInvalidArgument
 	}
 	impl.syncmap.Delete(key)
 	return nil

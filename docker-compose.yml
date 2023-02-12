@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  guestbook-api-grpc:
+    image: "guestbook-api-grpc"
+    container_name: "guestbook-api-grpc"
+    environment:
+      - "ENVIRONMENT=development"
+      - "GRPC_HOST=guestbook-api-grpc"
+      - "GRPC_PORT=50051"
+
+  guestbook-api-rest:
+    image: "guestbook-api-rest"
+    container_name: "guestbook-api-rest"
+    environment:
+      - "ENVIRONMENT=development"
+      - "GRPC_HOST=guestbook-api-grpc"
+      - "GRPC_PORT=50051"
+      - "REST_HOST=guestbook-api-rest"
+      - "REST_PORT=50080"
+    ports:
+      - "50080:50080"

@@ -2,7 +2,5 @@ go 1.18
 
 use (
 	./api
-	./gw
-	./logger
 	./pb
 )

@@ -1,5 +1,10 @@
 package config
 
+import (
+	"github.com/pkg/errors"
+	"strings"
+)
+
 type Environment int
 
 const (
@@ -9,32 +14,32 @@ const (
 	EnvTest
 )
 
-func NewEnvironment(s string) Environment {
+var (
+	ErrEnvUnknown = errors.New("unknown environment")
+)
+
+func NewEnvironment(s string) (Environment, error) {
 	e := EnvUnknown
-	_ = e.Set(s)
-	return e
+	err := e.Set(s)
+	return e, err
 }
 
 func (e *Environment) Set(s string) error {
-	switch s {
-	case "Development", "DEVELOPMENT", "development":
+	switch strings.ToLower(s) {
+	case "development":
 		*e = EnvDevelopment
-	case "Production", "PRODUCTION", "production":
+	case "production":
 		*e = EnvProduction
-	case "Test", "TEST", "test":
+	case "test":
 		*e = EnvTest
 	default:
-		*e = EnvUnknown
+		return ErrEnvUnknown
 	}
 	return nil
 }
 
-func (e Environment) Get() interface{} {
-	return e
-}
-
-func (e Environment) String() string {
-	switch e {
+func (e *Environment) String() string {
+	switch *e {
 	case EnvDevelopment:
 		return "development"
 	case EnvProduction:
