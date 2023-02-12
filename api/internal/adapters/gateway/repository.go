@@ -11,10 +11,10 @@ import (
 )
 
 var (
-	ErrRepositoryAlreadyExists   = errors.New("message already exists")
-	ErrRepositoryNotFound        = errors.New("not exists")
-	ErrRepositoryInvalidData     = errors.New("returns invalid data")
-	ErrRepositoryInvalidArgument = errors.New("invalid argument")
+	ErrMessageAlreadyExists = errors.New("message already exists")
+	ErrMessageNotFound      = errors.New("not exists")
+	ErrInvalidData          = errors.New("returns invalid data")
+	ErrInvalidArgument      = errors.New("invalid argument")
 )
 
 func NewRepository(config *config.Config, syncmap syncmap.Syncmap, generator domain.Generator) domain.Repository {
@@ -35,12 +35,12 @@ func (impl *repositoryImpl) Get(ctx context.Context, serial *domain.Serial) (*do
 	message, err := impl.store.Load(ctx, fmt.Sprintf("%d", serial.Int64()))
 	if err != nil {
 		switch {
-		case errors.Is(err, syncmap.ErrSyncmapNotFound):
-			return nil, ErrRepositoryNotFound
-		case errors.Is(err, syncmap.ErrSyncmapInvalidArgument):
-			return nil, ErrRepositoryInvalidArgument
-		case errors.Is(err, syncmap.ErrSyncmapInvalidData):
-			return nil, ErrRepositoryInvalidData
+		case errors.Is(err, syncmap.ErrNotFound):
+			return nil, ErrMessageNotFound
+		case errors.Is(err, syncmap.ErrInvalidArgument):
+			return nil, ErrInvalidArgument
+		case errors.Is(err, syncmap.ErrInvalidData):
+			return nil, ErrInvalidData
 		default:
 			return nil, errors.WithStack(err)
 		}
@@ -57,30 +57,30 @@ func (impl *repositoryImpl) Create(ctx context.Context, post *domain.Post) (*dom
 	_, loaded, err := impl.store.LoadOrStore(ctx, impl.ToMessage(domain.NewPost(serial, post.Body())))
 	if err != nil {
 		switch {
-		case errors.Is(err, syncmap.ErrSyncmapInvalidArgument):
-			return nil, ErrRepositoryInvalidArgument
-		case errors.Is(err, syncmap.ErrSyncmapInvalidData):
-			return nil, ErrRepositoryInvalidData
+		case errors.Is(err, syncmap.ErrInvalidArgument):
+			return nil, ErrInvalidArgument
+		case errors.Is(err, syncmap.ErrInvalidData):
+			return nil, ErrInvalidData
 		default:
 			return nil, errors.WithStack(err)
 		}
 	}
 	if loaded {
-		return nil, ErrRepositoryAlreadyExists
+		return nil, ErrMessageAlreadyExists
 	}
 	return serial, nil
 }
 
 func (impl *repositoryImpl) Update(ctx context.Context, post *domain.Post) error {
 	_, err := impl.store.Load(ctx, fmt.Sprintf("%d", post.Serial().Int64()))
-	if err == nil {
+	if err != nil {
 		switch {
-		case errors.Is(err, syncmap.ErrSyncmapNotFound):
-			return ErrRepositoryNotFound
-		case errors.Is(err, syncmap.ErrSyncmapInvalidArgument):
-			return ErrRepositoryInvalidArgument
-		case errors.Is(err, syncmap.ErrSyncmapInvalidData):
-			return ErrRepositoryInvalidData
+		case errors.Is(err, syncmap.ErrNotFound):
+			return ErrMessageNotFound
+		case errors.Is(err, syncmap.ErrInvalidArgument):
+			return ErrInvalidArgument
+		case errors.Is(err, syncmap.ErrInvalidData):
+			return ErrInvalidData
 		}
 	}
 	_, err = impl.store.Store(ctx, impl.ToMessage(post))

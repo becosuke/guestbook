@@ -2,12 +2,14 @@ package controller
 
 import (
 	"context"
+	"github.com/becosuke/guestbook/api/internal/adapters/gateway"
 	"github.com/becosuke/guestbook/api/internal/domain/post"
-	"github.com/becosuke/guestbook/api/internal/drivers/syncmap"
 	"github.com/becosuke/guestbook/api/internal/registry/config"
 	"github.com/becosuke/guestbook/pb"
 	"github.com/mennanov/fmutils"
 	"github.com/pkg/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -33,11 +35,16 @@ func (impl *guestbookServiceServerImpl) GetPost(ctx context.Context, req *pb.Get
 	res, err := impl.usecase.Get(ctx, impl.boundary.SerialResourceToDomain(req.GetSerial()))
 	if err != nil {
 		switch {
-		case errors.Is(err, syncmap.ErrSyncmapInvalidArgument):
-		case errors.Is(err, syncmap.ErrSyncmapNotFound):
-		case errors.Is(err, syncmap.ErrSyncmapInvalidData):
+		case errors.Is(err, gateway.ErrMessageNotFound):
+			return nil, status.New(codes.NotFound, err.Error()).Err()
+		case errors.Is(err, gateway.ErrInvalidData):
+			return nil, status.New(codes.Internal, err.Error()).Err()
+		case errors.Is(err, gateway.ErrInvalidArgument):
+			stat := status.New(codes.InvalidArgument, err.Error())
+			stat, _ = stat.WithDetails(req)
+			return nil, stat.Err()
 		default:
-
+			return nil, status.New(codes.Unknown, err.Error()).Err()
 		}
 	}
 	return impl.boundary.PostDomainToResource(res), nil
