@@ -29,11 +29,7 @@ func (impl *usecaseImpl) Get(ctx context.Context, serial *domain.Serial) (*domai
 }
 
 func (impl *usecaseImpl) get(ctx context.Context, serial *domain.Serial) (*domain.Post, error) {
-	result, err := impl.repository.Get(ctx, serial)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-	return result, nil
+	return impl.repository.Get(ctx, serial)
 }
 
 func (impl *usecaseImpl) Range(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, error) {

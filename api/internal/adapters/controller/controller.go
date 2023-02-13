@@ -29,20 +29,13 @@ func NewGuestbookServiceServer(config *config.Config, usecase post.Usecase, boun
 }
 
 func (impl *guestbookServiceServerImpl) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb.Post, error) {
-	if err := req.ValidateAll(); err != nil {
-		return nil, err
-	}
 	res, err := impl.usecase.Get(ctx, impl.boundary.SerialResourceToDomain(req.GetSerial()))
 	if err != nil {
 		switch {
 		case errors.Is(err, gateway.ErrMessageNotFound):
 			return nil, status.New(codes.NotFound, err.Error()).Err()
-		case errors.Is(err, gateway.ErrInvalidData):
+		case errors.Is(err, gateway.ErrInvalidData), errors.Is(err, gateway.ErrInvalidArgument):
 			return nil, status.New(codes.Internal, err.Error()).Err()
-		case errors.Is(err, gateway.ErrInvalidArgument):
-			stat := status.New(codes.InvalidArgument, err.Error())
-			stat, _ = stat.WithDetails(req)
-			return nil, stat.Err()
 		default:
 			return nil, status.New(codes.Unknown, err.Error()).Err()
 		}
@@ -51,20 +44,19 @@ func (impl *guestbookServiceServerImpl) GetPost(ctx context.Context, req *pb.Get
 }
 
 func (impl *guestbookServiceServerImpl) CreatePost(ctx context.Context, req *pb.CreatePostRequest) (*pb.Post, error) {
-	if err := req.ValidateAll(); err != nil {
-		return nil, err
-	}
 	res, err := impl.usecase.Create(ctx, impl.boundary.PostResourceToDomain(req.GetPost()))
 	if err != nil {
-		return nil, err
+		switch {
+		case errors.Is(err, gateway.ErrInvalidData), errors.Is(err, gateway.ErrInvalidArgument):
+			return nil, status.New(codes.Internal, err.Error()).Err()
+		default:
+			return nil, status.New(codes.Unknown, err.Error()).Err()
+		}
 	}
 	return impl.boundary.PostDomainToResource(res), nil
 }
 
 func (impl *guestbookServiceServerImpl) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest) (*pb.Post, error) {
-	if err := req.ValidateAll(); err != nil {
-		return nil, err
-	}
 	dest := req.GetPost()
 	req.GetFieldMask().Normalize()
 	if req.GetFieldMask().IsValid(req.GetPost()) {
@@ -78,9 +70,6 @@ func (impl *guestbookServiceServerImpl) UpdatePost(ctx context.Context, req *pb.
 }
 
 func (impl *guestbookServiceServerImpl) DeletePost(ctx context.Context, req *pb.DeletePostRequest) (*emptypb.Empty, error) {
-	if err := req.ValidateAll(); err != nil {
-		return nil, err
-	}
 	err := impl.usecase.Delete(ctx, impl.boundary.SerialResourceToDomain(req.GetSerial()))
 	if err != nil {
 		return nil, err
