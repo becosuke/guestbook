@@ -1,6 +1,6 @@
 [submodule "modules/github.com/bufbuild/protoc-gen-validate"]
 	path = modules/github.com/bufbuild/protoc-gen-validate
-	url = git@github.com:bufbuild/protoc-gen-validate.git
+	url = https://github.com/bufbuild/protoc-gen-validate.git
 [submodule "modules/github.com/googleapis/googleapis"]
 	path = modules/github.com/googleapis/googleapis
-	url = git@github.com:googleapis/googleapis.git
+	url = https://github.com/googleapis/googleapis.git
