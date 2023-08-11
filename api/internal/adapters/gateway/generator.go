@@ -1,8 +1,9 @@
 package gateway
 
 import (
-	"github.com/becosuke/guestbook/api/internal/domain/post"
 	"sync/atomic"
+
+	"github.com/becosuke/guestbook/api/internal/domain/post"
 )
 
 func NewGenerator() post.Generator {

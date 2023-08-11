@@ -3,11 +3,13 @@ package gateway
 import (
 	"context"
 	"fmt"
+	"strconv"
+
+	"github.com/pkg/errors"
+
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	"github.com/becosuke/guestbook/api/internal/drivers/syncmap"
 	"github.com/becosuke/guestbook/api/internal/registry/config"
-	"github.com/pkg/errors"
-	"strconv"
 )
 
 var (

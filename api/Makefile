@@ -1,4 +1,4 @@
-GO_VERSION := 1.18.10
+GO_VERSION := 1.20.5
 GO_BINARY := go$(GO_VERSION)
 
 PROJECT_REPOSITORY=github.com/becosuke/guestbook/api
@@ -16,7 +16,7 @@ VERSION ?= $(TIMESTAMP)-$(GIT_REF)
 all: mod test build
 
 mod:
-	$(GO_BINARY) mod vendor
+	$(GO_BINARY) mod download
 
 mod-tidy:
 	$(GO_BINARY) mod tidy
@@ -25,14 +25,11 @@ vet:
 	$(GO_BINARY) vet $(CODE_DIRS)
 
 lint:
-	golangci-lint run $(args) ./internal/...
-	go-consistent $(cons_args) $(CODE_DIRS)
+	./bin/golangci-lint run $(args) ./internal/...
+	./bin/go-consistent $(cons_args) $(CODE_DIRS)
 
 fmt:
-	@find ./internal -iname "*.go" -not -path "./pkg/**" | xargs gofmt -w
-
-imports:
-	@find ./internal -iname "*.go" -not -path "./pkg/**" | xargs goimports -w -local $(PROJECT_REPOSITORY)
+	@find ./internal -iname "*.go" -not -path "./pkg/**" | xargs ./bin/goimports -w -local $(PROJECT_REPOSITORY)
 
 run: mod run-grpc run-rest
 
@@ -65,7 +62,7 @@ clean-test:
 build: clean update-build-dependencies build-grpc build-rest
 
 update-build-dependencies:
-	docker run --rm -v $(shell pwd):/root golang:1.18.10-alpine sh -c 'cp /usr/local/go/lib/time/zoneinfo.zip /root/build/zoneinfo.zip && cp /etc/ssl/certs/ca-certificates.crt /root/build/ca-certificates.crt'
+	docker run --rm -v $(shell pwd):/root golang:$(GO_VERSION)-alpine sh -c 'cp /usr/local/go/lib/time/zoneinfo.zip /root/build/zoneinfo.zip && cp /etc/ssl/certs/ca-certificates.crt /root/build/ca-certificates.crt'
 
 build-grpc: build-grpc-binary build-grpc-container
 
@@ -89,6 +86,8 @@ build-rest-container:
 	cd $(BUILD_DIR) && \
 	docker build . --no-cache --build-arg name=$(PROJECT_NAME)-rest -t $(PROJECT_NAME)-rest:latest -t $(PROJECT_NAME)-rest:$(VERSION)
 
+gen: gen-mocks
+
 gen-mocks:
 	mockgen -source internal/domain/post/usecase.go -destination mocks/domain/post/usecase.go -package post
 	mockgen -source internal/domain/post/repository.go -destination mocks/domain/post/repository.go -package post
@@ -96,7 +95,7 @@ gen-mocks:
 	mockgen -source internal/drivers/syncmap/syncmap.go -destination mocks/drivers/syncmap/syncmap.go -package syncmap
 
 tools-install: tools-tidy
-	@for tool in $$(sed -n 's/[ \f\n\r\t]*_ "\(.*\)"/\1/p' tools/tools.go); do GOBIN=$(shell pwd)/bin go install $${tool}@latest; done
+	@for tool in $$(sed -n 's/[ \f\n\r\t]*_ "\(.*\)"/\1/p' tools/tools.go); do GOBIN=$(shell pwd)/bin $(GO_BINARY) install $${tool}@latest; done
 
 tools-tidy:
 	@cd tools && $(GO_BINARY) mod tidy

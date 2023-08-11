@@ -2,11 +2,11 @@
 // source: guestbook.proto
 
 /*
-Package pb is a reverse proxy.
+Package pbgo is a reverse proxy.
 
 It translates gRPC into RESTful JSON APIs.
 */
-package pb
+package pbgo
 
 import (
 	"context"
@@ -446,7 +446,7 @@ func RegisterGuestbookServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 // RegisterGuestbookServiceHandlerFromEndpoint is same as RegisterGuestbookServiceHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
 func RegisterGuestbookServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
-	conn, err := grpc.Dial(endpoint, opts...)
+	conn, err := grpc.DialContext(ctx, endpoint, opts...)
 	if err != nil {
 		return err
 	}

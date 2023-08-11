@@ -3,15 +3,17 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/becosuke/guestbook/api/internal/registry/injection"
-	"github.com/becosuke/guestbook/pb"
-	"go.uber.org/zap"
-	"golang.org/x/sync/errgroup"
-	"google.golang.org/grpc/reflection"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"go.uber.org/zap"
+	"golang.org/x/sync/errgroup"
+	"google.golang.org/grpc/reflection"
+
+	"github.com/becosuke/guestbook/api/internal/registry/injection"
+	"github.com/becosuke/guestbook/pbgo"
 )
 
 const (
@@ -38,7 +40,7 @@ func run() int {
 
 	grpcServer := in.InjectGrpcServer()
 	controller := in.InjectController()
-	pb.RegisterGuestbookServiceServer(grpcServer, controller)
+	pbgo.RegisterGuestbookServiceServer(grpcServer, controller)
 	reflection.Register(grpcServer)
 
 	ctx, cancel := context.WithCancel(context.Background())
