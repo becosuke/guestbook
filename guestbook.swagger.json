@@ -214,6 +214,7 @@
         "posts": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/pbPost"
           }
         },
@@ -256,6 +257,7 @@
         "details": {
           "type": "array",
           "items": {
+            "type": "object",
             "$ref": "#/definitions/protobufAny"
           }
         }

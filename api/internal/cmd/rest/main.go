@@ -3,17 +3,19 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/becosuke/guestbook/api/internal/registry/injection"
-	"github.com/becosuke/guestbook/pb"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
+
+	"github.com/becosuke/guestbook/api/internal/registry/injection"
+	"github.com/becosuke/guestbook/pbgo"
 )
 
 const (
@@ -48,7 +50,7 @@ func run() int {
 	signal.Notify(interrupt, syscall.SIGTERM, os.Interrupt)
 	defer signal.Stop(interrupt)
 
-	err := pb.RegisterGuestbookServiceHandlerFromEndpoint(ctx, mux, fmt.Sprintf("%s:%d", config.GrpcHost, config.GrpcPort), opts)
+	err := pbgo.RegisterGuestbookServiceHandlerFromEndpoint(ctx, mux, fmt.Sprintf("%s:%d", config.GrpcHost, config.GrpcPort), opts)
 	if err != nil {
 		logger.Error("rest server: failed to register handler", zap.Error(err))
 		return exitError

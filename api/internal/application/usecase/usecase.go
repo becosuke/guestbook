@@ -2,9 +2,11 @@ package usecase
 
 import (
 	"context"
+
+	"github.com/pkg/errors"
+
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	"github.com/becosuke/guestbook/api/internal/registry/config"
-	"github.com/pkg/errors"
 )
 
 func NewUsecase(config *config.Config, repository domain.Repository) domain.Usecase {
