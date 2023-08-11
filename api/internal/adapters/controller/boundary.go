@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/becosuke/guestbook/api/internal/domain/post"
-	"github.com/becosuke/guestbook/pb"
+	"github.com/becosuke/guestbook/pbgo"
 )
 
 type Boundary interface {
@@ -10,8 +10,8 @@ type Boundary interface {
 	SerialResourceToDomain(resourceSerial int64) *post.Serial
 	BodyDomainToResource(domainBody *post.Body) string
 	BodyResourceToDomain(resourceBody string) *post.Body
-	PostDomainToResource(domainPost *post.Post) *pb.Post
-	PostResourceToDomain(resourcePost *pb.Post) *post.Post
+	PostDomainToResource(domainPost *post.Post) *pbgo.Post
+	PostResourceToDomain(resourcePost *pbgo.Post) *post.Post
 }
 
 func NewBoundary() Boundary {
@@ -37,14 +37,14 @@ func (impl *boundaryImpl) BodyResourceToDomain(resourceBody string) *post.Body {
 	return post.NewBody(resourceBody)
 }
 
-func (impl *boundaryImpl) PostDomainToResource(domainPost *post.Post) *pb.Post {
-	return &pb.Post{
+func (impl *boundaryImpl) PostDomainToResource(domainPost *post.Post) *pbgo.Post {
+	return &pbgo.Post{
 		Serial: impl.SerialDomainToResource(domainPost.Serial()),
 		Body:   impl.BodyDomainToResource(domainPost.Body()),
 	}
 }
 
-func (impl *boundaryImpl) PostResourceToDomain(resourcePost *pb.Post) *post.Post {
+func (impl *boundaryImpl) PostResourceToDomain(resourcePost *pbgo.Post) *post.Post {
 	return post.NewPost(
 		impl.SerialResourceToDomain(resourcePost.GetSerial()),
 		impl.BodyResourceToDomain(resourcePost.GetBody()),

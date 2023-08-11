@@ -2,6 +2,13 @@ package injection
 
 import (
 	"context"
+	"log"
+	"sync"
+
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
+
 	"github.com/becosuke/guestbook/api/internal/adapters/controller"
 	"github.com/becosuke/guestbook/api/internal/adapters/gateway"
 	"github.com/becosuke/guestbook/api/internal/application/usecase"
@@ -9,12 +16,7 @@ import (
 	"github.com/becosuke/guestbook/api/internal/drivers/grpcserver"
 	"github.com/becosuke/guestbook/api/internal/drivers/syncmap"
 	"github.com/becosuke/guestbook/api/internal/registry/config"
-	"github.com/becosuke/guestbook/pb"
-	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
-	"go.uber.org/zap"
-	"google.golang.org/grpc"
-	"log"
-	"sync"
+	"github.com/becosuke/guestbook/pbgo"
 )
 
 type Injection interface {
@@ -22,7 +24,7 @@ type Injection interface {
 	InjectLogger() *zap.Logger
 	InjectAuthFunc() grpc_auth.AuthFunc
 	InjectGrpcServer() *grpc.Server
-	InjectController() pb.GuestbookServiceServer
+	InjectController() pbgo.GuestbookServiceServer
 	InjectUsecase() post.Usecase
 	InjectBoundary() controller.Boundary
 	InjectRepository() post.Repository
@@ -39,7 +41,7 @@ type injectionImpl struct {
 		Config                 *config.Config
 		Logger                 *zap.Logger
 		GrpcServer             *grpc.Server
-		GuestbookServiceServer pb.GuestbookServiceServer
+		GuestbookServiceServer pbgo.GuestbookServiceServer
 		Usecase                post.Usecase
 		Boundary               controller.Boundary
 		Repository             post.Repository
@@ -105,7 +107,7 @@ func (i *injectionImpl) InjectGrpcServer() *grpc.Server {
 	return i.container.GrpcServer
 }
 
-func (i *injectionImpl) InjectController() pb.GuestbookServiceServer {
+func (i *injectionImpl) InjectController() pbgo.GuestbookServiceServer {
 	actual, _ := i.store.LoadOrStore("controller", &sync.Once{})
 	once, ok := actual.(*sync.Once)
 	if ok {

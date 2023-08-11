@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package pb;
 
-option go_package = "github.com/becosuke/guestbook/internal/pkg/pb";
+option go_package = "github.com/becosuke/guestbook/internal/pkg/pbgo";
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";

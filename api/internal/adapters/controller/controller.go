@@ -2,25 +2,27 @@ package controller
 
 import (
 	"context"
-	"github.com/becosuke/guestbook/api/internal/adapters/gateway"
-	"github.com/becosuke/guestbook/api/internal/domain/post"
-	"github.com/becosuke/guestbook/api/internal/registry/config"
-	"github.com/becosuke/guestbook/pb"
+
 	"github.com/mennanov/fmutils"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+
+	"github.com/becosuke/guestbook/api/internal/adapters/gateway"
+	"github.com/becosuke/guestbook/api/internal/domain/post"
+	"github.com/becosuke/guestbook/api/internal/registry/config"
+	"github.com/becosuke/guestbook/pbgo"
 )
 
 type guestbookServiceServerImpl struct {
-	pb.UnimplementedGuestbookServiceServer
+	pbgo.UnimplementedGuestbookServiceServer
 	config   *config.Config
 	usecase  post.Usecase
 	boundary Boundary
 }
 
-func NewGuestbookServiceServer(config *config.Config, usecase post.Usecase, boundary Boundary) pb.GuestbookServiceServer {
+func NewGuestbookServiceServer(config *config.Config, usecase post.Usecase, boundary Boundary) pbgo.GuestbookServiceServer {
 	return &guestbookServiceServerImpl{
 		config:   config,
 		usecase:  usecase,
@@ -28,7 +30,7 @@ func NewGuestbookServiceServer(config *config.Config, usecase post.Usecase, boun
 	}
 }
 
-func (impl *guestbookServiceServerImpl) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb.Post, error) {
+func (impl *guestbookServiceServerImpl) GetPost(ctx context.Context, req *pbgo.GetPostRequest) (*pbgo.Post, error) {
 	res, err := impl.usecase.Get(ctx, impl.boundary.SerialResourceToDomain(req.GetSerial()))
 	if err != nil {
 		switch {
@@ -43,7 +45,7 @@ func (impl *guestbookServiceServerImpl) GetPost(ctx context.Context, req *pb.Get
 	return impl.boundary.PostDomainToResource(res), nil
 }
 
-func (impl *guestbookServiceServerImpl) CreatePost(ctx context.Context, req *pb.CreatePostRequest) (*pb.Post, error) {
+func (impl *guestbookServiceServerImpl) CreatePost(ctx context.Context, req *pbgo.CreatePostRequest) (*pbgo.Post, error) {
 	res, err := impl.usecase.Create(ctx, impl.boundary.PostResourceToDomain(req.GetPost()))
 	if err != nil {
 		switch {
@@ -56,7 +58,7 @@ func (impl *guestbookServiceServerImpl) CreatePost(ctx context.Context, req *pb.
 	return impl.boundary.PostDomainToResource(res), nil
 }
 
-func (impl *guestbookServiceServerImpl) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest) (*pb.Post, error) {
+func (impl *guestbookServiceServerImpl) UpdatePost(ctx context.Context, req *pbgo.UpdatePostRequest) (*pbgo.Post, error) {
 	dest := req.GetPost()
 	req.GetFieldMask().Normalize()
 	if req.GetFieldMask().IsValid(req.GetPost()) {
@@ -69,7 +71,7 @@ func (impl *guestbookServiceServerImpl) UpdatePost(ctx context.Context, req *pb.
 	return impl.boundary.PostDomainToResource(res), nil
 }
 
-func (impl *guestbookServiceServerImpl) DeletePost(ctx context.Context, req *pb.DeletePostRequest) (*emptypb.Empty, error) {
+func (impl *guestbookServiceServerImpl) DeletePost(ctx context.Context, req *pbgo.DeletePostRequest) (*emptypb.Empty, error) {
 	err := impl.usecase.Delete(ctx, impl.boundary.SerialResourceToDomain(req.GetSerial()))
 	if err != nil {
 		return nil, err
