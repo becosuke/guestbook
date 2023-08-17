@@ -10,11 +10,10 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/becosuke/guestbook/api/internal/adapters/controller"
-	"github.com/becosuke/guestbook/api/internal/adapters/gateway"
+	syncmap_repository "github.com/becosuke/guestbook/api/internal/adapters/repository/syncmap"
 	"github.com/becosuke/guestbook/api/internal/application/usecase"
-	"github.com/becosuke/guestbook/api/internal/domain/post"
 	"github.com/becosuke/guestbook/api/internal/drivers/grpcserver"
-	"github.com/becosuke/guestbook/api/internal/drivers/syncmap"
+	syncmap_driver "github.com/becosuke/guestbook/api/internal/drivers/syncmap"
 	"github.com/becosuke/guestbook/api/internal/registry/config"
 	"github.com/becosuke/guestbook/pbgo"
 )
@@ -25,11 +24,13 @@ type Injection interface {
 	InjectAuthFunc() grpc_auth.AuthFunc
 	InjectGrpcServer() *grpc.Server
 	InjectController() pbgo.GuestbookServiceServer
-	InjectUsecase() post.Usecase
-	InjectBoundary() controller.Boundary
-	InjectRepository() post.Repository
-	InjectGenerator() post.Generator
-	InjectSyncmap() syncmap.Syncmap
+	InjectControllerBoundary() controller.Boundary
+	InjectUsecase() usecase.Usecase
+	InjectSyncmapRepositoryGenerator() syncmap_repository.Generator
+	InjectSyncmapRepositoryQuerier() syncmap_repository.Querier
+	InjectSyncmapRepositoryCommander() syncmap_repository.Commander
+	InjectSyncmapRepositoryBoundary() syncmap_repository.Boundary
+	InjectSyncmapDriver() syncmap_driver.Syncmap
 }
 
 func NewInjection(serviceName, version string) Injection {
@@ -38,15 +39,17 @@ func NewInjection(serviceName, version string) Injection {
 
 type injectionImpl struct {
 	container struct {
-		Config                 *config.Config
-		Logger                 *zap.Logger
-		GrpcServer             *grpc.Server
-		GuestbookServiceServer pbgo.GuestbookServiceServer
-		Usecase                post.Usecase
-		Boundary               controller.Boundary
-		Repository             post.Repository
-		Generator              post.Generator
-		Syncmap                syncmap.Syncmap
+		Config                     *config.Config
+		Logger                     *zap.Logger
+		GrpcServer                 *grpc.Server
+		GuestbookServiceServer     pbgo.GuestbookServiceServer
+		ControllerBoundary         controller.Boundary
+		Usecase                    usecase.Usecase
+		SyncmapRepositoryGenerator syncmap_repository.Generator
+		SyncmapRepositoryQuerier   syncmap_repository.Querier
+		SyncmapRepositoryCommander syncmap_repository.Commander
+		SyncmapRepositoryBoundary  syncmap_repository.Boundary
+		SyncmapDriver              syncmap_driver.Syncmap
 	}
 	serviceName string
 	version     string
@@ -97,7 +100,7 @@ func (i *injectionImpl) InjectAuthFunc() grpc_auth.AuthFunc {
 }
 
 func (i *injectionImpl) InjectGrpcServer() *grpc.Server {
-	actual, _ := i.store.LoadOrStore("grpcServer", &sync.Once{})
+	actual, _ := i.store.LoadOrStore("grpc_server", &sync.Once{})
 	once, ok := actual.(*sync.Once)
 	if ok {
 		once.Do(func() {
@@ -115,64 +118,88 @@ func (i *injectionImpl) InjectController() pbgo.GuestbookServiceServer {
 			i.container.GuestbookServiceServer = controller.NewGuestbookServiceServer(
 				i.InjectConfig(),
 				i.InjectUsecase(),
-				i.InjectBoundary(),
+				i.InjectControllerBoundary(),
 			)
 		})
 	}
 	return i.container.GuestbookServiceServer
 }
 
-func (i *injectionImpl) InjectUsecase() post.Usecase {
+func (i *injectionImpl) InjectControllerBoundary() controller.Boundary {
+	actual, _ := i.store.LoadOrStore("controller_boundary", &sync.Once{})
+	once, ok := actual.(*sync.Once)
+	if ok {
+		once.Do(func() {
+			i.container.ControllerBoundary = controller.NewBoundary()
+		})
+	}
+	return i.container.ControllerBoundary
+}
+
+func (i *injectionImpl) InjectUsecase() usecase.Usecase {
 	actual, _ := i.store.LoadOrStore("usecase", &sync.Once{})
 	once, ok := actual.(*sync.Once)
 	if ok {
 		once.Do(func() {
-			i.container.Usecase = usecase.NewUsecase(i.InjectConfig(), i.InjectRepository())
+			i.container.Usecase = usecase.NewUsecase(i.InjectConfig(), i.InjectSyncmapRepositoryQuerier(), i.InjectSyncmapRepositoryCommander())
 		})
 	}
 	return i.container.Usecase
 }
 
-func (i *injectionImpl) InjectBoundary() controller.Boundary {
-	actual, _ := i.store.LoadOrStore("boundary", &sync.Once{})
+func (i *injectionImpl) InjectSyncmapRepositoryGenerator() syncmap_repository.Generator {
+	actual, _ := i.store.LoadOrStore("syncmap_repository_generator", &sync.Once{})
 	once, ok := actual.(*sync.Once)
 	if ok {
 		once.Do(func() {
-			i.container.Boundary = controller.NewBoundary()
+			i.container.SyncmapRepositoryGenerator = syncmap_repository.NewGenerator()
 		})
 	}
-	return i.container.Boundary
+	return i.container.SyncmapRepositoryGenerator
 }
 
-func (i *injectionImpl) InjectRepository() post.Repository {
-	actual, _ := i.store.LoadOrStore("repository", &sync.Once{})
+func (i *injectionImpl) InjectSyncmapRepositoryQuerier() syncmap_repository.Querier {
+	actual, _ := i.store.LoadOrStore("syncmap_repository_querier", &sync.Once{})
 	once, ok := actual.(*sync.Once)
 	if ok {
 		once.Do(func() {
-			i.container.Repository = gateway.NewRepository(i.InjectConfig(), i.InjectSyncmap(), i.InjectGenerator())
+			i.container.SyncmapRepositoryQuerier = syncmap_repository.NewQuerier(
+				i.InjectConfig(), i.InjectSyncmapDriver(), i.InjectSyncmapRepositoryBoundary())
 		})
 	}
-	return i.container.Repository
+	return i.container.SyncmapRepositoryQuerier
 }
 
-func (i *injectionImpl) InjectGenerator() post.Generator {
-	actual, _ := i.store.LoadOrStore("generator", &sync.Once{})
+func (i *injectionImpl) InjectSyncmapRepositoryCommander() syncmap_repository.Commander {
+	actual, _ := i.store.LoadOrStore("syncmap_repository_commander", &sync.Once{})
 	once, ok := actual.(*sync.Once)
 	if ok {
 		once.Do(func() {
-			i.container.Generator = gateway.NewGenerator()
+			i.container.SyncmapRepositoryCommander = syncmap_repository.NewCommander(
+				i.InjectConfig(), i.InjectSyncmapDriver(), i.InjectSyncmapRepositoryBoundary(), i.InjectSyncmapRepositoryGenerator())
 		})
 	}
-	return i.container.Generator
+	return i.container.SyncmapRepositoryCommander
 }
 
-func (i *injectionImpl) InjectSyncmap() syncmap.Syncmap {
-	actual, _ := i.store.LoadOrStore("syncmap", &sync.Once{})
+func (i *injectionImpl) InjectSyncmapRepositoryBoundary() syncmap_repository.Boundary {
+	actual, _ := i.store.LoadOrStore("syncmap_repository_boundary", &sync.Once{})
 	once, ok := actual.(*sync.Once)
 	if ok {
 		once.Do(func() {
-			i.container.Syncmap = syncmap.NewSyncmap()
+			i.container.SyncmapRepositoryBoundary = syncmap_repository.NewBoundary()
 		})
 	}
-	return i.container.Syncmap
+	return i.container.SyncmapRepositoryBoundary
+}
+
+func (i *injectionImpl) InjectSyncmapDriver() syncmap_driver.Syncmap {
+	actual, _ := i.store.LoadOrStore("syncmap_driver", &sync.Once{})
+	once, ok := actual.(*sync.Once)
+	if ok {
+		once.Do(func() {
+			i.container.SyncmapDriver = syncmap_driver.NewSyncmap()
+		})
+	}
+	return i.container.SyncmapDriver
 }

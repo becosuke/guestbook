@@ -18,8 +18,7 @@ func NewBoundary() Boundary {
 	return &boundaryImpl{}
 }
 
-type boundaryImpl struct {
-}
+type boundaryImpl struct{}
 
 func (impl *boundaryImpl) SerialDomainToResource(domainSerial *post.Serial) int64 {
 	return domainSerial.Int64()

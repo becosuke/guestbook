@@ -5,20 +5,31 @@ import (
 
 	"github.com/pkg/errors"
 
+	"github.com/becosuke/guestbook/api/internal/adapters/gateway/syncmap"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	"github.com/becosuke/guestbook/api/internal/registry/config"
 )
 
-func NewUsecase(config *config.Config, repository domain.Repository) domain.Usecase {
+type Usecase interface {
+	Get(context.Context, *domain.Serial) (*domain.Post, error)
+	Range(context.Context, *domain.PageOption) ([]*domain.Post, error)
+	Create(context.Context, *domain.Post) (*domain.Post, error)
+	Update(context.Context, *domain.Post) (*domain.Post, error)
+	Delete(context.Context, *domain.Serial) error
+}
+
+func NewUsecase(config *config.Config, querier syncmap.Querier, commander syncmap.Commander) Usecase {
 	return &usecaseImpl{
-		config:     config,
-		repository: repository,
+		config:    config,
+		querier:   querier,
+		commander: commander,
 	}
 }
 
 type usecaseImpl struct {
-	config     *config.Config
-	repository domain.Repository
+	config    *config.Config
+	querier   syncmap.Querier
+	commander syncmap.Commander
 }
 
 func (impl *usecaseImpl) Get(ctx context.Context, serial *domain.Serial) (*domain.Post, error) {
@@ -31,11 +42,11 @@ func (impl *usecaseImpl) Get(ctx context.Context, serial *domain.Serial) (*domai
 }
 
 func (impl *usecaseImpl) get(ctx context.Context, serial *domain.Serial) (*domain.Post, error) {
-	return impl.repository.Get(ctx, serial)
+	return impl.querier.Get(ctx, serial)
 }
 
 func (impl *usecaseImpl) Range(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, error) {
-	result, err := impl.repository.Range(ctx, pageOption)
+	result, err := impl.querier.Range(ctx, pageOption)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -43,7 +54,7 @@ func (impl *usecaseImpl) Range(ctx context.Context, pageOption *domain.PageOptio
 }
 
 func (impl *usecaseImpl) Create(ctx context.Context, post *domain.Post) (*domain.Post, error) {
-	serial, err := impl.repository.Create(ctx, post)
+	serial, err := impl.commander.Create(ctx, post)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -51,7 +62,7 @@ func (impl *usecaseImpl) Create(ctx context.Context, post *domain.Post) (*domain
 }
 
 func (impl *usecaseImpl) Update(ctx context.Context, post *domain.Post) (*domain.Post, error) {
-	err := impl.repository.Update(ctx, post)
+	err := impl.commander.Update(ctx, post)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -59,7 +70,7 @@ func (impl *usecaseImpl) Update(ctx context.Context, post *domain.Post) (*domain
 }
 
 func (impl *usecaseImpl) Delete(ctx context.Context, serial *domain.Serial) error {
-	err := impl.repository.Delete(ctx, serial)
+	err := impl.commander.Delete(ctx, serial)
 	if err != nil {
 		return errors.WithStack(err)
 	}
