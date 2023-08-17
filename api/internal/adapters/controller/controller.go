@@ -9,8 +9,8 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/becosuke/guestbook/api/internal/adapters/gateway"
-	"github.com/becosuke/guestbook/api/internal/domain/post"
+	repository "github.com/becosuke/guestbook/api/internal/adapters/repository/syncmap"
+	"github.com/becosuke/guestbook/api/internal/application/usecase"
 	"github.com/becosuke/guestbook/api/internal/registry/config"
 	"github.com/becosuke/guestbook/pbgo"
 )
@@ -18,11 +18,11 @@ import (
 type guestbookServiceServerImpl struct {
 	pbgo.UnimplementedGuestbookServiceServer
 	config   *config.Config
-	usecase  post.Usecase
+	usecase  usecase.Usecase
 	boundary Boundary
 }
 
-func NewGuestbookServiceServer(config *config.Config, usecase post.Usecase, boundary Boundary) pbgo.GuestbookServiceServer {
+func NewGuestbookServiceServer(config *config.Config, usecase usecase.Usecase, boundary Boundary) pbgo.GuestbookServiceServer {
 	return &guestbookServiceServerImpl{
 		config:   config,
 		usecase:  usecase,
@@ -34,9 +34,9 @@ func (impl *guestbookServiceServerImpl) GetPost(ctx context.Context, req *pbgo.G
 	res, err := impl.usecase.Get(ctx, impl.boundary.SerialResourceToDomain(req.GetSerial()))
 	if err != nil {
 		switch {
-		case errors.Is(err, gateway.ErrMessageNotFound):
+		case errors.Is(err, repository.ErrMessageNotFound):
 			return nil, status.New(codes.NotFound, err.Error()).Err()
-		case errors.Is(err, gateway.ErrInvalidData), errors.Is(err, gateway.ErrInvalidArgument):
+		case errors.Is(err, repository.ErrInvalidData), errors.Is(err, repository.ErrInvalidArgument):
 			return nil, status.New(codes.Internal, err.Error()).Err()
 		default:
 			return nil, status.New(codes.Unknown, err.Error()).Err()
@@ -49,7 +49,7 @@ func (impl *guestbookServiceServerImpl) CreatePost(ctx context.Context, req *pbg
 	res, err := impl.usecase.Create(ctx, impl.boundary.PostResourceToDomain(req.GetPost()))
 	if err != nil {
 		switch {
-		case errors.Is(err, gateway.ErrInvalidData), errors.Is(err, gateway.ErrInvalidArgument):
+		case errors.Is(err, repository.ErrInvalidData), errors.Is(err, repository.ErrInvalidArgument):
 			return nil, status.New(codes.Internal, err.Error()).Err()
 		default:
 			return nil, status.New(codes.Unknown, err.Error()).Err()
