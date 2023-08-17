@@ -1,5 +1,5 @@
-GO_VERSION := 1.20.5
-GO_BINARY := go$(GO_VERSION)
+GO_VERSION=1.20.7
+GO_BINARY=go
 
 .PHONY: build
 build: build-api

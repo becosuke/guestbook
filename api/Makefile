@@ -1,7 +1,8 @@
-GO_VERSION := 1.20.5
-GO_BINARY := go$(GO_VERSION)
+GO_VERSION=1.20.7
+GO_BINARY=go
 
-PROJECT_REPOSITORY=github.com/becosuke/guestbook/api
+PROJECT_REPOSITORY_ORIGIN=github.com/becosuke/guestbook
+PROJECT_REPOSITORY=$(PROJECT_REPOSITORY_ORIGIN)/api
 PROJECT_NAME=guestbook-api
 COMMAND_DIR=internal/cmd
 BUILD_DIR=build
@@ -16,47 +17,47 @@ VERSION ?= $(TIMESTAMP)-$(GIT_REF)
 all: mod test build
 
 mod:
-	$(GO_BINARY) mod download
+	go mod download
 
 mod-tidy:
-	$(GO_BINARY) mod tidy
+	go mod tidy
 
 vet:
-	$(GO_BINARY) vet $(CODE_DIRS)
+	go vet $(CODE_DIRS)
 
 lint:
 	./bin/golangci-lint run $(args) ./internal/...
 	./bin/go-consistent $(cons_args) $(CODE_DIRS)
 
 fmt:
-	@find ./internal -iname "*.go" -not -path "./pkg/**" | xargs ./bin/goimports -w -local $(PROJECT_REPOSITORY)
+	@find ./internal -iname "*.go" -not -path "./pkg/**" | xargs ./bin/goimports -w -local $(PROJECT_REPOSITORY_ORIGIN)
 
 run: mod run-grpc run-rest
 
 run-grpc:
-	$(GO_BINARY) run -ldflags "-X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-grpc" \
+	go run -ldflags "-X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-grpc" \
 	$(PROJECT_REPOSITORY)/$(COMMAND_DIR)/grpc
 
 run-rest:
-	$(GO_BINARY) run -ldflags "-X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-rest" \
+	go run -ldflags "-X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-rest" \
 	$(PROJECT_REPOSITORY)/$(COMMAND_DIR)/rest
 
 .PHONY: test
 test: unit-test functional-test
 
 unit-test:
-	$(GO_BINARY) test $(args) -race -cover $(CODE_DIRS)
+	go test $(args) -race -cover $(CODE_DIRS)
 
 functional-test:
-	$(GO_BINARY) test $(args) -race -cover $(TEST_DIRS)
+	go test $(args) -race -cover $(TEST_DIRS)
 
 .PHONY: clean
 clean:
-	$(GO_BINARY) clean
+	go clean
 	rm -f $(BUILD_DIR)/roneinfo.zip $(BUILD_DIR)/ca-certificates.crt $(BUILD_DIR)/$(PROJECT_NAME)-grpc $(BUILD_DIR)/$(PROJECT_NAME)-rest
 
 clean-test:
-	$(GO_BINARY) clean -testcache
+	go clean -testcache
 
 .PHONY: build
 build: clean update-build-dependencies build-grpc build-rest
