@@ -5,7 +5,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/becosuke/guestbook/api/internal/adapters/gateway/syncmap"
+	syncmap_repository "github.com/becosuke/guestbook/api/internal/adapters/repository/syncmap"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	"github.com/becosuke/guestbook/api/internal/registry/config"
 )
@@ -18,7 +18,7 @@ type Usecase interface {
 	Delete(context.Context, *domain.Serial) error
 }
 
-func NewUsecase(config *config.Config, querier syncmap.Querier, commander syncmap.Commander) Usecase {
+func NewUsecase(config *config.Config, querier syncmap_repository.Querier, commander syncmap_repository.Commander) Usecase {
 	return &usecaseImpl{
 		config:    config,
 		querier:   querier,
@@ -28,8 +28,8 @@ func NewUsecase(config *config.Config, querier syncmap.Querier, commander syncma
 
 type usecaseImpl struct {
 	config    *config.Config
-	querier   syncmap.Querier
-	commander syncmap.Commander
+	querier   syncmap_repository.Querier
+	commander syncmap_repository.Commander
 }
 
 func (impl *usecaseImpl) Get(ctx context.Context, serial *domain.Serial) (*domain.Post, error) {
