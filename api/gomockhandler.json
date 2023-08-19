@@ -1,0 +1,58 @@
+{
+	"mocks": {
+		"mock/adapter/repository/syncmap/boundary.go": {
+			"checksum": "uZAvrRohxNpkbtljw36MWQ==",
+			"source_checksum": "GN4ZqL2c5FH1XLp358hLpQ==",
+			"mode": "SOURCE_MODE",
+			"source_mode_runner": {
+				"source": "internal/adapter/repository/syncmap/boundary.go",
+				"destination": "mock/adapter/repository/syncmap/boundary.go"
+			}
+		},
+		"mock/adapter/repository/syncmap/commander.go": {
+			"checksum": "90yy5M80/BtkGp//5yoxGg==",
+			"source_checksum": "+IWWQcvVvdwXdD8CQpLChA==",
+			"mode": "SOURCE_MODE",
+			"source_mode_runner": {
+				"source": "internal/adapter/repository/syncmap/commander.go",
+				"destination": "mock/adapter/repository/syncmap/commander.go"
+			}
+		},
+		"mock/adapter/repository/syncmap/generator.go": {
+			"checksum": "x7uSX2y16wmn55VLL5Trjg==",
+			"source_checksum": "YIjiiDACZYRkaI7cpk6Hyg==",
+			"mode": "SOURCE_MODE",
+			"source_mode_runner": {
+				"source": "internal/adapter/repository/syncmap/generator.go",
+				"destination": "mock/adapter/repository/syncmap/generator.go"
+			}
+		},
+		"mock/adapter/repository/syncmap/querier.go": {
+			"checksum": "YvHp4qC/RtGFNbL/RbzrYw==",
+			"source_checksum": "THMwUJkYVf5O1ogSDiw3cg==",
+			"mode": "SOURCE_MODE",
+			"source_mode_runner": {
+				"source": "internal/adapter/repository/syncmap/querier.go",
+				"destination": "mock/adapter/repository/syncmap/querier.go"
+			}
+		},
+		"mock/appication/usecase/usecase.go": {
+			"checksum": "H8e697hB8ngF8iFEmG0oUw==",
+			"source_checksum": "KD0SNwaXCMO5DgA3oWoDAQ==",
+			"mode": "SOURCE_MODE",
+			"source_mode_runner": {
+				"source": "internal/application/usecase/usecase.go",
+				"destination": "mock/appication/usecase/usecase.go"
+			}
+		},
+		"mock/driver/syncmap/syncmap.go": {
+			"checksum": "eRkHnJW/o3J3P1rAt8E1/w==",
+			"source_checksum": "Yqz1ASdxAsfr6i57t2nT8g==",
+			"mode": "SOURCE_MODE",
+			"source_mode_runner": {
+				"source": "internal/driver/syncmap/syncmap.go",
+				"destination": "mock/driver/syncmap/syncmap.go"
+			}
+		}
+	}
+}
