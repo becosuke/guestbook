@@ -5,7 +5,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	syncmap_repository "github.com/becosuke/guestbook/api/internal/adapters/repository/syncmap"
+	syncmap_repository "github.com/becosuke/guestbook/api/internal/adapter/repository/syncmap"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	"github.com/becosuke/guestbook/api/internal/registry/config"
 )

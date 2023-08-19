@@ -20,14 +20,14 @@ func NewQuerier(config *config.Config, store syncmap.Syncmap, boundary Boundary)
 	return &querierImpl{
 		config:   config,
 		store:    store,
-		Boundary: boundary,
+		boundary: boundary,
 	}
 }
 
 type querierImpl struct {
-	config *config.Config
-	store  syncmap.Syncmap
-	Boundary
+	config   *config.Config
+	store    syncmap.Syncmap
+	boundary Boundary
 }
 
 func (impl *querierImpl) Get(ctx context.Context, serial *domain.Serial) (*domain.Post, error) {
@@ -44,7 +44,7 @@ func (impl *querierImpl) Get(ctx context.Context, serial *domain.Serial) (*domai
 			return nil, errors.WithStack(err)
 		}
 	}
-	return impl.ToEntity(message), nil
+	return impl.boundary.ToEntity(message), nil
 }
 
 func (impl *querierImpl) Range(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, error) {

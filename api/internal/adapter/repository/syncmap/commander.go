@@ -21,21 +21,21 @@ func NewCommander(config *config.Config, store syncmap.Syncmap, boundary Boundar
 	return &commanderImpl{
 		config:    config,
 		store:     store,
-		Boundary:  boundary,
-		Generator: generator,
+		boundary:  boundary,
+		generator: generator,
 	}
 }
 
 type commanderImpl struct {
-	config *config.Config
-	store  syncmap.Syncmap
-	Boundary
-	Generator
+	config    *config.Config
+	store     syncmap.Syncmap
+	boundary  Boundary
+	generator Generator
 }
 
 func (impl *commanderImpl) Create(ctx context.Context, post *domain.Post) (*domain.Serial, error) {
-	serial := impl.GenerateSerial()
-	_, loaded, err := impl.store.LoadOrStore(ctx, impl.ToMessage(domain.NewPost(serial, post.Body())))
+	serial := impl.generator.GenerateSerial()
+	_, loaded, err := impl.store.LoadOrStore(ctx, impl.boundary.ToMessage(domain.NewPost(serial, post.Body())))
 	if err != nil {
 		switch {
 		case errors.Is(err, syncmap.ErrInvalidArgument):
@@ -64,7 +64,7 @@ func (impl *commanderImpl) Update(ctx context.Context, post *domain.Post) error 
 			return ErrInvalidData
 		}
 	}
-	_, err = impl.store.Store(ctx, impl.ToMessage(post))
+	_, err = impl.store.Store(ctx, impl.boundary.ToMessage(post))
 	if err != nil {
 		return errors.WithStack(err)
 	}
