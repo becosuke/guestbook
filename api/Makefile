@@ -54,7 +54,7 @@ functional-test:
 .PHONY: clean
 clean:
 	go clean
-	rm -f $(BUILD_DIR)/roneinfo.zip $(BUILD_DIR)/ca-certificates.crt $(BUILD_DIR)/$(PROJECT_NAME)-grpc $(BUILD_DIR)/$(PROJECT_NAME)-rest
+	rm -f $(BUILD_DIR)/zoneinfo.zip $(BUILD_DIR)/ca-certificates.crt $(BUILD_DIR)/$(PROJECT_NAME)-grpc $(BUILD_DIR)/$(PROJECT_NAME)-rest
 
 clean-test:
 	go clean -testcache
