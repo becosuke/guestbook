@@ -8,7 +8,7 @@ COMMAND_DIR=internal/cmd
 BUILD_DIR=build
 
 CODE_DIRS ?= $(shell $(GO_BINARY) list ./internal/... | grep -v pkg)
-TEST_DIRS ?= $(shell $(GO_BINARY) list ./tests/...)
+TEST_DIRS ?= $(shell $(GO_BINARY) list ./test/...)
 
 TIMESTAMP := $(shell date "+%Y%m%d%H%M%S")
 GIT_REF := $(shell git rev-parse --short=7 HEAD)
@@ -17,13 +17,13 @@ VERSION ?= $(TIMESTAMP)-$(GIT_REF)
 all: mod test build
 
 mod:
-	go mod download
+	$(GO_BINARY) mod download
 
 mod-tidy:
-	go mod tidy
+	$(GO_BINARY) mod tidy
 
 vet:
-	go vet $(CODE_DIRS)
+	$(GO_BINARY) vet $(CODE_DIRS)
 
 lint:
 	./bin/golangci-lint run $(args) ./internal/...
@@ -35,29 +35,29 @@ fmt:
 run: mod run-grpc run-rest
 
 run-grpc:
-	go run -ldflags "-X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-grpc" \
+	$(GO_BINARY) run -ldflags "-X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-grpc" \
 	$(PROJECT_REPOSITORY)/$(COMMAND_DIR)/grpc
 
 run-rest:
-	go run -ldflags "-X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-rest" \
+	$(GO_BINARY) run -ldflags "-X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-rest" \
 	$(PROJECT_REPOSITORY)/$(COMMAND_DIR)/rest
 
 .PHONY: test
 test: unit-test functional-test
 
 unit-test:
-	go test $(args) -race -cover $(CODE_DIRS)
+	$(GO_BINARY) test $(args) -race -cover $(CODE_DIRS)
 
 functional-test:
-	go test $(args) -race -cover $(TEST_DIRS)
+	$(GO_BINARY) test $(args) -race -cover $(TEST_DIRS)
 
 .PHONY: clean
 clean:
-	go clean
+	$(GO_BINARY) clean
 	rm -f $(BUILD_DIR)/zoneinfo.zip $(BUILD_DIR)/ca-certificates.crt $(BUILD_DIR)/$(PROJECT_NAME)-grpc $(BUILD_DIR)/$(PROJECT_NAME)-rest
 
 clean-test:
-	go clean -testcache
+	$(GO_BINARY) clean -testcache
 
 .PHONY: build
 build: clean update-build-dependencies build-grpc build-rest
@@ -87,13 +87,10 @@ build-rest-container:
 	cd $(BUILD_DIR) && \
 	docker build . --no-cache --build-arg name=$(PROJECT_NAME)-rest -t $(PROJECT_NAME)-rest:latest -t $(PROJECT_NAME)-rest:$(VERSION)
 
-gen: gen-mocks
+gen: gen-mock
 
-gen-mocks:
-	mockgen -source internal/domain/post/usecase.go -destination mocks/domain/post/usecase.go -package post
-	mockgen -source internal/domain/post/repository.go -destination mocks/domain/post/repository.go -package post
-	mockgen -source internal/domain/post/generator.go -destination mocks/domain/post/generator.go -package post
-	mockgen -source internal/drivers/syncmap/syncmap.go -destination mocks/drivers/syncmap/syncmap.go -package syncmap
+gen-mock:
+	./bin/gomockhandler mockgen
 
 tools-install: tools-tidy
 	@for tool in $$(sed -n 's/[ \f\n\r\t]*_ "\(.*\)"/\1/p' tools/tools.go); do GOBIN=$(shell pwd)/bin $(GO_BINARY) install $${tool}@latest; done
