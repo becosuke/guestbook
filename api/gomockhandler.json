@@ -1,8 +1,8 @@
 {
 	"mocks": {
 		"mock/adapter/repository/syncmap/boundary.go": {
-			"checksum": "uZAvrRohxNpkbtljw36MWQ==",
-			"source_checksum": "GN4ZqL2c5FH1XLp358hLpQ==",
+			"checksum": "lFKLTG6IFDzLpu3GHfi5dQ==",
+			"source_checksum": "hOuKfsOAUrDva8VtGZpfmw==",
 			"mode": "SOURCE_MODE",
 			"source_mode_runner": {
 				"source": "internal/adapter/repository/syncmap/boundary.go",
@@ -11,7 +11,7 @@
 		},
 		"mock/adapter/repository/syncmap/commander.go": {
 			"checksum": "90yy5M80/BtkGp//5yoxGg==",
-			"source_checksum": "+IWWQcvVvdwXdD8CQpLChA==",
+			"source_checksum": "luXCpEBJ+7g/P1o1QmeJLw==",
 			"mode": "SOURCE_MODE",
 			"source_mode_runner": {
 				"source": "internal/adapter/repository/syncmap/commander.go",
@@ -29,20 +29,20 @@
 		},
 		"mock/adapter/repository/syncmap/querier.go": {
 			"checksum": "YvHp4qC/RtGFNbL/RbzrYw==",
-			"source_checksum": "THMwUJkYVf5O1ogSDiw3cg==",
+			"source_checksum": "au41S4nXHejWTE7rzO4BSw==",
 			"mode": "SOURCE_MODE",
 			"source_mode_runner": {
 				"source": "internal/adapter/repository/syncmap/querier.go",
 				"destination": "mock/adapter/repository/syncmap/querier.go"
 			}
 		},
-		"mock/appication/usecase/usecase.go": {
+		"mock/application/usecase/usecase.go": {
 			"checksum": "H8e697hB8ngF8iFEmG0oUw==",
 			"source_checksum": "KD0SNwaXCMO5DgA3oWoDAQ==",
 			"mode": "SOURCE_MODE",
 			"source_mode_runner": {
 				"source": "internal/application/usecase/usecase.go",
-				"destination": "mock/appication/usecase/usecase.go"
+				"destination": "mock/application/usecase/usecase.go"
 			}
 		},
 		"mock/driver/syncmap/syncmap.go": {
