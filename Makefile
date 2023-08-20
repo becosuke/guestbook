@@ -28,14 +28,14 @@ tools-tidy:
 pbgo-tidy:
 	@cd pbgo && $(GO_BINARY) mod tidy
 
-example-get:
-	curl -v 'http://localhost:50080/api/v1/post/100'
-
 example-post:
 	curl -v -X POST -H 'Content-Type: application/json' -d '{"post": {"body": "example"}}' 'http://localhost:50080/api/v1/post'
 
 example-put:
 	curl -v -X PUT -H 'Content-Type: application/json' -d '{"post": {"body":"example-value"}}' 'http://localhost:50080/api/v1/post/100'
+
+example-get:
+	curl -v 'http://localhost:50080/api/v1/post/100'
 
 example-delete:
 	curl -v -X DELETE 'http://localhost:50080/api/v1/post/100'

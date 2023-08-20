@@ -9,11 +9,11 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
-	"github.com/becosuke/guestbook/api/internal/adapters/controller"
-	syncmap_repository "github.com/becosuke/guestbook/api/internal/adapters/repository/syncmap"
+	"github.com/becosuke/guestbook/api/internal/adapter/controller"
+	syncmap_repository "github.com/becosuke/guestbook/api/internal/adapter/repository/syncmap"
 	"github.com/becosuke/guestbook/api/internal/application/usecase"
-	"github.com/becosuke/guestbook/api/internal/drivers/grpcserver"
-	syncmap_driver "github.com/becosuke/guestbook/api/internal/drivers/syncmap"
+	"github.com/becosuke/guestbook/api/internal/driver/grpcserver"
+	syncmap_driver "github.com/becosuke/guestbook/api/internal/driver/syncmap"
 	"github.com/becosuke/guestbook/api/internal/registry/config"
 	"github.com/becosuke/guestbook/pbgo"
 )
