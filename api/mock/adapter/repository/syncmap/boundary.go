@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 
 	post "github.com/becosuke/guestbook/api/internal/domain/post"
-	syncmap "github.com/becosuke/guestbook/api/internal/drivers/syncmap"
+	syncmap "github.com/becosuke/guestbook/api/internal/driver/syncmap"
 	gomock "github.com/golang/mock/gomock"
 )
 
