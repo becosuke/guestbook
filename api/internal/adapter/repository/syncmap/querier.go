@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
-	"github.com/becosuke/guestbook/api/internal/drivers/syncmap"
+	driver "github.com/becosuke/guestbook/api/internal/driver/syncmap"
 	"github.com/becosuke/guestbook/api/internal/registry/config"
 )
 
@@ -16,7 +16,7 @@ type Querier interface {
 	Range(context.Context, *domain.PageOption) ([]*domain.Post, error)
 }
 
-func NewQuerier(config *config.Config, store syncmap.Syncmap, boundary Boundary) Querier {
+func NewQuerier(config *config.Config, store driver.Syncmap, boundary Boundary) Querier {
 	return &querierImpl{
 		config:   config,
 		store:    store,
@@ -26,7 +26,7 @@ func NewQuerier(config *config.Config, store syncmap.Syncmap, boundary Boundary)
 
 type querierImpl struct {
 	config   *config.Config
-	store    syncmap.Syncmap
+	store    driver.Syncmap
 	boundary Boundary
 }
 
@@ -34,11 +34,11 @@ func (impl *querierImpl) Get(ctx context.Context, serial *domain.Serial) (*domai
 	message, err := impl.store.Load(ctx, fmt.Sprintf("%d", serial.Int64()))
 	if err != nil {
 		switch {
-		case errors.Is(err, syncmap.ErrNotFound):
+		case errors.Is(err, driver.ErrNotFound):
 			return nil, ErrMessageNotFound
-		case errors.Is(err, syncmap.ErrInvalidArgument):
+		case errors.Is(err, driver.ErrInvalidArgument):
 			return nil, ErrInvalidArgument
-		case errors.Is(err, syncmap.ErrInvalidData):
+		case errors.Is(err, driver.ErrInvalidData):
 			return nil, ErrInvalidData
 		default:
 			return nil, errors.WithStack(err)

@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	repository "github.com/becosuke/guestbook/api/internal/adapters/repository/syncmap"
+	repository "github.com/becosuke/guestbook/api/internal/adapter/repository/syncmap"
 	"github.com/becosuke/guestbook/api/internal/application/usecase"
 	"github.com/becosuke/guestbook/api/internal/registry/config"
 	"github.com/becosuke/guestbook/pbgo"
