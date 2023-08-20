@@ -117,6 +117,7 @@ func (i *injectionImpl) InjectController() pbgo.GuestbookServiceServer {
 		once.Do(func() {
 			i.container.GuestbookServiceServer = controller.NewGuestbookServiceServer(
 				i.InjectConfig(),
+				i.InjectLogger(),
 				i.InjectUsecase(),
 				i.InjectControllerBoundary(),
 			)

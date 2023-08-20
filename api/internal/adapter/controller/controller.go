@@ -3,8 +3,8 @@ package controller
 import (
 	"context"
 
-	"github.com/mennanov/fmutils"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -18,13 +18,15 @@ import (
 type guestbookServiceServerImpl struct {
 	pbgo.UnimplementedGuestbookServiceServer
 	config   *config.Config
+	logger   *zap.Logger
 	usecase  usecase.Usecase
 	boundary Boundary
 }
 
-func NewGuestbookServiceServer(config *config.Config, usecase usecase.Usecase, boundary Boundary) pbgo.GuestbookServiceServer {
+func NewGuestbookServiceServer(config *config.Config, logger *zap.Logger, usecase usecase.Usecase, boundary Boundary) pbgo.GuestbookServiceServer {
 	return &guestbookServiceServerImpl{
 		config:   config,
+		logger:   logger,
 		usecase:  usecase,
 		boundary: boundary,
 	}
@@ -59,14 +61,14 @@ func (impl *guestbookServiceServerImpl) CreatePost(ctx context.Context, req *pbg
 }
 
 func (impl *guestbookServiceServerImpl) UpdatePost(ctx context.Context, req *pbgo.UpdatePostRequest) (*pbgo.Post, error) {
-	dest := req.GetPost()
-	req.GetFieldMask().Normalize()
-	if req.GetFieldMask().IsValid(req.GetPost()) {
-		fmutils.Filter(dest, req.GetFieldMask().GetPaths())
-	}
-	res, err := impl.usecase.Update(ctx, impl.boundary.PostResourceToDomain(dest))
+	res, err := impl.usecase.Update(ctx, impl.boundary.PostResourceToDomain(req.GetPost()))
 	if err != nil {
-		return nil, err
+		switch {
+		case errors.Is(err, repository.ErrInvalidData), errors.Is(err, repository.ErrInvalidArgument):
+			return nil, status.New(codes.Internal, err.Error()).Err()
+		default:
+			return nil, status.New(codes.Unknown, err.Error()).Err()
+		}
 	}
 	return impl.boundary.PostDomainToResource(res), nil
 }
