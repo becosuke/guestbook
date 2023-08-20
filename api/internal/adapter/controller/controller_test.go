@@ -9,9 +9,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/becosuke/guestbook/api/internal/application/usecase"
-	"github.com/becosuke/guestbook/api/internal/domain/post"
-	"github.com/becosuke/guestbook/api/internal/registry/config"
+	repository "github.com/becosuke/guestbook/api/internal/adapter/repository/syncmap"
+	real_usecase "github.com/becosuke/guestbook/api/internal/application/usecase"
+	domain "github.com/becosuke/guestbook/api/internal/domain/post"
+	registry_config "github.com/becosuke/guestbook/api/internal/registry/config"
 	mock_usecase "github.com/becosuke/guestbook/api/mock/application/usecase"
 	"github.com/becosuke/guestbook/pbgo"
 )
@@ -19,12 +20,12 @@ import (
 func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockConfig := config.NewConfig()
-	mockBoundary := NewBoundary()
+	config := registry_config.NewConfig()
+	boundary := NewBoundary()
 	type fields struct {
 		UnimplementedGuestbookServiceServer pbgo.UnimplementedGuestbookServiceServer
-		config                              *config.Config
-		usecase                             usecase.Usecase
+		config                              *registry_config.Config
+		usecase                             real_usecase.Usecase
 		boundary                            Boundary
 	}
 	type args struct {
@@ -42,19 +43,20 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
-			serial := post.NewSerial(1)
-			body := post.NewBody("example")
+			serial := domain.NewSerial(1)
+			body := domain.NewBody("example")
+			post := domain.NewPost(serial, body)
 			mockUsecase.EXPECT().Get(ctx, serial).
-				Return(post.NewPost(serial, body), nil).
-				Do(func(ctx context.Context, serial *post.Serial) {
+				Return(post, nil).
+				Do(func(ctx context.Context, serial *domain.Serial) {
 					assert.Equal(t, int64(1), serial.Int64())
 				})
 			return testCase{
 				name: "normal",
 				fields: fields{
-					config:   mockConfig,
+					config:   config,
 					usecase:  mockUsecase,
-					boundary: mockBoundary,
+					boundary: boundary,
 				},
 				args: args{
 					ctx: ctx,
@@ -67,6 +69,28 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 					Body:   "example",
 				},
 				wantErr: false,
+			}
+		}(),
+		func() testCase {
+			ctx := context.Background()
+			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
+			serial := domain.NewSerial(1)
+			mockUsecase.EXPECT().Get(ctx, serial).Return(nil, repository.ErrMessageNotFound)
+			return testCase{
+				name: "not found",
+				fields: fields{
+					config:   config,
+					usecase:  mockUsecase,
+					boundary: boundary,
+				},
+				args: args{
+					ctx: ctx,
+					req: &pbgo.GetPostRequest{
+						Serial: 1,
+					},
+				},
+				want:    nil,
+				wantErr: true,
 			}
 		}(),
 	}
@@ -91,24 +115,56 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 }
 
 func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	config := registry_config.NewConfig()
+	boundary := NewBoundary()
 	type fields struct {
 		UnimplementedGuestbookServiceServer pbgo.UnimplementedGuestbookServiceServer
-		config                              *config.Config
-		usecase                             usecase.Usecase
+		config                              *registry_config.Config
+		usecase                             real_usecase.Usecase
 		boundary                            Boundary
 	}
 	type args struct {
 		ctx context.Context
 		req *pbgo.CreatePostRequest
 	}
-	tests := []struct {
+	type testCase struct {
 		name    string
 		fields  fields
 		args    args
 		want    *pbgo.Post
 		wantErr bool
-	}{
-		// TODO: Add test cases.
+	}
+	tests := []testCase{
+		func() testCase {
+			ctx := context.Background()
+			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
+			req := domain.NewPost(domain.NewSerial(0), domain.NewBody("example"))
+			res := domain.NewPost(domain.NewSerial(1), domain.NewBody("example"))
+			mockUsecase.EXPECT().Create(ctx, req).Return(res, nil)
+			return testCase{
+				name: "normal",
+				fields: fields{
+					config:   config,
+					usecase:  mockUsecase,
+					boundary: boundary,
+				},
+				args: args{
+					ctx: ctx,
+					req: &pbgo.CreatePostRequest{
+						Post: &pbgo.Post{
+							Body: "example",
+						},
+					},
+				},
+				want: &pbgo.Post{
+					Serial: 1,
+					Body:   "example",
+				},
+				wantErr: false,
+			}
+		}(),
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -133,8 +189,8 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 	type fields struct {
 		UnimplementedGuestbookServiceServer pbgo.UnimplementedGuestbookServiceServer
-		config                              *config.Config
-		usecase                             usecase.Usecase
+		config                              *registry_config.Config
+		usecase                             real_usecase.Usecase
 		boundary                            Boundary
 	}
 	type args struct {
@@ -173,8 +229,8 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 	type fields struct {
 		UnimplementedGuestbookServiceServer pbgo.UnimplementedGuestbookServiceServer
-		config                              *config.Config
-		usecase                             usecase.Usecase
+		config                              *registry_config.Config
+		usecase                             real_usecase.Usecase
 		boundary                            Boundary
 	}
 	type args struct {
