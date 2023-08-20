@@ -87,9 +87,6 @@
                       "type": "string"
                     }
                   }
-                },
-                "fieldMask": {
-                  "type": "string"
                 }
               }
             }

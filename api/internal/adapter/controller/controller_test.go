@@ -43,13 +43,13 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
-			serial := domain.NewSerial(1)
+			serial := domain.NewSerial(100)
 			body := domain.NewBody("example")
 			post := domain.NewPost(serial, body)
 			mockUsecase.EXPECT().Get(ctx, serial).
 				Return(post, nil).
 				Do(func(ctx context.Context, serial *domain.Serial) {
-					assert.Equal(t, int64(1), serial.Int64())
+					assert.Equal(t, int64(100), serial.Int64())
 				})
 			return testCase{
 				name: "normal",
@@ -61,11 +61,11 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 				args: args{
 					ctx: ctx,
 					req: &pbgo.GetPostRequest{
-						Serial: 1,
+						Serial: 100,
 					},
 				},
 				want: &pbgo.Post{
-					Serial: 1,
+					Serial: 100,
 					Body:   "example",
 				},
 				wantErr: false,
@@ -74,7 +74,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
-			serial := domain.NewSerial(1)
+			serial := domain.NewSerial(100)
 			mockUsecase.EXPECT().Get(ctx, serial).Return(nil, repository.ErrMessageNotFound)
 			return testCase{
 				name: "not found",
@@ -86,7 +86,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 				args: args{
 					ctx: ctx,
 					req: &pbgo.GetPostRequest{
-						Serial: 1,
+						Serial: 100,
 					},
 				},
 				want:    nil,
@@ -187,6 +187,10 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 }
 
 func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	config := registry_config.NewConfig()
+	boundary := NewBoundary()
 	type fields struct {
 		UnimplementedGuestbookServiceServer pbgo.UnimplementedGuestbookServiceServer
 		config                              *registry_config.Config
@@ -197,14 +201,42 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 		ctx context.Context
 		req *pbgo.UpdatePostRequest
 	}
-	tests := []struct {
+	type testCase struct {
 		name    string
 		fields  fields
 		args    args
 		want    *pbgo.Post
 		wantErr bool
-	}{
-		// TODO: Add test cases.
+	}
+	tests := []testCase{
+		func() testCase {
+			ctx := context.Background()
+			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
+			post := domain.NewPost(domain.NewSerial(100), domain.NewBody("example-value"))
+			mockUsecase.EXPECT().Update(ctx, post).Return(post, nil)
+			return testCase{
+				name: "normal",
+				fields: fields{
+					config:   config,
+					usecase:  mockUsecase,
+					boundary: boundary,
+				},
+				args: args{
+					ctx: ctx,
+					req: &pbgo.UpdatePostRequest{
+						Post: &pbgo.Post{
+							Serial: 100,
+							Body:   "example-value",
+						},
+					},
+				},
+				want: &pbgo.Post{
+					Serial: 100,
+					Body:   "example-value",
+				},
+				wantErr: false,
+			}
+		}(),
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -227,6 +259,10 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 }
 
 func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	config := registry_config.NewConfig()
+	boundary := NewBoundary()
 	type fields struct {
 		UnimplementedGuestbookServiceServer pbgo.UnimplementedGuestbookServiceServer
 		config                              *registry_config.Config
@@ -237,14 +273,36 @@ func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 		ctx context.Context
 		req *pbgo.DeletePostRequest
 	}
-	tests := []struct {
+	type testCase struct {
 		name    string
 		fields  fields
 		args    args
 		want    *emptypb.Empty
 		wantErr bool
-	}{
-		// TODO: Add test cases.
+	}
+	tests := []testCase{
+		func() testCase {
+			ctx := context.Background()
+			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
+			serial := domain.NewSerial(100)
+			mockUsecase.EXPECT().Delete(ctx, serial).Return(nil)
+			return testCase{
+				name: "normal",
+				fields: fields{
+					config:   config,
+					usecase:  mockUsecase,
+					boundary: boundary,
+				},
+				args: args{
+					ctx: ctx,
+					req: &pbgo.DeletePostRequest{
+						Serial: 100,
+					},
+				},
+				want:    &emptypb.Empty{},
+				wantErr: false,
+			}
+		}(),
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
