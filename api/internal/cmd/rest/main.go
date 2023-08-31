@@ -14,7 +14,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/becosuke/guestbook/api/internal/registry/injection"
+	pkgconfig "github.com/becosuke/guestbook/api/internal/registry/config"
+	"github.com/becosuke/guestbook/api/internal/registry/injection/rest"
 	"github.com/becosuke/guestbook/pbgo"
 )
 
@@ -33,18 +34,21 @@ func main() {
 }
 
 func run() int {
-	in := injection.NewInjection(serviceName, version)
-	config := in.InjectConfig()
-	logger := in.InjectLogger()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	ctx = context.WithValue(ctx, pkgconfig.ServiceName{}, serviceName)
+	ctx = context.WithValue(ctx, pkgconfig.ServiceVersion{}, version)
+
+	app := rest.InitializeApp(ctx)
+	config := app.Config
+	logger := app.Logger
 	defer func() {
 		_ = logger.Sync()
 	}()
 
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, syscall.SIGTERM, os.Interrupt)
