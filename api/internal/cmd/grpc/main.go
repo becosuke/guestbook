@@ -12,8 +12,7 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/reflection"
 
-	pkgconfig "github.com/becosuke/guestbook/api/internal/registry/config"
-	"github.com/becosuke/guestbook/api/internal/registry/injection/grpc"
+	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 	"github.com/becosuke/guestbook/pbgo"
 )
 
@@ -38,7 +37,7 @@ func run() int {
 	ctx = context.WithValue(ctx, pkgconfig.ServiceName{}, serviceName)
 	ctx = context.WithValue(ctx, pkgconfig.ServiceVersion{}, version)
 
-	app := grpc.InitializeApp(ctx)
+	app := InitializeApp(ctx)
 	config := app.Config
 	logger := app.Logger
 	defer func() {

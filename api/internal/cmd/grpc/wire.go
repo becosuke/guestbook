@@ -1,22 +1,32 @@
 //go:build wireinject
 // +build wireinject
 
-package grpc
+package main
 
 import (
 	"context"
 
 	"github.com/google/wire"
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
 
 	"github.com/becosuke/guestbook/api/internal/adapter/controller"
 	syncmap_repository "github.com/becosuke/guestbook/api/internal/adapter/repository/syncmap"
 	"github.com/becosuke/guestbook/api/internal/application/usecase"
 	"github.com/becosuke/guestbook/api/internal/driver/grpcserver"
+	"github.com/becosuke/guestbook/api/internal/driver/interceptor"
 	syncmap_driver "github.com/becosuke/guestbook/api/internal/driver/syncmap"
-	"github.com/becosuke/guestbook/api/internal/pkg/authfunc"
+	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 	"github.com/becosuke/guestbook/api/internal/pkg/logger"
-	pkgconfig "github.com/becosuke/guestbook/api/internal/registry/config"
+	"github.com/becosuke/guestbook/pbgo"
 )
+
+type App struct {
+	Config     *pkgconfig.Config
+	Logger     *zap.Logger
+	GrpcServer *grpc.Server
+	Controller pbgo.GuestbookServiceServer
+}
 
 var controllerSet = wire.NewSet(
 	controller.NewGuestbookServiceServer,
@@ -42,7 +52,7 @@ func InitializeApp(ctx context.Context) *App {
 	wire.Build(
 		pkgconfig.NewConfig,
 		logger.NewLogger,
-		authfunc.NewAuthFunc,
+		interceptor.NewAuthFunc,
 		grpcserver.NewGrpcServer,
 		controllerSet,
 		usecaseSet,
