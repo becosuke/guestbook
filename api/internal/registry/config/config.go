@@ -1,6 +1,7 @@
 package config
 
 import (
+	"context"
 	"os"
 	"strconv"
 
@@ -10,13 +11,6 @@ import (
 type Config struct {
 	constConfig
 	envConfig
-}
-
-func NewConfig() *Config {
-	return &Config{
-		constConfig: newConstConfig(),
-		envConfig:   newEnvConfig(),
-	}
 }
 
 type constConfig struct{}
@@ -30,11 +24,23 @@ type envConfig struct {
 	RestPort    int
 }
 
-func newConstConfig() constConfig {
+func NewConfig(ctx context.Context) *Config {
+	return &Config{
+		constConfig: newConstConfig(ctx),
+		envConfig:   newEnvConfig(ctx),
+	}
+}
+
+type (
+	ServiceName    struct{}
+	ServiceVersion struct{}
+)
+
+func newConstConfig(ctx context.Context) constConfig {
 	return constConfig{}
 }
 
-func newEnvConfig() envConfig {
+func newEnvConfig(ctx context.Context) envConfig {
 	environmentString, ok := os.LookupEnv("ENVIRONMENT")
 	if !ok {
 		environmentString = "development"

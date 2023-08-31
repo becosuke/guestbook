@@ -20,8 +20,6 @@ import (
 func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	config := registry_config.NewConfig()
-	boundary := NewBoundary()
 	type fields struct {
 		UnimplementedGuestbookServiceServer pbgo.UnimplementedGuestbookServiceServer
 		config                              *registry_config.Config
@@ -42,6 +40,8 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 	tests := []testCase{
 		func() testCase {
 			ctx := context.Background()
+			config := registry_config.NewConfig(ctx)
+			boundary := NewBoundary()
 			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
 			serial := domain.NewSerial(100)
 			body := domain.NewBody("example")
@@ -73,6 +73,8 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 		}(),
 		func() testCase {
 			ctx := context.Background()
+			config := registry_config.NewConfig(ctx)
+			boundary := NewBoundary()
 			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
 			serial := domain.NewSerial(100)
 			mockUsecase.EXPECT().Get(ctx, serial).Return(nil, repository.ErrMessageNotFound)
@@ -117,8 +119,6 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	config := registry_config.NewConfig()
-	boundary := NewBoundary()
 	type fields struct {
 		UnimplementedGuestbookServiceServer pbgo.UnimplementedGuestbookServiceServer
 		config                              *registry_config.Config
@@ -139,6 +139,8 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 	tests := []testCase{
 		func() testCase {
 			ctx := context.Background()
+			config := registry_config.NewConfig(ctx)
+			boundary := NewBoundary()
 			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
 			req := domain.NewPost(domain.NewSerial(0), domain.NewBody("example"))
 			res := domain.NewPost(domain.NewSerial(1), domain.NewBody("example"))
@@ -189,8 +191,6 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	config := registry_config.NewConfig()
-	boundary := NewBoundary()
 	type fields struct {
 		UnimplementedGuestbookServiceServer pbgo.UnimplementedGuestbookServiceServer
 		config                              *registry_config.Config
@@ -211,6 +211,8 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 	tests := []testCase{
 		func() testCase {
 			ctx := context.Background()
+			config := registry_config.NewConfig(ctx)
+			boundary := NewBoundary()
 			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
 			post := domain.NewPost(domain.NewSerial(100), domain.NewBody("example-value"))
 			mockUsecase.EXPECT().Update(ctx, post).Return(post, nil)
@@ -261,8 +263,6 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	config := registry_config.NewConfig()
-	boundary := NewBoundary()
 	type fields struct {
 		UnimplementedGuestbookServiceServer pbgo.UnimplementedGuestbookServiceServer
 		config                              *registry_config.Config
@@ -283,6 +283,8 @@ func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 	tests := []testCase{
 		func() testCase {
 			ctx := context.Background()
+			config := registry_config.NewConfig(ctx)
+			boundary := NewBoundary()
 			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
 			serial := domain.NewSerial(100)
 			mockUsecase.EXPECT().Delete(ctx, serial).Return(nil)
