@@ -12,7 +12,8 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/becosuke/guestbook/api/internal/registry/injection"
+	pkgconfig "github.com/becosuke/guestbook/api/internal/registry/config"
+	"github.com/becosuke/guestbook/api/internal/registry/injection/grpc"
 	"github.com/becosuke/guestbook/pbgo"
 )
 
@@ -31,20 +32,23 @@ func main() {
 }
 
 func run() int {
-	in := injection.NewInjection(serviceName, version)
-	config := in.InjectConfig()
-	logger := in.InjectLogger()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	ctx = context.WithValue(ctx, pkgconfig.ServiceName{}, serviceName)
+	ctx = context.WithValue(ctx, pkgconfig.ServiceVersion{}, version)
+
+	app := grpc.InitializeApp(ctx)
+	config := app.Config
+	logger := app.Logger
 	defer func() {
 		_ = logger.Sync()
 	}()
 
-	grpcServer := in.InjectGrpcServer()
-	controller := in.InjectController()
+	grpcServer := app.GrpcServer
+	controller := app.Controller
 	pbgo.RegisterGuestbookServiceServer(grpcServer, controller)
 	reflection.Register(grpcServer)
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, syscall.SIGTERM, os.Interrupt)

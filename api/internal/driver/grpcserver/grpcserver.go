@@ -1,6 +1,8 @@
 package grpcserver
 
 import (
+	"context"
+
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
@@ -10,7 +12,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func NewGrpcServer(logger *zap.Logger, authFunc grpc_auth.AuthFunc) *grpc.Server {
+func NewGrpcServer(ctx context.Context, logger *zap.Logger, authFunc grpc_auth.AuthFunc) *grpc.Server {
 	return grpc.NewServer(
 		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
 			grpc_zap.StreamServerInterceptor(logger),
