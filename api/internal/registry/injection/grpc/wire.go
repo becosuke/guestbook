@@ -13,8 +13,9 @@ import (
 	"github.com/becosuke/guestbook/api/internal/application/usecase"
 	"github.com/becosuke/guestbook/api/internal/driver/grpcserver"
 	syncmap_driver "github.com/becosuke/guestbook/api/internal/driver/syncmap"
+	"github.com/becosuke/guestbook/api/internal/pkg/authfunc"
+	"github.com/becosuke/guestbook/api/internal/pkg/logger"
 	pkgconfig "github.com/becosuke/guestbook/api/internal/registry/config"
-	"github.com/becosuke/guestbook/api/internal/registry/injection"
 )
 
 var controllerSet = wire.NewSet(
@@ -40,8 +41,8 @@ var driverSet = wire.NewSet(
 func InitializeApp(ctx context.Context) *App {
 	wire.Build(
 		pkgconfig.NewConfig,
-		injection.ProvideLogger,
-		injection.ProvideAuthFunc,
+		logger.NewLogger,
+		authfunc.NewAuthFunc,
 		grpcserver.NewGrpcServer,
 		controllerSet,
 		usecaseSet,

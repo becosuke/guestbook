@@ -1,15 +1,14 @@
-package injection
+package logger
 
 import (
 	"context"
 
-	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"go.uber.org/zap"
 
 	pkgconfig "github.com/becosuke/guestbook/api/internal/registry/config"
 )
 
-func ProvideLogger(ctx context.Context, config *pkgconfig.Config) *zap.Logger {
+func NewLogger(ctx context.Context, config *pkgconfig.Config) *zap.Logger {
 	serviceName, ok := ctx.Value(pkgconfig.ServiceName{}).(string)
 	if !ok {
 		serviceName = ""
@@ -34,10 +33,4 @@ func ProvideLogger(ctx context.Context, config *pkgconfig.Config) *zap.Logger {
 		panic("failed to provide logger")
 	}
 	return logger
-}
-
-func ProvideAuthFunc(ctx context.Context) grpc_auth.AuthFunc {
-	return func(ctx context.Context) (context.Context, error) {
-		return ctx, nil
-	}
 }
