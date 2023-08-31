@@ -13,8 +13,9 @@ import (
 	"github.com/becosuke/guestbook/api/internal/application/usecase"
 	"github.com/becosuke/guestbook/api/internal/driver/grpcserver"
 	"github.com/becosuke/guestbook/api/internal/driver/syncmap"
+	"github.com/becosuke/guestbook/api/internal/pkg/authfunc"
+	"github.com/becosuke/guestbook/api/internal/pkg/logger"
 	"github.com/becosuke/guestbook/api/internal/registry/config"
-	"github.com/becosuke/guestbook/api/internal/registry/injection"
 	"github.com/google/wire"
 )
 
@@ -22,9 +23,9 @@ import (
 
 func InitializeApp(ctx context.Context) *App {
 	configConfig := config.NewConfig(ctx)
-	logger := injection.ProvideLogger(ctx, configConfig)
-	authFunc := injection.ProvideAuthFunc(ctx)
-	server := grpcserver.NewGrpcServer(ctx, logger, authFunc)
+	zapLogger := logger.NewLogger(ctx, configConfig)
+	authFunc := authfunc.NewAuthFunc(ctx)
+	server := grpcserver.NewGrpcServer(ctx, zapLogger, authFunc)
 	syncmapSyncmap := syncmap.NewSyncmap()
 	boundary := syncmap2.NewBoundary()
 	querier := syncmap2.NewQuerier(configConfig, syncmapSyncmap, boundary)
@@ -32,10 +33,10 @@ func InitializeApp(ctx context.Context) *App {
 	commander := syncmap2.NewCommander(configConfig, syncmapSyncmap, boundary, generator)
 	usecaseUsecase := usecase.NewUsecase(configConfig, querier, commander)
 	controllerBoundary := controller.NewBoundary()
-	guestbookServiceServer := controller.NewGuestbookServiceServer(configConfig, logger, usecaseUsecase, controllerBoundary)
+	guestbookServiceServer := controller.NewGuestbookServiceServer(configConfig, zapLogger, usecaseUsecase, controllerBoundary)
 	app := &App{
 		Config:     configConfig,
-		Logger:     logger,
+		Logger:     zapLogger,
 		GrpcServer: server,
 		Controller: guestbookServiceServer,
 	}
