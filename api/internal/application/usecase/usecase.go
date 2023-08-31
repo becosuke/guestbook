@@ -7,7 +7,7 @@ import (
 
 	syncmap_repository "github.com/becosuke/guestbook/api/internal/adapter/repository/syncmap"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
-	"github.com/becosuke/guestbook/api/internal/registry/config"
+	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 )
 
 type Usecase interface {
@@ -18,7 +18,7 @@ type Usecase interface {
 	Delete(context.Context, *domain.Serial) error
 }
 
-func NewUsecase(config *config.Config, querier syncmap_repository.Querier, commander syncmap_repository.Commander) Usecase {
+func NewUsecase(config *pkgconfig.Config, querier syncmap_repository.Querier, commander syncmap_repository.Commander) Usecase {
 	return &usecaseImpl{
 		config:    config,
 		querier:   querier,
@@ -27,7 +27,7 @@ func NewUsecase(config *config.Config, querier syncmap_repository.Querier, comma
 }
 
 type usecaseImpl struct {
-	config    *config.Config
+	config    *pkgconfig.Config
 	querier   syncmap_repository.Querier
 	commander syncmap_repository.Commander
 }

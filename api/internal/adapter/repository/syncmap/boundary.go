@@ -5,12 +5,12 @@ import (
 	"strconv"
 
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
-	driver "github.com/becosuke/guestbook/api/internal/driver/syncmap"
+	syncmap_driver "github.com/becosuke/guestbook/api/internal/driver/syncmap"
 )
 
 type Boundary interface {
-	ToEntity(message *driver.Message) *domain.Post
-	ToMessage(entity *domain.Post) *driver.Message
+	ToEntity(message *syncmap_driver.Message) *domain.Post
+	ToMessage(entity *domain.Post) *syncmap_driver.Message
 }
 
 func NewBoundary() Boundary {
@@ -19,7 +19,7 @@ func NewBoundary() Boundary {
 
 type boundaryImpl struct{}
 
-func (impl *boundaryImpl) ToEntity(m *driver.Message) *domain.Post {
+func (impl *boundaryImpl) ToEntity(m *syncmap_driver.Message) *domain.Post {
 	if m == nil {
 		return &domain.Post{}
 	}
@@ -30,11 +30,11 @@ func (impl *boundaryImpl) ToEntity(m *driver.Message) *domain.Post {
 	)
 }
 
-func (impl *boundaryImpl) ToMessage(post *domain.Post) *driver.Message {
+func (impl *boundaryImpl) ToMessage(post *domain.Post) *syncmap_driver.Message {
 	if post == nil {
-		return &driver.Message{}
+		return &syncmap_driver.Message{}
 	}
-	return driver.NewMessage(
+	return syncmap_driver.NewMessage(
 		fmt.Sprintf("%d", post.Serial().Int64()),
 		post.Body().String(),
 	)

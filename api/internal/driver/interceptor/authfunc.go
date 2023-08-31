@@ -1,4 +1,4 @@
-package authfunc
+package interceptor
 
 import (
 	"context"

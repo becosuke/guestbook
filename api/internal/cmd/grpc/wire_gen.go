@@ -4,7 +4,7 @@
 //go:build !wireinject
 // +build !wireinject
 
-package grpc
+package main
 
 import (
 	"context"
@@ -12,11 +12,14 @@ import (
 	syncmap2 "github.com/becosuke/guestbook/api/internal/adapter/repository/syncmap"
 	"github.com/becosuke/guestbook/api/internal/application/usecase"
 	"github.com/becosuke/guestbook/api/internal/driver/grpcserver"
+	"github.com/becosuke/guestbook/api/internal/driver/interceptor"
 	"github.com/becosuke/guestbook/api/internal/driver/syncmap"
-	"github.com/becosuke/guestbook/api/internal/pkg/authfunc"
+	"github.com/becosuke/guestbook/api/internal/pkg/config"
 	"github.com/becosuke/guestbook/api/internal/pkg/logger"
-	"github.com/becosuke/guestbook/api/internal/registry/config"
+	"github.com/becosuke/guestbook/pbgo"
 	"github.com/google/wire"
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
 )
 
 // Injectors from wire.go:
@@ -24,7 +27,7 @@ import (
 func InitializeApp(ctx context.Context) *App {
 	configConfig := config.NewConfig(ctx)
 	zapLogger := logger.NewLogger(ctx, configConfig)
-	authFunc := authfunc.NewAuthFunc(ctx)
+	authFunc := interceptor.NewAuthFunc(ctx)
 	server := grpcserver.NewGrpcServer(ctx, zapLogger, authFunc)
 	syncmapSyncmap := syncmap.NewSyncmap()
 	boundary := syncmap2.NewBoundary()
@@ -44,6 +47,13 @@ func InitializeApp(ctx context.Context) *App {
 }
 
 // wire.go:
+
+type App struct {
+	Config     *config.Config
+	Logger     *zap.Logger
+	GrpcServer *grpc.Server
+	Controller pbgo.GuestbookServiceServer
+}
 
 var controllerSet = wire.NewSet(controller.NewGuestbookServiceServer, controller.NewBoundary)
 

@@ -4,12 +4,13 @@
 //go:build !wireinject
 // +build !wireinject
 
-package rest
+package main
 
 import (
 	"context"
+	"github.com/becosuke/guestbook/api/internal/pkg/config"
 	"github.com/becosuke/guestbook/api/internal/pkg/logger"
-	"github.com/becosuke/guestbook/api/internal/registry/config"
+	"go.uber.org/zap"
 )
 
 // Injectors from wire.go:
@@ -22,4 +23,11 @@ func InitializeApp(ctx context.Context) *App {
 		Logger: zapLogger,
 	}
 	return app
+}
+
+// wire.go:
+
+type App struct {
+	Config *config.Config
+	Logger *zap.Logger
 }
