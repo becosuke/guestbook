@@ -8,18 +8,18 @@ package rest
 
 import (
 	"context"
+	"github.com/becosuke/guestbook/api/internal/pkg/logger"
 	"github.com/becosuke/guestbook/api/internal/registry/config"
-	"github.com/becosuke/guestbook/api/internal/registry/injection"
 )
 
 // Injectors from wire.go:
 
 func InitializeApp(ctx context.Context) *App {
 	configConfig := config.NewConfig(ctx)
-	logger := injection.ProvideLogger(ctx, configConfig)
+	zapLogger := logger.NewLogger(ctx, configConfig)
 	app := &App{
 		Config: configConfig,
-		Logger: logger,
+		Logger: zapLogger,
 	}
 	return app
 }

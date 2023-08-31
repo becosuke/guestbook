@@ -87,10 +87,13 @@ build-rest-container:
 	cd $(BUILD_DIR) && \
 	docker build . --no-cache --build-arg name=$(PROJECT_NAME)-rest -t $(PROJECT_NAME)-rest:latest -t $(PROJECT_NAME)-rest:$(VERSION)
 
-gen: gen-mock
+gen: gen-mock gen-wire
 
 gen-mock:
 	./bin/gomockhandler mockgen
+
+gen-wire:
+	./bin/wire $(CODE_DIRS)
 
 tools-install: tools-tidy
 	@for tool in $$(sed -n 's/[ \f\n\r\t]*_ "\(.*\)"/\1/p' tools/tools.go); do GOBIN=$(shell pwd)/bin $(GO_BINARY) install $${tool}@latest; done
