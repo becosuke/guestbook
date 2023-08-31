@@ -14,8 +14,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	pkgconfig "github.com/becosuke/guestbook/api/internal/registry/config"
-	"github.com/becosuke/guestbook/api/internal/registry/injection/rest"
+	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 	"github.com/becosuke/guestbook/pbgo"
 )
 
@@ -40,7 +39,7 @@ func run() int {
 	ctx = context.WithValue(ctx, pkgconfig.ServiceName{}, serviceName)
 	ctx = context.WithValue(ctx, pkgconfig.ServiceVersion{}, version)
 
-	app := rest.InitializeApp(ctx)
+	app := InitializeApp(ctx)
 	config := app.Config
 	logger := app.Logger
 	defer func() {

@@ -7,8 +7,8 @@ import (
 	"github.com/pkg/errors"
 
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
-	driver "github.com/becosuke/guestbook/api/internal/driver/syncmap"
-	"github.com/becosuke/guestbook/api/internal/registry/config"
+	syncmap_driver "github.com/becosuke/guestbook/api/internal/driver/syncmap"
+	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 )
 
 type Commander interface {
@@ -17,7 +17,7 @@ type Commander interface {
 	Delete(context.Context, *domain.Serial) error
 }
 
-func NewCommander(config *config.Config, store driver.Syncmap, boundary Boundary, generator Generator) Commander {
+func NewCommander(config *pkgconfig.Config, store syncmap_driver.Syncmap, boundary Boundary, generator Generator) Commander {
 	return &commanderImpl{
 		config:    config,
 		store:     store,
@@ -27,8 +27,8 @@ func NewCommander(config *config.Config, store driver.Syncmap, boundary Boundary
 }
 
 type commanderImpl struct {
-	config    *config.Config
-	store     driver.Syncmap
+	config    *pkgconfig.Config
+	store     syncmap_driver.Syncmap
 	boundary  Boundary
 	generator Generator
 }
@@ -38,9 +38,9 @@ func (impl *commanderImpl) Create(ctx context.Context, post *domain.Post) (*doma
 	_, loaded, err := impl.store.LoadOrStore(ctx, impl.boundary.ToMessage(domain.NewPost(serial, post.Body())))
 	if err != nil {
 		switch {
-		case errors.Is(err, driver.ErrInvalidArgument):
+		case errors.Is(err, syncmap_driver.ErrInvalidArgument):
 			return nil, ErrInvalidArgument
-		case errors.Is(err, driver.ErrInvalidData):
+		case errors.Is(err, syncmap_driver.ErrInvalidData):
 			return nil, ErrInvalidData
 		default:
 			return nil, errors.WithStack(err)
@@ -56,11 +56,11 @@ func (impl *commanderImpl) Update(ctx context.Context, post *domain.Post) error 
 	_, err := impl.store.Load(ctx, fmt.Sprintf("%d", post.Serial().Int64()))
 	if err != nil {
 		switch {
-		case errors.Is(err, driver.ErrNotFound):
+		case errors.Is(err, syncmap_driver.ErrNotFound):
 			return ErrMessageNotFound
-		case errors.Is(err, driver.ErrInvalidArgument):
+		case errors.Is(err, syncmap_driver.ErrInvalidArgument):
 			return ErrInvalidArgument
-		case errors.Is(err, driver.ErrInvalidData):
+		case errors.Is(err, syncmap_driver.ErrInvalidData):
 			return ErrInvalidData
 		}
 	}

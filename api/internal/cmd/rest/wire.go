@@ -1,16 +1,22 @@
 //go:build wireinject
 // +build wireinject
 
-package rest
+package main
 
 import (
 	"context"
 
 	"github.com/google/wire"
+	"go.uber.org/zap"
 
+	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 	"github.com/becosuke/guestbook/api/internal/pkg/logger"
-	pkgconfig "github.com/becosuke/guestbook/api/internal/registry/config"
 )
+
+type App struct {
+	Config *pkgconfig.Config
+	Logger *zap.Logger
+}
 
 func InitializeApp(ctx context.Context) *App {
 	wire.Build(

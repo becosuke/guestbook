@@ -12,7 +12,7 @@ import (
 	repository "github.com/becosuke/guestbook/api/internal/adapter/repository/syncmap"
 	real_usecase "github.com/becosuke/guestbook/api/internal/application/usecase"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
-	registry_config "github.com/becosuke/guestbook/api/internal/registry/config"
+	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 	mock_usecase "github.com/becosuke/guestbook/api/mock/application/usecase"
 	"github.com/becosuke/guestbook/pbgo"
 )
@@ -22,7 +22,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 	defer ctrl.Finish()
 	type fields struct {
 		UnimplementedGuestbookServiceServer pbgo.UnimplementedGuestbookServiceServer
-		config                              *registry_config.Config
+		config                              *pkgconfig.Config
 		usecase                             real_usecase.Usecase
 		boundary                            Boundary
 	}
@@ -40,7 +40,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 	tests := []testCase{
 		func() testCase {
 			ctx := context.Background()
-			config := registry_config.NewConfig(ctx)
+			config := pkgconfig.NewConfig(ctx)
 			boundary := NewBoundary()
 			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
 			serial := domain.NewSerial(100)
@@ -73,7 +73,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 		}(),
 		func() testCase {
 			ctx := context.Background()
-			config := registry_config.NewConfig(ctx)
+			config := pkgconfig.NewConfig(ctx)
 			boundary := NewBoundary()
 			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
 			serial := domain.NewSerial(100)
@@ -121,7 +121,7 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 	defer ctrl.Finish()
 	type fields struct {
 		UnimplementedGuestbookServiceServer pbgo.UnimplementedGuestbookServiceServer
-		config                              *registry_config.Config
+		config                              *pkgconfig.Config
 		usecase                             real_usecase.Usecase
 		boundary                            Boundary
 	}
@@ -139,7 +139,7 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 	tests := []testCase{
 		func() testCase {
 			ctx := context.Background()
-			config := registry_config.NewConfig(ctx)
+			config := pkgconfig.NewConfig(ctx)
 			boundary := NewBoundary()
 			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
 			req := domain.NewPost(domain.NewSerial(0), domain.NewBody("example"))
@@ -193,7 +193,7 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 	defer ctrl.Finish()
 	type fields struct {
 		UnimplementedGuestbookServiceServer pbgo.UnimplementedGuestbookServiceServer
-		config                              *registry_config.Config
+		config                              *pkgconfig.Config
 		usecase                             real_usecase.Usecase
 		boundary                            Boundary
 	}
@@ -211,7 +211,7 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 	tests := []testCase{
 		func() testCase {
 			ctx := context.Background()
-			config := registry_config.NewConfig(ctx)
+			config := pkgconfig.NewConfig(ctx)
 			boundary := NewBoundary()
 			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
 			post := domain.NewPost(domain.NewSerial(100), domain.NewBody("example-value"))
@@ -265,7 +265,7 @@ func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 	defer ctrl.Finish()
 	type fields struct {
 		UnimplementedGuestbookServiceServer pbgo.UnimplementedGuestbookServiceServer
-		config                              *registry_config.Config
+		config                              *pkgconfig.Config
 		usecase                             real_usecase.Usecase
 		boundary                            Boundary
 	}
@@ -283,7 +283,7 @@ func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 	tests := []testCase{
 		func() testCase {
 			ctx := context.Background()
-			config := registry_config.NewConfig(ctx)
+			config := pkgconfig.NewConfig(ctx)
 			boundary := NewBoundary()
 			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
 			serial := domain.NewSerial(100)

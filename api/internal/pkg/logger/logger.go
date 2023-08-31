@@ -5,7 +5,7 @@ import (
 
 	"go.uber.org/zap"
 
-	pkgconfig "github.com/becosuke/guestbook/api/internal/registry/config"
+	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 )
 
 func NewLogger(ctx context.Context, config *pkgconfig.Config) *zap.Logger {
@@ -30,7 +30,7 @@ func NewLogger(ctx context.Context, config *pkgconfig.Config) *zap.Logger {
 	}
 	logger, err := loggerConfig.Build()
 	if err != nil {
-		panic("failed to provide logger")
+		panic("failed to build logger")
 	}
 	return logger
 }

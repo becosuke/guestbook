@@ -9,21 +9,21 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	repository "github.com/becosuke/guestbook/api/internal/adapter/repository/syncmap"
+	syncmap_repository "github.com/becosuke/guestbook/api/internal/adapter/repository/syncmap"
 	"github.com/becosuke/guestbook/api/internal/application/usecase"
-	"github.com/becosuke/guestbook/api/internal/registry/config"
+	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 	"github.com/becosuke/guestbook/pbgo"
 )
 
 type guestbookServiceServerImpl struct {
 	pbgo.UnimplementedGuestbookServiceServer
-	config   *config.Config
+	config   *pkgconfig.Config
 	logger   *zap.Logger
 	usecase  usecase.Usecase
 	boundary Boundary
 }
 
-func NewGuestbookServiceServer(config *config.Config, logger *zap.Logger, usecase usecase.Usecase, boundary Boundary) pbgo.GuestbookServiceServer {
+func NewGuestbookServiceServer(config *pkgconfig.Config, logger *zap.Logger, usecase usecase.Usecase, boundary Boundary) pbgo.GuestbookServiceServer {
 	return &guestbookServiceServerImpl{
 		config:   config,
 		logger:   logger,
@@ -36,9 +36,9 @@ func (impl *guestbookServiceServerImpl) GetPost(ctx context.Context, req *pbgo.G
 	res, err := impl.usecase.Get(ctx, impl.boundary.SerialResourceToDomain(req.GetSerial()))
 	if err != nil {
 		switch {
-		case errors.Is(err, repository.ErrMessageNotFound):
+		case errors.Is(err, syncmap_repository.ErrMessageNotFound):
 			return nil, status.New(codes.NotFound, err.Error()).Err()
-		case errors.Is(err, repository.ErrInvalidData), errors.Is(err, repository.ErrInvalidArgument):
+		case errors.Is(err, syncmap_repository.ErrInvalidData), errors.Is(err, syncmap_repository.ErrInvalidArgument):
 			return nil, status.New(codes.Internal, err.Error()).Err()
 		default:
 			return nil, status.New(codes.Unknown, err.Error()).Err()
@@ -51,7 +51,7 @@ func (impl *guestbookServiceServerImpl) CreatePost(ctx context.Context, req *pbg
 	res, err := impl.usecase.Create(ctx, impl.boundary.PostResourceToDomain(req.GetPost()))
 	if err != nil {
 		switch {
-		case errors.Is(err, repository.ErrInvalidData), errors.Is(err, repository.ErrInvalidArgument):
+		case errors.Is(err, syncmap_repository.ErrInvalidData), errors.Is(err, syncmap_repository.ErrInvalidArgument):
 			return nil, status.New(codes.Internal, err.Error()).Err()
 		default:
 			return nil, status.New(codes.Unknown, err.Error()).Err()
@@ -64,7 +64,7 @@ func (impl *guestbookServiceServerImpl) UpdatePost(ctx context.Context, req *pbg
 	res, err := impl.usecase.Update(ctx, impl.boundary.PostResourceToDomain(req.GetPost()))
 	if err != nil {
 		switch {
-		case errors.Is(err, repository.ErrInvalidData), errors.Is(err, repository.ErrInvalidArgument):
+		case errors.Is(err, syncmap_repository.ErrInvalidData), errors.Is(err, syncmap_repository.ErrInvalidArgument):
 			return nil, status.New(codes.Internal, err.Error()).Err()
 		default:
 			return nil, status.New(codes.Unknown, err.Error()).Err()
