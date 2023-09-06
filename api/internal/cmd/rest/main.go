@@ -15,7 +15,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
-	"github.com/becosuke/guestbook/pbgo"
+	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
 
 const (
@@ -53,7 +53,7 @@ func run() int {
 	signal.Notify(interrupt, syscall.SIGTERM, os.Interrupt)
 	defer signal.Stop(interrupt)
 
-	err := pbgo.RegisterGuestbookServiceHandlerFromEndpoint(ctx, mux, fmt.Sprintf("%s:%d", config.GrpcHost, config.GrpcPort), opts)
+	err := pb.RegisterGuestbookServiceHandlerFromEndpoint(ctx, mux, fmt.Sprintf("%s:%d", config.GrpcHost, config.GrpcPort), opts)
 	if err != nil {
 		logger.Error("rest server: failed to register handler", zap.Error(err))
 		return exitError
