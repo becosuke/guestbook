@@ -8,17 +8,31 @@ build-api:
 	@$(MAKE) --no-print-directory -C api build
 
 .PHONY: protoc
-protoc: tools-install
+protoc: tools-install protoc-openapi protoc-go protoc-dart
+
+protoc-openapi:
 	protoc -I proto -I $(shell brew --prefix)/opt/protobuf/include \
 	-I ./third_party/googleapis \
 	-I ./third_party/protoc-gen-validate \
-	--dart_out=grpc:pbdart \
-	--go_out pbgo --go_opt paths=source_relative \
-	--go-grpc_out pbgo --go-grpc_opt paths=source_relative \
-	--grpc-gateway_out pbgo --grpc-gateway_opt paths=source_relative \
-	--validate_out "lang=go,paths=source_relative:pbgo" \
 	--openapiv2_out . \
 	proto/guestbook.proto
+
+protoc-go:
+	protoc -I proto -I $(shell brew --prefix)/opt/protobuf/include \
+	-I ./third_party/googleapis \
+	-I ./third_party/protoc-gen-validate \
+	--go_out api/internal/pkg/pb --go_opt paths=source_relative \
+	--go-grpc_out api/internal/pkg/pb --go-grpc_opt paths=source_relative \
+	--grpc-gateway_out api/internal/pkg/pb --grpc-gateway_opt paths=source_relative \
+	--validate_out "lang=go,paths=source_relative:api/internal/pkg/pb" \
+	proto/guestbook.proto
+
+protoc-dart:
+	protoc -I proto -I $(shell brew --prefix)/opt/protobuf/include \
+	-I ./third_party/googleapis \
+	-I ./third_party/protoc-gen-validate \
+	--dart_out=grpc:view/lib/pb \
+	proto/guestbook.proto google/protobuf/empty.proto
 
 install-dependencies: tools-install dart-pub
 
