@@ -18,14 +18,14 @@ import (
 	syncmap_driver "github.com/becosuke/guestbook/api/internal/driver/syncmap"
 	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 	"github.com/becosuke/guestbook/api/internal/pkg/logger"
-	"github.com/becosuke/guestbook/pbgo"
+	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
 
 type App struct {
 	Config     *pkgconfig.Config
 	Logger     *zap.Logger
 	GrpcServer *grpc.Server
-	Controller pbgo.GuestbookServiceServer
+	Controller pb.GuestbookServiceServer
 }
 
 var controllerSet = wire.NewSet(

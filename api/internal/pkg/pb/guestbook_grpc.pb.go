@@ -4,7 +4,7 @@
 // - protoc             v4.23.4
 // source: guestbook.proto
 
-package pbgo
+package pb
 
 import (
 	context "context"
