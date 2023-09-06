@@ -1,2 +1,3 @@
 PATH_add bin
+PATH_add .pub_cache/bin
 dotenv .env

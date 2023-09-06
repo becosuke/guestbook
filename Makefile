@@ -12,6 +12,7 @@ protoc: tools-install
 	protoc -I proto -I $(shell brew --prefix)/opt/protobuf/include \
 	-I ./third_party/googleapis \
 	-I ./third_party/protoc-gen-validate \
+	--dart_out=grpc:pbdart \
 	--go_out pbgo --go_opt paths=source_relative \
 	--go-grpc_out pbgo --go-grpc_opt paths=source_relative \
 	--grpc-gateway_out pbgo --grpc-gateway_opt paths=source_relative \
@@ -19,11 +20,16 @@ protoc: tools-install
 	--openapiv2_out . \
 	proto/guestbook.proto
 
+install-dependencies: tools-install dart-pub
+
 tools-install: tools-tidy
 	@for tool in $$(sed -n 's/[ \f\n\r\t]*_ "\(.*\)"/\1/p' tools/tools.go); do GOBIN=$(shell pwd)/bin $(GO_BINARY) install $${tool}@latest; done
 
 tools-tidy:
 	@cd tools && $(GO_BINARY) mod tidy
+
+dart-pub:
+	PUB_CACHE=$(pwd)/.pub_cache dart pub global activate protoc_plugin
 
 pbgo-tidy:
 	@cd pbgo && $(GO_BINARY) mod tidy
