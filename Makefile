@@ -29,7 +29,7 @@ tools-tidy:
 	@cd tools && $(GO_BINARY) mod tidy
 
 dart-pub:
-	PUB_CACHE=$(pwd)/.pub_cache dart pub global activate protoc_plugin
+	PUB_CACHE=$(shell pwd)/.pub_cache dart pub global activate protoc_plugin
 
 pbgo-tidy:
 	@cd pbgo && $(GO_BINARY) mod tidy
