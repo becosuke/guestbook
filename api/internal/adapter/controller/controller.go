@@ -12,18 +12,18 @@ import (
 	syncmap_repository "github.com/becosuke/guestbook/api/internal/adapter/repository/syncmap"
 	"github.com/becosuke/guestbook/api/internal/application/usecase"
 	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
-	"github.com/becosuke/guestbook/pbgo"
+	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
 
 type guestbookServiceServerImpl struct {
-	pbgo.UnimplementedGuestbookServiceServer
+	pb.UnimplementedGuestbookServiceServer
 	config   *pkgconfig.Config
 	logger   *zap.Logger
 	usecase  usecase.Usecase
 	boundary Boundary
 }
 
-func NewGuestbookServiceServer(config *pkgconfig.Config, logger *zap.Logger, usecase usecase.Usecase, boundary Boundary) pbgo.GuestbookServiceServer {
+func NewGuestbookServiceServer(config *pkgconfig.Config, logger *zap.Logger, usecase usecase.Usecase, boundary Boundary) pb.GuestbookServiceServer {
 	return &guestbookServiceServerImpl{
 		config:   config,
 		logger:   logger,
@@ -32,7 +32,7 @@ func NewGuestbookServiceServer(config *pkgconfig.Config, logger *zap.Logger, use
 	}
 }
 
-func (impl *guestbookServiceServerImpl) GetPost(ctx context.Context, req *pbgo.GetPostRequest) (*pbgo.Post, error) {
+func (impl *guestbookServiceServerImpl) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb.Post, error) {
 	res, err := impl.usecase.Get(ctx, impl.boundary.SerialResourceToDomain(req.GetSerial()))
 	if err != nil {
 		switch {
@@ -47,7 +47,7 @@ func (impl *guestbookServiceServerImpl) GetPost(ctx context.Context, req *pbgo.G
 	return impl.boundary.PostDomainToResource(res), nil
 }
 
-func (impl *guestbookServiceServerImpl) CreatePost(ctx context.Context, req *pbgo.CreatePostRequest) (*pbgo.Post, error) {
+func (impl *guestbookServiceServerImpl) CreatePost(ctx context.Context, req *pb.CreatePostRequest) (*pb.Post, error) {
 	res, err := impl.usecase.Create(ctx, impl.boundary.PostResourceToDomain(req.GetPost()))
 	if err != nil {
 		switch {
@@ -60,7 +60,7 @@ func (impl *guestbookServiceServerImpl) CreatePost(ctx context.Context, req *pbg
 	return impl.boundary.PostDomainToResource(res), nil
 }
 
-func (impl *guestbookServiceServerImpl) UpdatePost(ctx context.Context, req *pbgo.UpdatePostRequest) (*pbgo.Post, error) {
+func (impl *guestbookServiceServerImpl) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest) (*pb.Post, error) {
 	res, err := impl.usecase.Update(ctx, impl.boundary.PostResourceToDomain(req.GetPost()))
 	if err != nil {
 		switch {
@@ -73,7 +73,7 @@ func (impl *guestbookServiceServerImpl) UpdatePost(ctx context.Context, req *pbg
 	return impl.boundary.PostDomainToResource(res), nil
 }
 
-func (impl *guestbookServiceServerImpl) DeletePost(ctx context.Context, req *pbgo.DeletePostRequest) (*emptypb.Empty, error) {
+func (impl *guestbookServiceServerImpl) DeletePost(ctx context.Context, req *pb.DeletePostRequest) (*emptypb.Empty, error) {
 	err := impl.usecase.Delete(ctx, impl.boundary.SerialResourceToDomain(req.GetSerial()))
 	if err != nil {
 		return nil, err

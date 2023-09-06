@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
-	"github.com/becosuke/guestbook/pbgo"
+	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
 
 const (
@@ -46,7 +46,7 @@ func run() int {
 
 	grpcServer := app.GrpcServer
 	controller := app.Controller
-	pbgo.RegisterGuestbookServiceServer(grpcServer, controller)
+	pb.RegisterGuestbookServiceServer(grpcServer, controller)
 	reflection.Register(grpcServer)
 
 	interrupt := make(chan os.Signal, 1)

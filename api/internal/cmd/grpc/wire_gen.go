@@ -16,7 +16,7 @@ import (
 	"github.com/becosuke/guestbook/api/internal/driver/syncmap"
 	"github.com/becosuke/guestbook/api/internal/pkg/config"
 	"github.com/becosuke/guestbook/api/internal/pkg/logger"
-	"github.com/becosuke/guestbook/pbgo"
+	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 	"github.com/google/wire"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -52,7 +52,7 @@ type App struct {
 	Config     *config.Config
 	Logger     *zap.Logger
 	GrpcServer *grpc.Server
-	Controller pbgo.GuestbookServiceServer
+	Controller pb.GuestbookServiceServer
 }
 
 var controllerSet = wire.NewSet(controller.NewGuestbookServiceServer, controller.NewBoundary)

@@ -13,28 +13,28 @@ import (
 	real_usecase "github.com/becosuke/guestbook/api/internal/application/usecase"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
+	pb "github.com/becosuke/guestbook/api/internal/pkg/pb"
 	mock_usecase "github.com/becosuke/guestbook/api/mock/application/usecase"
-	"github.com/becosuke/guestbook/pbgo"
 )
 
 func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	type fields struct {
-		UnimplementedGuestbookServiceServer pbgo.UnimplementedGuestbookServiceServer
+		UnimplementedGuestbookServiceServer pb.UnimplementedGuestbookServiceServer
 		config                              *pkgconfig.Config
 		usecase                             real_usecase.Usecase
 		boundary                            Boundary
 	}
 	type args struct {
 		ctx context.Context
-		req *pbgo.GetPostRequest
+		req *pb.GetPostRequest
 	}
 	type testCase struct {
 		name    string
 		fields  fields
 		args    args
-		want    *pbgo.Post
+		want    *pb.Post
 		wantErr bool
 	}
 	tests := []testCase{
@@ -60,11 +60,11 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 				},
 				args: args{
 					ctx: ctx,
-					req: &pbgo.GetPostRequest{
+					req: &pb.GetPostRequest{
 						Serial: 100,
 					},
 				},
-				want: &pbgo.Post{
+				want: &pb.Post{
 					Serial: 100,
 					Body:   "example",
 				},
@@ -87,7 +87,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 				},
 				args: args{
 					ctx: ctx,
-					req: &pbgo.GetPostRequest{
+					req: &pb.GetPostRequest{
 						Serial: 100,
 					},
 				},
@@ -120,20 +120,20 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	type fields struct {
-		UnimplementedGuestbookServiceServer pbgo.UnimplementedGuestbookServiceServer
+		UnimplementedGuestbookServiceServer pb.UnimplementedGuestbookServiceServer
 		config                              *pkgconfig.Config
 		usecase                             real_usecase.Usecase
 		boundary                            Boundary
 	}
 	type args struct {
 		ctx context.Context
-		req *pbgo.CreatePostRequest
+		req *pb.CreatePostRequest
 	}
 	type testCase struct {
 		name    string
 		fields  fields
 		args    args
-		want    *pbgo.Post
+		want    *pb.Post
 		wantErr bool
 	}
 	tests := []testCase{
@@ -154,13 +154,13 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 				},
 				args: args{
 					ctx: ctx,
-					req: &pbgo.CreatePostRequest{
-						Post: &pbgo.Post{
+					req: &pb.CreatePostRequest{
+						Post: &pb.Post{
 							Body: "example",
 						},
 					},
 				},
-				want: &pbgo.Post{
+				want: &pb.Post{
 					Serial: 1,
 					Body:   "example",
 				},
@@ -192,20 +192,20 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	type fields struct {
-		UnimplementedGuestbookServiceServer pbgo.UnimplementedGuestbookServiceServer
+		UnimplementedGuestbookServiceServer pb.UnimplementedGuestbookServiceServer
 		config                              *pkgconfig.Config
 		usecase                             real_usecase.Usecase
 		boundary                            Boundary
 	}
 	type args struct {
 		ctx context.Context
-		req *pbgo.UpdatePostRequest
+		req *pb.UpdatePostRequest
 	}
 	type testCase struct {
 		name    string
 		fields  fields
 		args    args
-		want    *pbgo.Post
+		want    *pb.Post
 		wantErr bool
 	}
 	tests := []testCase{
@@ -225,14 +225,14 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 				},
 				args: args{
 					ctx: ctx,
-					req: &pbgo.UpdatePostRequest{
-						Post: &pbgo.Post{
+					req: &pb.UpdatePostRequest{
+						Post: &pb.Post{
 							Serial: 100,
 							Body:   "example-value",
 						},
 					},
 				},
-				want: &pbgo.Post{
+				want: &pb.Post{
 					Serial: 100,
 					Body:   "example-value",
 				},
@@ -264,14 +264,14 @@ func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	type fields struct {
-		UnimplementedGuestbookServiceServer pbgo.UnimplementedGuestbookServiceServer
+		UnimplementedGuestbookServiceServer pb.UnimplementedGuestbookServiceServer
 		config                              *pkgconfig.Config
 		usecase                             real_usecase.Usecase
 		boundary                            Boundary
 	}
 	type args struct {
 		ctx context.Context
-		req *pbgo.DeletePostRequest
+		req *pb.DeletePostRequest
 	}
 	type testCase struct {
 		name    string
@@ -297,7 +297,7 @@ func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 				},
 				args: args{
 					ctx: ctx,
-					req: &pbgo.DeletePostRequest{
+					req: &pb.DeletePostRequest{
 						Serial: 100,
 					},
 				},
