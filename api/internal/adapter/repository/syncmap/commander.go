@@ -2,76 +2,67 @@ package syncmap
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/becosuke/syncmap"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 
+	"github.com/becosuke/guestbook/api/internal/adapter/repository"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
-	syncmap_driver "github.com/becosuke/guestbook/api/internal/driver/syncmap"
 	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 )
 
-type Commander interface {
-	Create(context.Context, *domain.Post) (*domain.Serial, error)
-	Update(context.Context, *domain.Post) error
-	Delete(context.Context, *domain.Serial) error
-}
-
-func NewCommander(config *pkgconfig.Config, store syncmap_driver.Syncmap, boundary Boundary, generator Generator) Commander {
+func NewCommander(config *pkgconfig.Config, logger *zap.Logger, store syncmap.Syncmap, generator repository.Generator) repository.Commander {
 	return &commanderImpl{
 		config:    config,
+		logger:    logger,
 		store:     store,
-		boundary:  boundary,
 		generator: generator,
 	}
 }
 
 type commanderImpl struct {
 	config    *pkgconfig.Config
-	store     syncmap_driver.Syncmap
-	boundary  Boundary
-	generator Generator
+	logger    *zap.Logger
+	store     syncmap.Syncmap
+	generator repository.Generator
 }
 
-func (impl *commanderImpl) Create(ctx context.Context, post *domain.Post) (*domain.Serial, error) {
+func (impl *commanderImpl) Create(_ context.Context, post *domain.Post) (*domain.Serial, error) {
 	serial := impl.generator.GenerateSerial()
-	_, loaded, err := impl.store.LoadOrStore(ctx, impl.boundary.ToMessage(domain.NewPost(serial, post.Body())))
+	err := impl.store.Create(serial.Int64(), post.Body().String())
 	if err != nil {
 		switch {
-		case errors.Is(err, syncmap_driver.ErrInvalidArgument):
-			return nil, ErrInvalidArgument
-		case errors.Is(err, syncmap_driver.ErrInvalidData):
-			return nil, ErrInvalidData
+		case errors.Is(err, syncmap.ErrInvalidArgument):
+			return nil, repository.ErrInvalidArgument
+		case errors.Is(err, syncmap.ErrAlreadyExists):
+			return nil, repository.ErrAlreadyExists
 		default:
 			return nil, errors.WithStack(err)
 		}
 	}
-	if loaded {
-		return nil, ErrMessageAlreadyExists
-	}
 	return serial, nil
 }
 
-func (impl *commanderImpl) Update(ctx context.Context, post *domain.Post) error {
-	_, err := impl.store.Load(ctx, fmt.Sprintf("%d", post.Serial().Int64()))
+func (impl *commanderImpl) Update(_ context.Context, post *domain.Post) error {
+	err := impl.store.Update(post.Serial().Int64(), post.Body().String())
 	if err != nil {
 		switch {
-		case errors.Is(err, syncmap_driver.ErrNotFound):
-			return ErrMessageNotFound
-		case errors.Is(err, syncmap_driver.ErrInvalidArgument):
-			return ErrInvalidArgument
-		case errors.Is(err, syncmap_driver.ErrInvalidData):
-			return ErrInvalidData
+		case errors.Is(err, syncmap.ErrInvalidArgument):
+			return repository.ErrInvalidArgument
+		case errors.Is(err, syncmap.ErrNotFound):
+			return repository.ErrNotFound
+		default:
+			return errors.WithStack(err)
 		}
-	}
-	_, err = impl.store.Store(ctx, impl.boundary.ToMessage(post))
-	if err != nil {
-		return errors.WithStack(err)
 	}
 	return nil
 }
 
-func (impl *commanderImpl) Delete(ctx context.Context, serial *domain.Serial) error {
-	err := impl.store.Delete(ctx, fmt.Sprintf("%d", serial.Int64()))
-	return errors.WithStack(err)
+func (impl *commanderImpl) Delete(_ context.Context, serial *domain.Serial) error {
+	err := impl.store.Delete(serial.Int64())
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
 }
