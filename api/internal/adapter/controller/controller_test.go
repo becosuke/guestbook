@@ -9,12 +9,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	repository "github.com/becosuke/guestbook/api/internal/adapter/repository/syncmap"
-	real_usecase "github.com/becosuke/guestbook/api/internal/application/usecase"
+	"github.com/becosuke/guestbook/api/internal/adapter/repository"
+	"github.com/becosuke/guestbook/api/internal/application/usecase"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 	pb "github.com/becosuke/guestbook/api/internal/pkg/pb"
-	mock_usecase "github.com/becosuke/guestbook/api/mock/application/usecase"
+	mock "github.com/becosuke/guestbook/api/mock/application/usecase"
 )
 
 func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
@@ -23,8 +23,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 	type fields struct {
 		UnimplementedGuestbookServiceServer pb.UnimplementedGuestbookServiceServer
 		config                              *pkgconfig.Config
-		usecase                             real_usecase.Usecase
-		boundary                            Boundary
+		usecase                             usecase.Usecase
 	}
 	type args struct {
 		ctx context.Context
@@ -41,8 +40,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			config := pkgconfig.NewConfig(ctx)
-			boundary := NewBoundary()
-			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
+			mockUsecase := mock.NewMockUsecase(ctrl)
 			serial := domain.NewSerial(100)
 			body := domain.NewBody("example")
 			post := domain.NewPost(serial, body)
@@ -54,9 +52,8 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 			return testCase{
 				name: "normal",
 				fields: fields{
-					config:   config,
-					usecase:  mockUsecase,
-					boundary: boundary,
+					config:  config,
+					usecase: mockUsecase,
 				},
 				args: args{
 					ctx: ctx,
@@ -74,16 +71,14 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			config := pkgconfig.NewConfig(ctx)
-			boundary := NewBoundary()
-			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
+			mockUsecase := mock.NewMockUsecase(ctrl)
 			serial := domain.NewSerial(100)
-			mockUsecase.EXPECT().Get(ctx, serial).Return(nil, repository.ErrMessageNotFound)
+			mockUsecase.EXPECT().Get(ctx, serial).Return(nil, repository.ErrNotFound)
 			return testCase{
 				name: "not found",
 				fields: fields{
-					config:   config,
-					usecase:  mockUsecase,
-					boundary: boundary,
+					config:  config,
+					usecase: mockUsecase,
 				},
 				args: args{
 					ctx: ctx,
@@ -102,7 +97,6 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 				UnimplementedGuestbookServiceServer: tt.fields.UnimplementedGuestbookServiceServer,
 				config:                              tt.fields.config,
 				usecase:                             tt.fields.usecase,
-				boundary:                            tt.fields.boundary,
 			}
 			got, err := impl.GetPost(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {
@@ -122,8 +116,7 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 	type fields struct {
 		UnimplementedGuestbookServiceServer pb.UnimplementedGuestbookServiceServer
 		config                              *pkgconfig.Config
-		usecase                             real_usecase.Usecase
-		boundary                            Boundary
+		usecase                             usecase.Usecase
 	}
 	type args struct {
 		ctx context.Context
@@ -140,17 +133,15 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			config := pkgconfig.NewConfig(ctx)
-			boundary := NewBoundary()
-			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
+			mockUsecase := mock.NewMockUsecase(ctrl)
 			req := domain.NewPost(domain.NewSerial(0), domain.NewBody("example"))
 			res := domain.NewPost(domain.NewSerial(1), domain.NewBody("example"))
 			mockUsecase.EXPECT().Create(ctx, req).Return(res, nil)
 			return testCase{
 				name: "normal",
 				fields: fields{
-					config:   config,
-					usecase:  mockUsecase,
-					boundary: boundary,
+					config:  config,
+					usecase: mockUsecase,
 				},
 				args: args{
 					ctx: ctx,
@@ -174,7 +165,6 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 				UnimplementedGuestbookServiceServer: tt.fields.UnimplementedGuestbookServiceServer,
 				config:                              tt.fields.config,
 				usecase:                             tt.fields.usecase,
-				boundary:                            tt.fields.boundary,
 			}
 			got, err := impl.CreatePost(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {
@@ -194,8 +184,7 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 	type fields struct {
 		UnimplementedGuestbookServiceServer pb.UnimplementedGuestbookServiceServer
 		config                              *pkgconfig.Config
-		usecase                             real_usecase.Usecase
-		boundary                            Boundary
+		usecase                             usecase.Usecase
 	}
 	type args struct {
 		ctx context.Context
@@ -212,16 +201,14 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			config := pkgconfig.NewConfig(ctx)
-			boundary := NewBoundary()
-			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
+			mockUsecase := mock.NewMockUsecase(ctrl)
 			post := domain.NewPost(domain.NewSerial(100), domain.NewBody("example-value"))
 			mockUsecase.EXPECT().Update(ctx, post).Return(post, nil)
 			return testCase{
 				name: "normal",
 				fields: fields{
-					config:   config,
-					usecase:  mockUsecase,
-					boundary: boundary,
+					config:  config,
+					usecase: mockUsecase,
 				},
 				args: args{
 					ctx: ctx,
@@ -246,7 +233,6 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 				UnimplementedGuestbookServiceServer: tt.fields.UnimplementedGuestbookServiceServer,
 				config:                              tt.fields.config,
 				usecase:                             tt.fields.usecase,
-				boundary:                            tt.fields.boundary,
 			}
 			got, err := impl.UpdatePost(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {
@@ -266,8 +252,7 @@ func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 	type fields struct {
 		UnimplementedGuestbookServiceServer pb.UnimplementedGuestbookServiceServer
 		config                              *pkgconfig.Config
-		usecase                             real_usecase.Usecase
-		boundary                            Boundary
+		usecase                             usecase.Usecase
 	}
 	type args struct {
 		ctx context.Context
@@ -284,16 +269,14 @@ func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			config := pkgconfig.NewConfig(ctx)
-			boundary := NewBoundary()
-			mockUsecase := mock_usecase.NewMockUsecase(ctrl)
+			mockUsecase := mock.NewMockUsecase(ctrl)
 			serial := domain.NewSerial(100)
 			mockUsecase.EXPECT().Delete(ctx, serial).Return(nil)
 			return testCase{
 				name: "normal",
 				fields: fields{
-					config:   config,
-					usecase:  mockUsecase,
-					boundary: boundary,
+					config:  config,
+					usecase: mockUsecase,
 				},
 				args: args{
 					ctx: ctx,
@@ -312,7 +295,6 @@ func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 				UnimplementedGuestbookServiceServer: tt.fields.UnimplementedGuestbookServiceServer,
 				config:                              tt.fields.config,
 				usecase:                             tt.fields.usecase,
-				boundary:                            tt.fields.boundary,
 			}
 			got, err := impl.DeletePost(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {

@@ -70,7 +70,7 @@ build-grpc: build-grpc-binary build-grpc-container
 build-grpc-binary:
 	CGO_ENABLED=0 GOOS=linux $(GO_BINARY) build -a -installsuffix cgo \
 	-ldflags "-w -X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-grpc" \
-	-o $(BUILD_DIR)/$(PROJECT_NAME)-grpc $(COMMAND_DIR)/grpc/main.go
+	-o $(BUILD_DIR)/$(PROJECT_NAME)-grpc $(COMMAND_DIR)/grpc/main.go $(COMMAND_DIR)/grpc/wire_gen.go
 
 build-grpc-container:
 	cd $(BUILD_DIR) && \
@@ -81,13 +81,20 @@ build-rest: build-rest-binary build-rest-container
 build-rest-binary:
 	CGO_ENABLED=0 GOOS=linux $(GO_BINARY) build -a -installsuffix cgo \
 	-ldflags "-w -X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-rest" \
-	-o $(BUILD_DIR)/$(PROJECT_NAME)-rest $(COMMAND_DIR)/rest/main.go
+	-o $(BUILD_DIR)/$(PROJECT_NAME)-rest $(COMMAND_DIR)/rest/main.go $(COMMAND_DIR)/rest/wire_gen.go
 
 build-rest-container:
 	cd $(BUILD_DIR) && \
 	docker build . --no-cache --build-arg name=$(PROJECT_NAME)-rest -t $(PROJECT_NAME)-rest:latest -t $(PROJECT_NAME)-rest:$(VERSION)
 
 gen: gen-mock gen-wire
+
+gen-mock-init:
+	rm -f gomockhandler.json
+	./bin/gomockhandler -source=./internal/adapter/repository/generator.go -destination=./mock/adapter/repository/generator.go
+	./bin/gomockhandler -source=./internal/adapter/repository/querier.go -destination=./mock/adapter/repository/querier.go
+	./bin/gomockhandler -source=./internal/adapter/repository/commander.go -destination=./mock/adapter/repository/commander.go
+	./bin/gomockhandler -source=./internal/application/usecase/usecase.go -destination=./mock/application/usecase/usecase.go
 
 gen-mock:
 	./bin/gomockhandler mockgen

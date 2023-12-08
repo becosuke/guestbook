@@ -2,51 +2,50 @@ package syncmap
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/becosuke/syncmap"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 
+	"github.com/becosuke/guestbook/api/internal/adapter/repository"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
-	syncmap_driver "github.com/becosuke/guestbook/api/internal/driver/syncmap"
 	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 )
 
-type Querier interface {
-	Get(context.Context, *domain.Serial) (*domain.Post, error)
-	Range(context.Context, *domain.PageOption) ([]*domain.Post, error)
-}
-
-func NewQuerier(config *pkgconfig.Config, store syncmap_driver.Syncmap, boundary Boundary) Querier {
+func NewQuerier(config *pkgconfig.Config, logger *zap.Logger, store syncmap.Syncmap) repository.Querier {
 	return &querierImpl{
-		config:   config,
-		store:    store,
-		boundary: boundary,
+		config: config,
+		logger: logger,
+		store:  store,
 	}
 }
 
 type querierImpl struct {
-	config   *pkgconfig.Config
-	store    syncmap_driver.Syncmap
-	boundary Boundary
+	config *pkgconfig.Config
+	logger *zap.Logger
+	store  syncmap.Syncmap
 }
 
-func (impl *querierImpl) Get(ctx context.Context, serial *domain.Serial) (*domain.Post, error) {
-	message, err := impl.store.Load(ctx, fmt.Sprintf("%d", serial.Int64()))
+func (impl *querierImpl) Get(_ context.Context, serial *domain.Serial) (*domain.Post, error) {
+	value, err := impl.store.Get(serial.Int64())
 	if err != nil {
 		switch {
-		case errors.Is(err, syncmap_driver.ErrNotFound):
-			return nil, ErrMessageNotFound
-		case errors.Is(err, syncmap_driver.ErrInvalidArgument):
-			return nil, ErrInvalidArgument
-		case errors.Is(err, syncmap_driver.ErrInvalidData):
-			return nil, ErrInvalidData
+		case errors.Is(err, syncmap.ErrInvalidArgument):
+			return nil, repository.ErrInvalidArgument
+		case errors.Is(err, syncmap.ErrNotFound):
+			return nil, repository.ErrNotFound
 		default:
 			return nil, errors.WithStack(err)
 		}
 	}
-	return impl.boundary.ToEntity(message), nil
+	body, ok := value.(string)
+	if !ok {
+		return nil, repository.ErrInvalidData
+	}
+
+	return domain.NewPost(serial, domain.NewBody(body)), nil
 }
 
-func (impl *querierImpl) Range(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, error) {
+func (impl *querierImpl) Range(_ context.Context, pageOption *domain.PageOption) ([]*domain.Post, error) {
 	return []*domain.Post{}, nil
 }

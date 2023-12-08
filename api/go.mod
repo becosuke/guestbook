@@ -3,6 +3,7 @@ module github.com/becosuke/guestbook/api
 go 1.20
 
 require (
+	github.com/becosuke/syncmap v1.0.4
 	github.com/envoyproxy/protoc-gen-validate v1.0.2
 	github.com/golang/mock v1.6.0
 	github.com/google/wire v0.5.0
