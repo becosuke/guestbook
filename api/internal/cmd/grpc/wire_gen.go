@@ -9,14 +9,15 @@ package main
 import (
 	"context"
 	"github.com/becosuke/guestbook/api/internal/adapter/controller"
+	"github.com/becosuke/guestbook/api/internal/adapter/repository/generator"
 	syncmap2 "github.com/becosuke/guestbook/api/internal/adapter/repository/syncmap"
-	"github.com/becosuke/guestbook/api/internal/application/usecase"
+	"github.com/becosuke/guestbook/api/internal/application/interactor"
 	"github.com/becosuke/guestbook/api/internal/driver/grpcserver"
 	"github.com/becosuke/guestbook/api/internal/driver/interceptor"
-	"github.com/becosuke/guestbook/api/internal/driver/syncmap"
 	"github.com/becosuke/guestbook/api/internal/pkg/config"
 	"github.com/becosuke/guestbook/api/internal/pkg/logger"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
+	"github.com/becosuke/syncmap"
 	"github.com/google/wire"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -30,13 +31,11 @@ func InitializeApp(ctx context.Context) *App {
 	authFunc := interceptor.NewAuthFunc(ctx)
 	server := grpcserver.NewGrpcServer(ctx, zapLogger, authFunc)
 	syncmapSyncmap := syncmap.NewSyncmap()
-	boundary := syncmap2.NewBoundary()
-	querier := syncmap2.NewQuerier(configConfig, syncmapSyncmap, boundary)
-	generator := syncmap2.NewGenerator()
-	commander := syncmap2.NewCommander(configConfig, syncmapSyncmap, boundary, generator)
-	usecaseUsecase := usecase.NewUsecase(configConfig, querier, commander)
-	controllerBoundary := controller.NewBoundary()
-	guestbookServiceServer := controller.NewGuestbookServiceServer(configConfig, zapLogger, usecaseUsecase, controllerBoundary)
+	querier := syncmap2.NewQuerier(configConfig, zapLogger, syncmapSyncmap)
+	repositoryGenerator := generator.NewGenerator()
+	commander := syncmap2.NewCommander(configConfig, zapLogger, syncmapSyncmap, repositoryGenerator)
+	usecase := interactor.NewUsecase(configConfig, zapLogger, querier, commander)
+	guestbookServiceServer := controller.NewGuestbookServiceServer(configConfig, zapLogger, usecase)
 	app := &App{
 		Config:     configConfig,
 		Logger:     zapLogger,
@@ -55,10 +54,8 @@ type App struct {
 	Controller pb.GuestbookServiceServer
 }
 
-var controllerSet = wire.NewSet(controller.NewGuestbookServiceServer, controller.NewBoundary)
+var controllerSet = wire.NewSet(controller.NewGuestbookServiceServer)
 
-var usecaseSet = wire.NewSet(usecase.NewUsecase)
+var usecaseSet = wire.NewSet(interactor.NewUsecase)
 
-var repositorySet = wire.NewSet(syncmap2.NewGenerator, syncmap2.NewQuerier, syncmap2.NewCommander, syncmap2.NewBoundary)
-
-var driverSet = wire.NewSet(syncmap.NewSyncmap)
+var repositorySet = wire.NewSet(generator.NewGenerator, syncmap2.NewQuerier, syncmap2.NewCommander)

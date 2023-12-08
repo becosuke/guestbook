@@ -1,16 +1,13 @@
-package syncmap
+package generator
 
 import (
 	"sync/atomic"
 
+	"github.com/becosuke/guestbook/api/internal/adapter/repository"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 )
 
-type Generator interface {
-	GenerateSerial() *domain.Serial
-}
-
-func NewGenerator() Generator {
+func NewGenerator() repository.Generator {
 	return &generatorImpl{}
 }
 
