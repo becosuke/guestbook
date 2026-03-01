@@ -8,11 +8,11 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
-	"github.com/becosuke/guestbook/api/internal/domain/entity"
+	"github.com/becosuke/guestbook/api/internal/domain"
 	"github.com/becosuke/guestbook/api/internal/domain/interfaces"
 )
 
-func NewQuerier(config *entity.Config, logger *zap.Logger, pool *pgxpool.Pool) interfaces.Querier {
+func NewQuerier(config *domain.Config, logger *zap.Logger, pool *pgxpool.Pool) interfaces.Querier {
 	return &querierImpl{
 		config: config,
 		logger: logger,
@@ -21,24 +21,24 @@ func NewQuerier(config *entity.Config, logger *zap.Logger, pool *pgxpool.Pool) i
 }
 
 type querierImpl struct {
-	config *entity.Config
+	config *domain.Config
 	logger *zap.Logger
 	pool   *pgxpool.Pool
 }
 
-func (impl *querierImpl) Get(ctx context.Context, postID *entity.PostID) (*entity.Post, error) {
+func (impl *querierImpl) Get(ctx context.Context, postID *domain.PostID) (*domain.Post, error) {
 	var body string
 	err := impl.pool.QueryRow(ctx, "SELECT body FROM posts WHERE post_id = $1", postID.String()).Scan(&body)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, interfaces.ErrNotFound
+			return nil, domain.ErrNotFound
 		}
 		return nil, errors.WithStack(err)
 	}
-	return entity.NewPost(postID, entity.NewPostBody(body)), nil
+	return domain.NewPost(postID, domain.NewPostBody(body)), nil
 }
 
-func (impl *querierImpl) Range(ctx context.Context, pageOption *entity.PageOption) ([]*entity.Post, error) {
+func (impl *querierImpl) Range(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, error) {
 	pageSize := int32(10)
 	if pageOption.PageSize() != nil {
 		pageSize = int32(*pageOption.PageSize())
@@ -62,20 +62,20 @@ func (impl *querierImpl) Range(ctx context.Context, pageOption *entity.PageOptio
 	}
 	defer rows.Close()
 
-	var posts []*entity.Post
+	var posts []*domain.Post
 	for rows.Next() {
 		var postID, body string
 		if err := rows.Scan(&postID, &body); err != nil {
 			return nil, errors.WithStack(err)
 		}
-		posts = append(posts, entity.NewPost(entity.NewPostID(postID), entity.NewPostBody(body)))
+		posts = append(posts, domain.NewPost(domain.NewPostID(postID), domain.NewPostBody(body)))
 	}
 	if err := rows.Err(); err != nil {
 		return nil, errors.WithStack(err)
 	}
 
 	if posts == nil {
-		posts = []*entity.Post{}
+		posts = []*domain.Post{}
 	}
 	return posts, nil
 }

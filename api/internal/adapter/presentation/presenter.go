@@ -9,19 +9,18 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/becosuke/guestbook/api/internal/domain/entity"
-	"github.com/becosuke/guestbook/api/internal/domain/interfaces"
+	"github.com/becosuke/guestbook/api/internal/domain"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
 
 type guestbookServiceServer struct {
 	pb.UnimplementedGuestbookServiceServer
-	config  *entity.Config
+	config  *domain.Config
 	logger  *zap.Logger
 	usecase Usecase
 }
 
-func NewGuestbookServiceServer(config *entity.Config, logger *zap.Logger, usecase Usecase) pb.GuestbookServiceServer {
+func NewGuestbookServiceServer(config *domain.Config, logger *zap.Logger, usecase Usecase) pb.GuestbookServiceServer {
 	return &guestbookServiceServer{
 		config:  config,
 		logger:  logger,
@@ -33,9 +32,9 @@ func (impl *guestbookServiceServer) GetPost(ctx context.Context, req *pb.GetPost
 	res, err := impl.usecase.Get(ctx, impl.postIDResourceToDomain(req.GetPostId()))
 	if err != nil {
 		switch {
-		case errors.Is(err, interfaces.ErrNotFound):
+		case errors.Is(err, domain.ErrNotFound):
 			return nil, status.New(codes.NotFound, err.Error()).Err()
-		case errors.Is(err, interfaces.ErrInvalidData), errors.Is(err, interfaces.ErrInvalidArgument):
+		case errors.Is(err, domain.ErrInvalidData), errors.Is(err, domain.ErrInvalidArgument):
 			return nil, status.New(codes.Internal, err.Error()).Err()
 		default:
 			return nil, status.New(codes.Unknown, err.Error()).Err()
@@ -48,7 +47,7 @@ func (impl *guestbookServiceServer) CreatePost(ctx context.Context, req *pb.Crea
 	res, err := impl.usecase.Create(ctx, impl.postResourceToDomain(req.GetPost()))
 	if err != nil {
 		switch {
-		case errors.Is(err, interfaces.ErrInvalidData), errors.Is(err, interfaces.ErrInvalidArgument):
+		case errors.Is(err, domain.ErrInvalidData), errors.Is(err, domain.ErrInvalidArgument):
 			return nil, status.New(codes.Internal, err.Error()).Err()
 		default:
 			return nil, status.New(codes.Unknown, err.Error()).Err()
@@ -61,7 +60,7 @@ func (impl *guestbookServiceServer) UpdatePost(ctx context.Context, req *pb.Upda
 	res, err := impl.usecase.Update(ctx, impl.postResourceToDomain(req.GetPost()))
 	if err != nil {
 		switch {
-		case errors.Is(err, interfaces.ErrInvalidData), errors.Is(err, interfaces.ErrInvalidArgument):
+		case errors.Is(err, domain.ErrInvalidData), errors.Is(err, domain.ErrInvalidArgument):
 			return nil, status.New(codes.Internal, err.Error()).Err()
 		default:
 			return nil, status.New(codes.Unknown, err.Error()).Err()

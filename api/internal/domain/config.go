@@ -1,4 +1,4 @@
-package entity
+package domain
 
 import (
 	"go.uber.org/zap/zapcore"

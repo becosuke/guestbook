@@ -7,11 +7,11 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
-	"github.com/becosuke/guestbook/api/internal/domain/entity"
+	"github.com/becosuke/guestbook/api/internal/domain"
 	"github.com/becosuke/guestbook/api/internal/domain/interfaces"
 )
 
-func NewUsecase(config *entity.Config, logger *zap.Logger, querier interfaces.Querier, commander interfaces.Commander) *Usecase {
+func NewUsecase(config *domain.Config, logger *zap.Logger, querier interfaces.Querier, commander interfaces.Commander) *Usecase {
 	return &Usecase{
 		config:    config,
 		logger:    logger,
@@ -21,13 +21,13 @@ func NewUsecase(config *entity.Config, logger *zap.Logger, querier interfaces.Qu
 }
 
 type Usecase struct {
-	config    *entity.Config
+	config    *domain.Config
 	logger    *zap.Logger
 	querier   interfaces.Querier
 	commander interfaces.Commander
 }
 
-func (impl *Usecase) Get(ctx context.Context, postID *entity.PostID) (*entity.Post, error) {
+func (impl *Usecase) Get(ctx context.Context, postID *domain.PostID) (*domain.Post, error) {
 	result, err := impl.get(ctx, postID)
 	if err != nil {
 		return nil, err // Already stacked
@@ -36,7 +36,7 @@ func (impl *Usecase) Get(ctx context.Context, postID *entity.PostID) (*entity.Po
 	return result, nil
 }
 
-func (impl *Usecase) get(ctx context.Context, postID *entity.PostID) (*entity.Post, error) {
+func (impl *Usecase) get(ctx context.Context, postID *domain.PostID) (*domain.Post, error) {
 	result, err := impl.querier.Get(ctx, postID)
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -44,7 +44,7 @@ func (impl *Usecase) get(ctx context.Context, postID *entity.PostID) (*entity.Po
 	return result, nil
 }
 
-func (impl *Usecase) Range(ctx context.Context, pageOption *entity.PageOption) ([]*entity.Post, error) {
+func (impl *Usecase) Range(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, error) {
 	result, err := impl.querier.Range(ctx, pageOption)
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -52,9 +52,9 @@ func (impl *Usecase) Range(ctx context.Context, pageOption *entity.PageOption) (
 	return result, nil
 }
 
-func (impl *Usecase) Create(ctx context.Context, post *entity.Post) (*entity.Post, error) {
-	postID := entity.NewPostID(uuid.New().String())
-	post = entity.NewPost(postID, post.PostBody())
+func (impl *Usecase) Create(ctx context.Context, post *domain.Post) (*domain.Post, error) {
+	postID := domain.NewPostID(uuid.New().String())
+	post = domain.NewPost(postID, post.PostBody())
 	err := impl.commander.Create(ctx, post)
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -62,7 +62,7 @@ func (impl *Usecase) Create(ctx context.Context, post *entity.Post) (*entity.Pos
 	return impl.get(ctx, postID)
 }
 
-func (impl *Usecase) Update(ctx context.Context, post *entity.Post) (*entity.Post, error) {
+func (impl *Usecase) Update(ctx context.Context, post *domain.Post) (*domain.Post, error) {
 	err := impl.commander.Update(ctx, post)
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -70,7 +70,7 @@ func (impl *Usecase) Update(ctx context.Context, post *entity.Post) (*entity.Pos
 	return impl.get(ctx, post.PostID())
 }
 
-func (impl *Usecase) Delete(ctx context.Context, postID *entity.PostID) error {
+func (impl *Usecase) Delete(ctx context.Context, postID *domain.PostID) error {
 	err := impl.commander.Delete(ctx, postID)
 	if err != nil {
 		return errors.WithStack(err)

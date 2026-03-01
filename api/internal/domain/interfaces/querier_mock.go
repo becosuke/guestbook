@@ -7,7 +7,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/becosuke/guestbook/api/internal/domain/entity"
+	"github.com/becosuke/guestbook/api/internal/domain"
 )
 
 // Ensure, that QuerierMock does implement Querier.
@@ -20,10 +20,10 @@ var _ Querier = &QuerierMock{}
 //
 //		// make and configure a mocked Querier
 //		mockedQuerier := &QuerierMock{
-//			GetFunc: func(contextMoqParam context.Context, postID *entity.PostID) (*entity.Post, error) {
+//			GetFunc: func(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error) {
 //				panic("mock out the Get method")
 //			},
-//			RangeFunc: func(contextMoqParam context.Context, pageOption *entity.PageOption) ([]*entity.Post, error) {
+//			RangeFunc: func(contextMoqParam context.Context, pageOption *domain.PageOption) ([]*domain.Post, error) {
 //				panic("mock out the Range method")
 //			},
 //		}
@@ -34,10 +34,10 @@ var _ Querier = &QuerierMock{}
 //	}
 type QuerierMock struct {
 	// GetFunc mocks the Get method.
-	GetFunc func(contextMoqParam context.Context, postID *entity.PostID) (*entity.Post, error)
+	GetFunc func(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error)
 
 	// RangeFunc mocks the Range method.
-	RangeFunc func(contextMoqParam context.Context, pageOption *entity.PageOption) ([]*entity.Post, error)
+	RangeFunc func(contextMoqParam context.Context, pageOption *domain.PageOption) ([]*domain.Post, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -46,14 +46,14 @@ type QuerierMock struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// PostID is the postID argument value.
-			PostID *entity.PostID
+			PostID *domain.PostID
 		}
 		// Range holds details about calls to the Range method.
 		Range []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// PageOption is the pageOption argument value.
-			PageOption *entity.PageOption
+			PageOption *domain.PageOption
 		}
 	}
 	lockGet   sync.RWMutex
@@ -61,13 +61,13 @@ type QuerierMock struct {
 }
 
 // Get calls GetFunc.
-func (mock *QuerierMock) Get(contextMoqParam context.Context, postID *entity.PostID) (*entity.Post, error) {
+func (mock *QuerierMock) Get(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error) {
 	if mock.GetFunc == nil {
 		panic("QuerierMock.GetFunc: method is nil but Querier.Get was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
-		PostID          *entity.PostID
+		PostID          *domain.PostID
 	}{
 		ContextMoqParam: contextMoqParam,
 		PostID:          postID,
@@ -84,11 +84,11 @@ func (mock *QuerierMock) Get(contextMoqParam context.Context, postID *entity.Pos
 //	len(mockedQuerier.GetCalls())
 func (mock *QuerierMock) GetCalls() []struct {
 	ContextMoqParam context.Context
-	PostID          *entity.PostID
+	PostID          *domain.PostID
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		PostID          *entity.PostID
+		PostID          *domain.PostID
 	}
 	mock.lockGet.RLock()
 	calls = mock.calls.Get
@@ -97,13 +97,13 @@ func (mock *QuerierMock) GetCalls() []struct {
 }
 
 // Range calls RangeFunc.
-func (mock *QuerierMock) Range(contextMoqParam context.Context, pageOption *entity.PageOption) ([]*entity.Post, error) {
+func (mock *QuerierMock) Range(contextMoqParam context.Context, pageOption *domain.PageOption) ([]*domain.Post, error) {
 	if mock.RangeFunc == nil {
 		panic("QuerierMock.RangeFunc: method is nil but Querier.Range was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
-		PageOption      *entity.PageOption
+		PageOption      *domain.PageOption
 	}{
 		ContextMoqParam: contextMoqParam,
 		PageOption:      pageOption,
@@ -120,11 +120,11 @@ func (mock *QuerierMock) Range(contextMoqParam context.Context, pageOption *enti
 //	len(mockedQuerier.RangeCalls())
 func (mock *QuerierMock) RangeCalls() []struct {
 	ContextMoqParam context.Context
-	PageOption      *entity.PageOption
+	PageOption      *domain.PageOption
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		PageOption      *entity.PageOption
+		PageOption      *domain.PageOption
 	}
 	mock.lockRange.RLock()
 	calls = mock.calls.Range

@@ -15,7 +15,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	infraconfig "github.com/becosuke/guestbook/api/internal/adapter/infrastructure/config"
-	"github.com/becosuke/guestbook/api/internal/domain/entity"
+	"github.com/becosuke/guestbook/api/internal/domain"
 	"github.com/becosuke/guestbook/api/internal/pkg/logger"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
@@ -31,7 +31,7 @@ var (
 )
 
 type App struct {
-	Config *entity.Config
+	Config *domain.Config
 	Logger *zap.Logger
 }
 
