@@ -1,4 +1,28 @@
 services:
+  grpc:
+    image: guestbook-api-grpc
+    environment:
+      ENVIRONMENT: development
+      GRPC_HOST: grpc
+      GRPC_PORT: "50051"
+      DATABASE_URL: postgres://guestbook:guestbook@postgres:5432/guestbook?sslmode=disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  rest:
+    image: guestbook-api-rest
+    environment:
+      ENVIRONMENT: development
+      GRPC_HOST: grpc
+      GRPC_PORT: "50051"
+      REST_HOST: rest
+      REST_PORT: "50080"
+    ports:
+      - "50080:50080"
+    depends_on:
+      - grpc
+
   postgres:
     image: postgres:17-alpine
     environment:

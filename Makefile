@@ -4,6 +4,7 @@ GO_BINARY=go
 .PHONY: build
 build: build-api
 
+.PHONY: build-api
 build-api:
 	@$(MAKE) --no-print-directory -C api build
 
@@ -11,17 +12,26 @@ build-api:
 buf-generate: buf-dep-update
 	buf generate
 
+.PHONY: buf-dep-update
 buf-dep-update:
 	buf dep update
 
-example-post:
+.PHONY: schema-dump
+schema-dump:
+	docker compose exec postgres pg_dump -U guestbook -d guestbook --schema-only --no-owner --no-privileges --no-comments -t posts > api/configurations/postgres/schema.sql
+
+.PHONY: example/post
+example/post:
 	curl -v -X POST -H 'Content-Type: application/json' -d '{"post": {"body": "example"}}' 'http://localhost:50080/api/v1/post'
 
-example-put:
+.PHONY: example/put
+example/put:
 	curl -v -X PUT -H 'Content-Type: application/json' -d '{"post": {"body": "example-value"}}' 'http://localhost:50080/api/v1/post/100'
 
-example-get:
+.PHONY: example/get
+example/get:
 	curl -v 'http://localhost:50080/api/v1/post/100'
 
-example-delete:
+.PHONY: example/delete
+example/delete:
 	curl -v -X DELETE 'http://localhost:50080/api/v1/post/100'
