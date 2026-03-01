@@ -8,6 +8,11 @@ import (
 	"os/signal"
 	"syscall"
 
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
+	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
@@ -15,8 +20,6 @@ import (
 
 	"github.com/becosuke/guestbook/api/internal/adapter/controller"
 	repository_postgres "github.com/becosuke/guestbook/api/internal/adapter/repository/postgres"
-	"github.com/becosuke/guestbook/api/internal/driver/grpcserver"
-	"github.com/becosuke/guestbook/api/internal/driver/interceptor"
 	"github.com/becosuke/guestbook/api/internal/pkg/config"
 	"github.com/becosuke/guestbook/api/internal/pkg/logger"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
@@ -43,8 +46,23 @@ type App struct {
 func InitializeApp(ctx context.Context) *App {
 	cfg := config.NewConfig(ctx)
 	zapLogger := logger.NewLogger(ctx, cfg)
-	authFunc := interceptor.NewAuthFunc(ctx)
-	server := grpcserver.NewGrpcServer(ctx, zapLogger, authFunc)
+	authFunc := func(ctx context.Context) (context.Context, error) {
+		return ctx, nil
+	}
+	server := grpc.NewServer(
+		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
+			grpc_zap.StreamServerInterceptor(zapLogger),
+			grpc_auth.StreamServerInterceptor(authFunc),
+			grpc_validator.StreamServerInterceptor(),
+			grpc_recovery.StreamServerInterceptor(),
+		)),
+		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+			grpc_zap.UnaryServerInterceptor(zapLogger),
+			grpc_auth.UnaryServerInterceptor(authFunc),
+			grpc_validator.UnaryServerInterceptor(),
+			grpc_recovery.UnaryServerInterceptor(),
+		)),
+	)
 	pool, err := repository_postgres.NewPool(ctx, cfg.DatabaseURL)
 	if err != nil {
 		zapLogger.Fatal("failed to connect to database", zap.Error(err))
