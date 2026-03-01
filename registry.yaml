@@ -1,0 +1,5 @@
+packages:
+- type: go_install
+  repo_owner: quasilyte
+  repo_name: go-consistent
+  path: github.com/quasilyte/go-consistent

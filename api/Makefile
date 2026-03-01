@@ -26,11 +26,11 @@ vet:
 	$(GO_BINARY) vet $(CODE_DIRS)
 
 lint:
-	./bin/golangci-lint run $(args) ./internal/...
-	./bin/go-consistent $(cons_args) $(CODE_DIRS)
+	golangci-lint run $(args) ./internal/...
+	go-consistent $(cons_args) $(CODE_DIRS)
 
 fmt:
-	@find ./internal -iname "*.go" -not -path "./pkg/**" | xargs ./bin/goimports -w -local $(PROJECT_REPOSITORY_ORIGIN)
+	@find ./internal -iname "*.go" -not -path "./pkg/**" | xargs goimports -w -local $(PROJECT_REPOSITORY_ORIGIN)
 
 run: mod run-grpc run-rest
 
@@ -89,15 +89,10 @@ build-rest-container:
 
 gen: gen-mock gen-wire
 
-gen-mock-init:
-	rm -f gomockhandler.json
-	./bin/gomockhandler -source=./internal/adapter/repository/generator.go -destination=./mock/adapter/repository/generator.go
-	./bin/gomockhandler -source=./internal/adapter/repository/querier.go -destination=./mock/adapter/repository/querier.go
-	./bin/gomockhandler -source=./internal/adapter/repository/commander.go -destination=./mock/adapter/repository/commander.go
-	./bin/gomockhandler -source=./internal/application/usecase/usecase.go -destination=./mock/application/usecase/usecase.go
-
 gen-mock:
-	./bin/gomockhandler mockgen
+	moq -out mock/adapter/repository/commander.go -pkg mock_repository ./internal/adapter/repository Commander
+	moq -out mock/adapter/repository/querier.go -pkg mock_repository ./internal/adapter/repository Querier
+	moq -out mock/application/usecase/usecase.go -pkg mock_usecase ./internal/application/usecase Usecase
 
 gen-wire:
 	./bin/wire $(CODE_DIRS)
