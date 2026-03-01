@@ -16,7 +16,7 @@ import (
 
 	"github.com/becosuke/guestbook/api/internal/adapter/controller"
 	syncmap2 "github.com/becosuke/guestbook/api/internal/adapter/repository/syncmap"
-	"github.com/becosuke/guestbook/api/internal/application/interactor"
+	"github.com/becosuke/guestbook/api/internal/usecase"
 	"github.com/becosuke/guestbook/api/internal/driver/grpcserver"
 	"github.com/becosuke/guestbook/api/internal/driver/interceptor"
 	"github.com/becosuke/guestbook/api/internal/pkg/config"
@@ -34,8 +34,8 @@ func InitializeApp(ctx context.Context) *App {
 	syncmapSyncmap := syncmap.NewSyncmap()
 	querier := syncmap2.NewQuerier(configConfig, zapLogger, syncmapSyncmap)
 	commander := syncmap2.NewCommander(configConfig, zapLogger, syncmapSyncmap)
-	usecase := interactor.NewUsecase(configConfig, zapLogger, querier, commander)
-	guestbookServiceServer := controller.NewGuestbookServiceServer(configConfig, zapLogger, usecase)
+	usecaseUsecase := usecase.NewUsecase(configConfig, zapLogger, querier, commander)
+	guestbookServiceServer := controller.NewGuestbookServiceServer(configConfig, zapLogger, usecaseUsecase)
 	app := &App{
 		Config:     configConfig,
 		Logger:     zapLogger,
@@ -56,6 +56,6 @@ type App struct {
 
 var controllerSet = wire.NewSet(controller.NewGuestbookServiceServer)
 
-var usecaseSet = wire.NewSet(interactor.NewUsecase)
+var usecaseSet = wire.NewSet(usecase.NewUsecase)
 
 var repositorySet = wire.NewSet(syncmap2.NewQuerier, syncmap2.NewCommander)

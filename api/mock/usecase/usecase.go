@@ -5,7 +5,7 @@ package mock_usecase
 
 import (
 	"context"
-	"github.com/becosuke/guestbook/api/internal/application/usecase"
+	"github.com/becosuke/guestbook/api/internal/usecase"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	"sync"
 )

@@ -92,7 +92,7 @@ gen: gen-mock gen-wire
 gen-mock:
 	moq -out mock/adapter/repository/commander.go -pkg mock_repository ./internal/adapter/repository Commander
 	moq -out mock/adapter/repository/querier.go -pkg mock_repository ./internal/adapter/repository Querier
-	moq -out mock/application/usecase/usecase.go -pkg mock_usecase ./internal/application/usecase Usecase
+	moq -out mock/usecase/usecase.go -pkg mock_usecase ./internal/usecase Usecase
 
 gen-wire:
 	./bin/wire $(CODE_DIRS)
