@@ -14,7 +14,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
+	"github.com/becosuke/guestbook/api/internal/pkg/config"
+	"github.com/becosuke/guestbook/api/internal/pkg/logger"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
 
@@ -28,6 +29,20 @@ var (
 	version     string
 )
 
+type App struct {
+	Config *config.Config
+	Logger *zap.Logger
+}
+
+func InitializeApp(ctx context.Context) *App {
+	cfg := config.NewConfig(ctx)
+	zapLogger := logger.NewLogger(ctx, cfg)
+	return &App{
+		Config: cfg,
+		Logger: zapLogger,
+	}
+}
+
 func main() {
 	os.Exit(run())
 }
@@ -36,14 +51,14 @@ func run() int {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	ctx = context.WithValue(ctx, pkgconfig.ServiceName{}, serviceName)
-	ctx = context.WithValue(ctx, pkgconfig.ServiceVersion{}, version)
+	ctx = context.WithValue(ctx, config.ServiceName{}, serviceName)
+	ctx = context.WithValue(ctx, config.ServiceVersion{}, version)
 
 	app := InitializeApp(ctx)
-	config := app.Config
-	logger := app.Logger
+	cfg := app.Config
+	zapLogger := app.Logger
 	defer func() {
-		_ = logger.Sync()
+		_ = zapLogger.Sync()
 	}()
 
 	mux := runtime.NewServeMux()
@@ -53,43 +68,43 @@ func run() int {
 	signal.Notify(interrupt, syscall.SIGTERM, os.Interrupt)
 	defer signal.Stop(interrupt)
 
-	err := pb.RegisterGuestbookServiceHandlerFromEndpoint(ctx, mux, fmt.Sprintf("%s:%d", config.GrpcHost, config.GrpcPort), opts)
+	err := pb.RegisterGuestbookServiceHandlerFromEndpoint(ctx, mux, fmt.Sprintf("%s:%d", cfg.GrpcHost, cfg.GrpcPort), opts)
 	if err != nil {
-		logger.Error("rest server: failed to register handler", zap.Error(err))
+		zapLogger.Error("rest server: failed to register handler", zap.Error(err))
 		return exitError
 	}
 
 	httpServer := http.Server{
-		Addr:    fmt.Sprintf("%s:%d", config.RestHost, config.RestPort),
+		Addr:    fmt.Sprintf("%s:%d", cfg.RestHost, cfg.RestPort),
 		Handler: mux,
 	}
 
 	eg, ctx := errgroup.WithContext(ctx)
 	eg.Go(func() error {
 		if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
-			logger.Error("rest server failed to listen", zap.Error(err))
+			zapLogger.Error("rest server failed to listen", zap.Error(err))
 			return err
 		}
 		return nil
 	})
-	logger.Info("rest server: listening", zap.String("host", config.RestHost), zap.Int("port", config.RestPort))
+	zapLogger.Info("rest server: listening", zap.String("host", cfg.RestHost), zap.Int("port", cfg.RestPort))
 
 	select {
 	case <-interrupt:
-		logger.Info("received shutdown signal")
+		zapLogger.Info("received shutdown signal")
 	case <-ctx.Done():
-		logger.Info("context canceled")
+		zapLogger.Info("context canceled")
 	}
 	cancel()
 
-	logger.Info("rest server: going gracefully shutdown")
+	zapLogger.Info("rest server: going gracefully shutdown")
 	if err := httpServer.Shutdown(ctx); err != context.Canceled {
-		logger.Error("received error on gracefully shutdown", zap.Error(err))
+		zapLogger.Error("received error on gracefully shutdown", zap.Error(err))
 	}
-	logger.Info("rest server: completed gracefully shutdown")
+	zapLogger.Info("rest server: completed gracefully shutdown")
 
 	if err := eg.Wait(); err != nil {
-		logger.Error("received error", zap.Error(err))
+		zapLogger.Error("received error", zap.Error(err))
 		return exitError
 	}
 
