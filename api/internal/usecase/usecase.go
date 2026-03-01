@@ -7,9 +7,9 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
-	"github.com/becosuke/guestbook/api/internal/domain/repository"
-	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	domainconfig "github.com/becosuke/guestbook/api/internal/domain/config"
+	domain "github.com/becosuke/guestbook/api/internal/domain/post"
+	"github.com/becosuke/guestbook/api/internal/domain/repository"
 )
 
 func NewUsecase(config *domainconfig.Config, logger *zap.Logger, querier repository.Querier, commander repository.Commander) *Usecase {

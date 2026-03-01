@@ -5,8 +5,9 @@ package presentation
 
 import (
 	"context"
-	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	"sync"
+
+	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 )
 
 // Ensure, that UsecaseMock does implement Usecase.
