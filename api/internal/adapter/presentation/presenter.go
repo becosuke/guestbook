@@ -10,7 +10,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/becosuke/guestbook/api/internal/domain/entity"
-	"github.com/becosuke/guestbook/api/internal/domain/repository"
+	"github.com/becosuke/guestbook/api/internal/domain/interfaces"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
 
@@ -33,9 +33,9 @@ func (impl *guestbookServiceServer) GetPost(ctx context.Context, req *pb.GetPost
 	res, err := impl.usecase.Get(ctx, impl.postIDResourceToDomain(req.GetPostId()))
 	if err != nil {
 		switch {
-		case errors.Is(err, repository.ErrNotFound):
+		case errors.Is(err, interfaces.ErrNotFound):
 			return nil, status.New(codes.NotFound, err.Error()).Err()
-		case errors.Is(err, repository.ErrInvalidData), errors.Is(err, repository.ErrInvalidArgument):
+		case errors.Is(err, interfaces.ErrInvalidData), errors.Is(err, interfaces.ErrInvalidArgument):
 			return nil, status.New(codes.Internal, err.Error()).Err()
 		default:
 			return nil, status.New(codes.Unknown, err.Error()).Err()
@@ -48,7 +48,7 @@ func (impl *guestbookServiceServer) CreatePost(ctx context.Context, req *pb.Crea
 	res, err := impl.usecase.Create(ctx, impl.postResourceToDomain(req.GetPost()))
 	if err != nil {
 		switch {
-		case errors.Is(err, repository.ErrInvalidData), errors.Is(err, repository.ErrInvalidArgument):
+		case errors.Is(err, interfaces.ErrInvalidData), errors.Is(err, interfaces.ErrInvalidArgument):
 			return nil, status.New(codes.Internal, err.Error()).Err()
 		default:
 			return nil, status.New(codes.Unknown, err.Error()).Err()
@@ -61,7 +61,7 @@ func (impl *guestbookServiceServer) UpdatePost(ctx context.Context, req *pb.Upda
 	res, err := impl.usecase.Update(ctx, impl.postResourceToDomain(req.GetPost()))
 	if err != nil {
 		switch {
-		case errors.Is(err, repository.ErrInvalidData), errors.Is(err, repository.ErrInvalidArgument):
+		case errors.Is(err, interfaces.ErrInvalidData), errors.Is(err, interfaces.ErrInvalidArgument):
 			return nil, status.New(codes.Internal, err.Error()).Err()
 		default:
 			return nil, status.New(codes.Unknown, err.Error()).Err()

@@ -9,10 +9,10 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/becosuke/guestbook/api/internal/domain/entity"
-	domainrepo "github.com/becosuke/guestbook/api/internal/domain/repository"
+	"github.com/becosuke/guestbook/api/internal/domain/interfaces"
 )
 
-func NewQuerier(config *entity.Config, logger *zap.Logger, pool *pgxpool.Pool) domainrepo.Querier {
+func NewQuerier(config *entity.Config, logger *zap.Logger, pool *pgxpool.Pool) interfaces.Querier {
 	return &querierImpl{
 		config: config,
 		logger: logger,
@@ -31,7 +31,7 @@ func (impl *querierImpl) Get(ctx context.Context, postID *entity.PostID) (*entit
 	err := impl.pool.QueryRow(ctx, "SELECT body FROM posts WHERE post_id = $1", postID.String()).Scan(&body)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, domainrepo.ErrNotFound
+			return nil, interfaces.ErrNotFound
 		}
 		return nil, errors.WithStack(err)
 	}

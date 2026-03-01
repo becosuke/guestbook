@@ -1,5 +1,5 @@
-//go:generate moq -out commander_mock.go -pkg repository . Commander
-package repository
+//go:generate moq -out commander_mock.go -pkg interfaces . Commander
+package interfaces
 
 import (
 	"context"
