@@ -1,4 +1,4 @@
-package interactor
+package usecase
 
 import (
 	"context"
@@ -8,12 +8,19 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/becosuke/guestbook/api/internal/adapter/repository"
-	"github.com/becosuke/guestbook/api/internal/application/usecase"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 )
 
-func NewUsecase(config *pkgconfig.Config, logger *zap.Logger, querier repository.Querier, commander repository.Commander) usecase.Usecase {
+type Usecase interface {
+	Get(context.Context, *domain.PostID) (*domain.Post, error)
+	Range(context.Context, *domain.PageOption) ([]*domain.Post, error)
+	Create(context.Context, *domain.Post) (*domain.Post, error)
+	Update(context.Context, *domain.Post) (*domain.Post, error)
+	Delete(context.Context, *domain.PostID) error
+}
+
+func NewUsecase(config *pkgconfig.Config, logger *zap.Logger, querier repository.Querier, commander repository.Commander) Usecase {
 	return &usecaseImpl{
 		config:    config,
 		logger:    logger,

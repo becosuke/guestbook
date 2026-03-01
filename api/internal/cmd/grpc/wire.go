@@ -13,7 +13,7 @@ import (
 
 	"github.com/becosuke/guestbook/api/internal/adapter/controller"
 	repository_syncmap "github.com/becosuke/guestbook/api/internal/adapter/repository/syncmap"
-	"github.com/becosuke/guestbook/api/internal/application/interactor"
+	"github.com/becosuke/guestbook/api/internal/usecase"
 	"github.com/becosuke/guestbook/api/internal/driver/grpcserver"
 	"github.com/becosuke/guestbook/api/internal/driver/interceptor"
 	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
@@ -33,7 +33,7 @@ var controllerSet = wire.NewSet(
 )
 
 var usecaseSet = wire.NewSet(
-	interactor.NewUsecase,
+	usecase.NewUsecase,
 )
 
 var repositorySet = wire.NewSet(

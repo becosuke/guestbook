@@ -9,11 +9,11 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/becosuke/guestbook/api/internal/adapter/repository"
-	"github.com/becosuke/guestbook/api/internal/application/usecase"
+	"github.com/becosuke/guestbook/api/internal/usecase"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 	pb "github.com/becosuke/guestbook/api/internal/pkg/pb"
-	mock "github.com/becosuke/guestbook/api/mock/application/usecase"
+	mock "github.com/becosuke/guestbook/api/mock/usecase"
 )
 
 func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {

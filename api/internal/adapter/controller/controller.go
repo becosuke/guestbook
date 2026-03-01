@@ -10,7 +10,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/becosuke/guestbook/api/internal/adapter/repository"
-	"github.com/becosuke/guestbook/api/internal/application/usecase"
+	"github.com/becosuke/guestbook/api/internal/usecase"
 	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
