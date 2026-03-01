@@ -1,4 +1,4 @@
-package controller
+package presentation
 
 import (
 	"github.com/becosuke/guestbook/api/internal/domain/post"

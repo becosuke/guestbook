@@ -1,5 +1,5 @@
-//go:generate moq -out usecase_mock.go -pkg controller . Usecase
-package controller
+//go:generate moq -out usecase_mock.go -pkg presentation . Usecase
+package presentation
 
 import (
 	"context"
