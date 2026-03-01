@@ -92,7 +92,7 @@ gen: gen-mock
 gen-mock:
 	moq -out internal/adapter/repository/commander_mock.go -pkg repository ./internal/adapter/repository Commander
 	moq -out internal/adapter/repository/querier_mock.go -pkg repository ./internal/adapter/repository Querier
-	moq -out internal/usecase/usecase_mock.go -pkg usecase ./internal/usecase Usecase
+	moq -out internal/adapter/controller/usecase_mock.go -pkg controller ./internal/adapter/controller Usecase
 
 tools-install: tools-tidy
 	@for tool in $$(sed -n 's/[ \f\n\r\t]*_ "\(.*\)"/\1/p' tools/tools.go); do GOBIN=$(shell pwd)/bin $(GO_BINARY) install $${tool}@latest; done
