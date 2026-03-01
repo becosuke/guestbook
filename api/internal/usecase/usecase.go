@@ -9,10 +9,10 @@ import (
 
 	"github.com/becosuke/guestbook/api/internal/domain/repository"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
-	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
+	domainconfig "github.com/becosuke/guestbook/api/internal/domain/config"
 )
 
-func NewUsecase(config *pkgconfig.Config, logger *zap.Logger, querier repository.Querier, commander repository.Commander) *Usecase {
+func NewUsecase(config *domainconfig.Config, logger *zap.Logger, querier repository.Querier, commander repository.Commander) *Usecase {
 	return &Usecase{
 		config:    config,
 		logger:    logger,
@@ -22,7 +22,7 @@ func NewUsecase(config *pkgconfig.Config, logger *zap.Logger, querier repository
 }
 
 type Usecase struct {
-	config    *pkgconfig.Config
+	config    *domainconfig.Config
 	logger    *zap.Logger
 	querier   repository.Querier
 	commander repository.Commander

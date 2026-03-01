@@ -8,16 +8,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/becosuke/guestbook/api/internal/domain/config"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	"github.com/becosuke/guestbook/api/internal/domain/repository"
-	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 	pb "github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
 
 func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 	type fields struct {
 		UnimplementedGuestbookServiceServer pb.UnimplementedGuestbookServiceServer
-		config                              *pkgconfig.Config
+		config                              *config.Config
 		usecase                             Usecase
 	}
 	type args struct {
@@ -34,7 +34,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 	tests := []testCase{
 		func() testCase {
 			ctx := context.Background()
-			config := pkgconfig.NewConfig(ctx)
+			config := &config.Config{}
 			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			body := domain.NewBody("example")
 			post := domain.NewPost(postID, body)
@@ -65,7 +65,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 		}(),
 		func() testCase {
 			ctx := context.Background()
-			config := pkgconfig.NewConfig(ctx)
+			config := &config.Config{}
 			mockUsecase := &UsecaseMock{
 				GetFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
 					return nil, repository.ErrNotFound
@@ -110,7 +110,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 	type fields struct {
 		UnimplementedGuestbookServiceServer pb.UnimplementedGuestbookServiceServer
-		config                              *pkgconfig.Config
+		config                              *config.Config
 		usecase                             Usecase
 	}
 	type args struct {
@@ -127,7 +127,7 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 	tests := []testCase{
 		func() testCase {
 			ctx := context.Background()
-			config := pkgconfig.NewConfig(ctx)
+			config := &config.Config{}
 			res := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewBody("example"))
 			mockUsecase := &UsecaseMock{
 				CreateFunc: func(ctx context.Context, post *domain.Post) (*domain.Post, error) {
@@ -178,7 +178,7 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 	type fields struct {
 		UnimplementedGuestbookServiceServer pb.UnimplementedGuestbookServiceServer
-		config                              *pkgconfig.Config
+		config                              *config.Config
 		usecase                             Usecase
 	}
 	type args struct {
@@ -195,7 +195,7 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 	tests := []testCase{
 		func() testCase {
 			ctx := context.Background()
-			config := pkgconfig.NewConfig(ctx)
+			config := &config.Config{}
 			post := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewBody("example-value"))
 			mockUsecase := &UsecaseMock{
 				UpdateFunc: func(ctx context.Context, p *domain.Post) (*domain.Post, error) {
@@ -247,7 +247,7 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 	type fields struct {
 		UnimplementedGuestbookServiceServer pb.UnimplementedGuestbookServiceServer
-		config                              *pkgconfig.Config
+		config                              *config.Config
 		usecase                             Usecase
 	}
 	type args struct {
@@ -264,7 +264,7 @@ func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 	tests := []testCase{
 		func() testCase {
 			ctx := context.Background()
-			config := pkgconfig.NewConfig(ctx)
+			config := &config.Config{}
 			mockUsecase := &UsecaseMock{
 				DeleteFunc: func(ctx context.Context, id *domain.PostID) error {
 					return nil
