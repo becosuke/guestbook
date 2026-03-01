@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/becosuke/guestbook/api/internal/adapter/repository"
+	"github.com/becosuke/guestbook/api/internal/domain/repository"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 	pb "github.com/becosuke/guestbook/api/internal/pkg/pb"
