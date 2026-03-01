@@ -1,24 +1,13 @@
 package logger
 
 import (
-	"context"
-
 	"go.uber.org/zap"
-
-	domainconfig "github.com/becosuke/guestbook/api/internal/domain/config"
+	"go.uber.org/zap/zapcore"
 )
 
-func NewLogger(ctx context.Context, config *domainconfig.Config) *zap.Logger {
-	serviceName, ok := ctx.Value(domainconfig.ServiceName{}).(string)
-	if !ok {
-		serviceName = ""
-	}
-	serviceVersion, ok := ctx.Value(domainconfig.ServiceVersion{}).(string)
-	if !ok {
-		serviceVersion = ""
-	}
+func NewLogger(serviceName, serviceVersion, environment string, logLevel zapcore.Level) *zap.Logger {
 	loggerConfig := zap.NewProductionConfig()
-	loggerConfig.Level = zap.NewAtomicLevelAt(config.LogLevel)
+	loggerConfig.Level = zap.NewAtomicLevelAt(logLevel)
 	loggerConfig.DisableStacktrace = true
 	loggerConfig.Sampling = nil
 	loggerConfig.OutputPaths = []string{"stdout"}
@@ -26,7 +15,7 @@ func NewLogger(ctx context.Context, config *domainconfig.Config) *zap.Logger {
 	loggerConfig.InitialFields = map[string]interface{}{
 		"service": serviceName,
 		"version": serviceVersion,
-		"env":     config.Environment.String(),
+		"env":     environment,
 	}
 	logger, err := loggerConfig.Build()
 	if err != nil {

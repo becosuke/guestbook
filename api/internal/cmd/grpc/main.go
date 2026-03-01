@@ -18,9 +18,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
+	infraconfig "github.com/becosuke/guestbook/api/internal/adapter/infrastructure/config"
 	"github.com/becosuke/guestbook/api/internal/adapter/presentation"
 	repository_postgres "github.com/becosuke/guestbook/api/internal/adapter/repository/postgres"
-	infraconfig "github.com/becosuke/guestbook/api/internal/adapter/infrastructure/config"
 	"github.com/becosuke/guestbook/api/internal/domain/config"
 	"github.com/becosuke/guestbook/api/internal/pkg/logger"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
@@ -46,7 +46,7 @@ type App struct {
 
 func InitializeApp(ctx context.Context) *App {
 	cfg := infraconfig.NewConfig()
-	zapLogger := logger.NewLogger(ctx, cfg)
+	zapLogger := logger.NewLogger(serviceName, version, cfg.Environment.String(), cfg.LogLevel)
 	authFunc := func(ctx context.Context) (context.Context, error) {
 		return ctx, nil
 	}
@@ -87,9 +87,6 @@ func main() {
 func run() int {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-
-	ctx = context.WithValue(ctx, config.ServiceName{}, serviceName)
-	ctx = context.WithValue(ctx, config.ServiceVersion{}, version)
 
 	app := InitializeApp(ctx)
 	cfg := app.Config
