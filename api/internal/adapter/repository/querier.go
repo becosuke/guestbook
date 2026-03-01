@@ -2,10 +2,10 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
 	"github.com/becosuke/guestbook/api/internal/domain"
@@ -33,7 +33,7 @@ func (impl *querierImpl) Get(ctx context.Context, postID *domain.PostID) (*domai
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, domain.ErrNotFound
 		}
-		return nil, errors.WithStack(err)
+		return nil, err
 	}
 	return domain.NewPost(postID, domain.NewPostBody(body)), nil
 }
@@ -58,7 +58,7 @@ func (impl *querierImpl) Range(ctx context.Context, pageOption *domain.PageOptio
 		)
 	}
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -66,12 +66,12 @@ func (impl *querierImpl) Range(ctx context.Context, pageOption *domain.PageOptio
 	for rows.Next() {
 		var postID, body string
 		if err := rows.Scan(&postID, &body); err != nil {
-			return nil, errors.WithStack(err)
+			return nil, err
 		}
 		posts = append(posts, domain.NewPost(domain.NewPostID(postID), domain.NewPostBody(body)))
 	}
 	if err := rows.Err(); err != nil {
-		return nil, errors.WithStack(err)
+		return nil, err
 	}
 
 	if posts == nil {

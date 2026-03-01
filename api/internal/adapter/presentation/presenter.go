@@ -2,8 +2,8 @@ package presentation
 
 import (
 	"context"
+	"errors"
 
-	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
