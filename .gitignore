@@ -3,8 +3,7 @@
 .vscode
 vendor
 
-bin
-build
+api/build/*
 .pub_cache
 
 CLAUDE.md
