@@ -6,12 +6,12 @@ option go_package = "github.com/becosuke/guestbook/internal/pkg/pb";
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
-import "validate/validate.proto";
+import "buf/validate/validate.proto";
 
 service GuestbookService {
   rpc GetPost (GetPostRequest) returns (Post) {
     option (google.api.http) = {
-      get: "/api/v1/post/{serial}"
+      get: "/api/v1/post/{post_id}"
     };
   }
   rpc CreatePost (CreatePostRequest) returns (Post) {
@@ -22,13 +22,13 @@ service GuestbookService {
   }
   rpc UpdatePost (UpdatePostRequest) returns (Post) {
     option (google.api.http) = {
-      put: "/api/v1/post/{post.serial}"
+      put: "/api/v1/post/{post.post_id}"
       body: "*"
     };
   }
   rpc DeletePost (DeletePostRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/api/v1/post/{serial}"
+      delete: "/api/v1/post/{post_id}"
     };
   }
   rpc ListPosts (ListPostsRequest) returns (ListPostsResponse) {
@@ -39,27 +39,35 @@ service GuestbookService {
 }
 
 message GetPostRequest {
-  int64 serial = 1;
+  string post_id = 1 [(buf.validate.field).string.uuid = true];
 }
+
 message CreatePostRequest {
-  Post post = 1 [(validate.rules).message.required = true];
+  Post post = 1 [(buf.validate.field).required = true];
+  string idempotency_key = 2 [(buf.validate.field).string.uuid = true];
 }
+
 message UpdatePostRequest {
-  Post post = 1 [(validate.rules).message.required = true];
+  Post post = 1 [(buf.validate.field).required = true];
+  string idempotency_key = 2 [(buf.validate.field).string.uuid = true];
 }
+
 message DeletePostRequest {
-  int64 serial = 1;
+  string post_id = 1 [(buf.validate.field).string.uuid = true];
+  string idempotency_key = 2 [(buf.validate.field).string.uuid = true];
 }
+
 message ListPostsRequest {
-  int32 page_size = 1 [(validate.rules).int32.gt = 0];
-  string page_token = 2 [(validate.rules).string.ignore_empty = true];
+  int32 page_size = 1 [(buf.validate.field).int32.gt = 0];
+  string page_token = 2;
 }
+
 message ListPostsResponse {
   repeated Post posts = 1;
   string next_page_token = 2;
 }
 
 message Post {
-  int64 serial = 1;
-  string body = 2 [(validate.rules).string = {min_len: 1, max_len: 128}];
+  string post_id = 1 [(buf.validate.field).string.uuid = true];
+  string body = 2 [(buf.validate.field).string = {min_len: 1, max_len: 128}];
 }
