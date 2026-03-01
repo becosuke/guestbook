@@ -4,10 +4,10 @@ package repository
 import (
 	"context"
 
-	domain "github.com/becosuke/guestbook/api/internal/domain/post"
+	entity "github.com/becosuke/guestbook/api/internal/domain/entity/post"
 )
 
 type Querier interface {
-	Get(context.Context, *domain.PostID) (*domain.Post, error)
-	Range(context.Context, *domain.PageOption) ([]*domain.Post, error)
+	Get(context.Context, *entity.PostID) (*entity.Post, error)
+	Range(context.Context, *entity.PageOption) ([]*entity.Post, error)
 }

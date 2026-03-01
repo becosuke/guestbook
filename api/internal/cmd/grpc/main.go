@@ -21,7 +21,7 @@ import (
 	infraconfig "github.com/becosuke/guestbook/api/internal/adapter/infrastructure/config"
 	"github.com/becosuke/guestbook/api/internal/adapter/presentation"
 	repository_postgres "github.com/becosuke/guestbook/api/internal/adapter/repository/postgres"
-	"github.com/becosuke/guestbook/api/internal/domain/config"
+	"github.com/becosuke/guestbook/api/internal/domain/entity/config"
 	"github.com/becosuke/guestbook/api/internal/pkg/logger"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 	"github.com/becosuke/guestbook/api/internal/usecase"

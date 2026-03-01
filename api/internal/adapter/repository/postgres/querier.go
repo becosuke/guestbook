@@ -8,12 +8,12 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
-	domainconfig "github.com/becosuke/guestbook/api/internal/domain/config"
-	domain "github.com/becosuke/guestbook/api/internal/domain/post"
+	entityconfig "github.com/becosuke/guestbook/api/internal/domain/entity/config"
+	entity "github.com/becosuke/guestbook/api/internal/domain/entity/post"
 	"github.com/becosuke/guestbook/api/internal/domain/repository"
 )
 
-func NewQuerier(config *domainconfig.Config, logger *zap.Logger, pool *pgxpool.Pool) repository.Querier {
+func NewQuerier(config *entityconfig.Config, logger *zap.Logger, pool *pgxpool.Pool) repository.Querier {
 	return &querierImpl{
 		config: config,
 		logger: logger,
@@ -22,12 +22,12 @@ func NewQuerier(config *domainconfig.Config, logger *zap.Logger, pool *pgxpool.P
 }
 
 type querierImpl struct {
-	config *domainconfig.Config
+	config *entityconfig.Config
 	logger *zap.Logger
 	pool   *pgxpool.Pool
 }
 
-func (impl *querierImpl) Get(ctx context.Context, postID *domain.PostID) (*domain.Post, error) {
+func (impl *querierImpl) Get(ctx context.Context, postID *entity.PostID) (*entity.Post, error) {
 	var body string
 	err := impl.pool.QueryRow(ctx, "SELECT body FROM posts WHERE post_id = $1", postID.String()).Scan(&body)
 	if err != nil {
@@ -36,10 +36,10 @@ func (impl *querierImpl) Get(ctx context.Context, postID *domain.PostID) (*domai
 		}
 		return nil, errors.WithStack(err)
 	}
-	return domain.NewPost(postID, domain.NewBody(body)), nil
+	return entity.NewPost(postID, entity.NewBody(body)), nil
 }
 
-func (impl *querierImpl) Range(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, error) {
+func (impl *querierImpl) Range(ctx context.Context, pageOption *entity.PageOption) ([]*entity.Post, error) {
 	pageSize := int32(10)
 	if pageOption.PageSize() != nil {
 		pageSize = int32(*pageOption.PageSize())
@@ -63,20 +63,20 @@ func (impl *querierImpl) Range(ctx context.Context, pageOption *domain.PageOptio
 	}
 	defer rows.Close()
 
-	var posts []*domain.Post
+	var posts []*entity.Post
 	for rows.Next() {
 		var postID, body string
 		if err := rows.Scan(&postID, &body); err != nil {
 			return nil, errors.WithStack(err)
 		}
-		posts = append(posts, domain.NewPost(domain.NewPostID(postID), domain.NewBody(body)))
+		posts = append(posts, entity.NewPost(entity.NewPostID(postID), entity.NewBody(body)))
 	}
 	if err := rows.Err(); err != nil {
 		return nil, errors.WithStack(err)
 	}
 
 	if posts == nil {
-		posts = []*domain.Post{}
+		posts = []*entity.Post{}
 	}
 	return posts, nil
 }
