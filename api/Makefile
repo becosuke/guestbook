@@ -1,4 +1,4 @@
-GO_VERSION=1.25.7
+GO_VERSION=1.24.7
 GO_BINARY=go
 
 PROJECT_REPOSITORY_ORIGIN=github.com/becosuke/guestbook
@@ -90,8 +90,8 @@ build-rest-container:
 gen: gen-mock
 
 gen-mock:
-	moq -out internal/adapter/repository/commander_mock.go -pkg repository ./internal/adapter/repository Commander
-	moq -out internal/adapter/repository/querier_mock.go -pkg repository ./internal/adapter/repository Querier
+	moq -out internal/domain/repository/commander_mock.go -pkg repository ./internal/domain/repository Commander
+	moq -out internal/domain/repository/querier_mock.go -pkg repository ./internal/domain/repository Querier
 	moq -out internal/adapter/controller/usecase_mock.go -pkg controller ./internal/adapter/controller Usecase
 
 tools-install: tools-tidy
