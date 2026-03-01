@@ -32,23 +32,23 @@ lint:
 fmt:
 	@find ./internal -iname "*.go" -not -path "./pkg/**" | xargs goimports -w -local $(PROJECT_REPOSITORY_ORIGIN)
 
-run: mod run-grpc run-rest
+run: mod run/grpc run/rest
 
-run-grpc:
+run/grpc:
 	$(GO_BINARY) run -ldflags "-X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-grpc" \
 	$(PROJECT_REPOSITORY)/$(COMMAND_DIR)/grpc
 
-run-rest:
+run/rest:
 	$(GO_BINARY) run -ldflags "-X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-rest" \
 	$(PROJECT_REPOSITORY)/$(COMMAND_DIR)/rest
 
 .PHONY: test
-test: unit-test functional-test
+test: test/unit test/functional
 
-unit-test:
+test/unit:
 	$(GO_BINARY) test $(args) -race -cover $(CODE_DIRS)
 
-functional-test:
+test/functional:
 	$(GO_BINARY) test $(args) -race -cover $(TEST_DIRS)
 
 .PHONY: clean
@@ -60,30 +60,30 @@ clean-test:
 	$(GO_BINARY) clean -testcache
 
 .PHONY: build
-build: clean update-build-dependencies build-grpc build-rest
+build: clean build/update-dependencies build/grpc build/rest
 
-update-build-dependencies:
+build/update-dependencies:
 	docker run --rm -v $(shell pwd):/root golang:$(GO_VERSION)-alpine sh -c 'cp /usr/local/go/lib/time/zoneinfo.zip /root/build/zoneinfo.zip && cp /etc/ssl/certs/ca-certificates.crt /root/build/ca-certificates.crt'
 
-build-grpc: build-grpc-binary build-grpc-container
+build/grpc: build/grpc/binary build/grpc/container
 
-build-grpc-binary:
+build/grpc/binary:
 	CGO_ENABLED=0 GOOS=linux $(GO_BINARY) build -a -installsuffix cgo \
 	-ldflags "-w -X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-grpc" \
 	-o $(BUILD_DIR)/$(PROJECT_NAME)-grpc $(COMMAND_DIR)/grpc/
 
-build-grpc-container:
+build/grpc/container:
 	cd $(BUILD_DIR) && \
 	docker build . --no-cache --build-arg name=$(PROJECT_NAME)-grpc -t $(PROJECT_NAME)-grpc:latest -t $(PROJECT_NAME)-grpc:$(VERSION)
 
-build-rest: build-rest-binary build-rest-container
+build/rest: build/rest/binary build/rest/container
 
-build-rest-binary:
+build/rest/binary:
 	CGO_ENABLED=0 GOOS=linux $(GO_BINARY) build -a -installsuffix cgo \
 	-ldflags "-w -X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-rest" \
 	-o $(BUILD_DIR)/$(PROJECT_NAME)-rest $(COMMAND_DIR)/rest/
 
-build-rest-container:
+build/rest/container:
 	cd $(BUILD_DIR) && \
 	docker build . --no-cache --build-arg name=$(PROJECT_NAME)-rest -t $(PROJECT_NAME)-rest:latest -t $(PROJECT_NAME)-rest:$(VERSION)
 
