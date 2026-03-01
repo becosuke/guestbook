@@ -4,11 +4,11 @@ package repository
 import (
 	"context"
 
-	domain "github.com/becosuke/guestbook/api/internal/domain/post"
+	entity "github.com/becosuke/guestbook/api/internal/domain/entity/post"
 )
 
 type Commander interface {
-	Create(context.Context, *domain.Post) error
-	Update(context.Context, *domain.Post) error
-	Delete(context.Context, *domain.PostID) error
+	Create(context.Context, *entity.Post) error
+	Update(context.Context, *entity.Post) error
+	Delete(context.Context, *entity.PostID) error
 }
