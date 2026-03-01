@@ -1,4 +1,4 @@
-package postgres
+package repository
 
 import (
 	"context"
@@ -9,10 +9,10 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/becosuke/guestbook/api/internal/domain/entity"
-	"github.com/becosuke/guestbook/api/internal/domain/repository"
+	domainrepo "github.com/becosuke/guestbook/api/internal/domain/repository"
 )
 
-func NewQuerier(config *entity.Config, logger *zap.Logger, pool *pgxpool.Pool) repository.Querier {
+func NewQuerier(config *entity.Config, logger *zap.Logger, pool *pgxpool.Pool) domainrepo.Querier {
 	return &querierImpl{
 		config: config,
 		logger: logger,
@@ -31,7 +31,7 @@ func (impl *querierImpl) Get(ctx context.Context, postID *entity.PostID) (*entit
 	err := impl.pool.QueryRow(ctx, "SELECT body FROM posts WHERE post_id = $1", postID.String()).Scan(&body)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, repository.ErrNotFound
+			return nil, domainrepo.ErrNotFound
 		}
 		return nil, errors.WithStack(err)
 	}

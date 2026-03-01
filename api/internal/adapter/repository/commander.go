@@ -1,4 +1,4 @@
-package postgres
+package repository
 
 import (
 	"context"
@@ -9,12 +9,12 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/becosuke/guestbook/api/internal/domain/entity"
-	"github.com/becosuke/guestbook/api/internal/domain/repository"
+	domainrepo "github.com/becosuke/guestbook/api/internal/domain/repository"
 )
 
 const uniqueViolationCode = "23505"
 
-func NewCommander(config *entity.Config, logger *zap.Logger, pool *pgxpool.Pool) repository.Commander {
+func NewCommander(config *entity.Config, logger *zap.Logger, pool *pgxpool.Pool) domainrepo.Commander {
 	return &commanderImpl{
 		config: config,
 		logger: logger,
@@ -36,7 +36,7 @@ func (impl *commanderImpl) Create(ctx context.Context, post *entity.Post) error 
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == uniqueViolationCode {
-			return repository.ErrAlreadyExists
+			return domainrepo.ErrAlreadyExists
 		}
 		return errors.WithStack(err)
 	}
@@ -52,7 +52,7 @@ func (impl *commanderImpl) Update(ctx context.Context, post *entity.Post) error 
 		return errors.WithStack(err)
 	}
 	if ct.RowsAffected() == 0 {
-		return repository.ErrNotFound
+		return domainrepo.ErrNotFound
 	}
 	return nil
 }
