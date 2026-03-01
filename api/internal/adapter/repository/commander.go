@@ -2,10 +2,10 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
 	"github.com/becosuke/guestbook/api/internal/domain"
@@ -38,7 +38,7 @@ func (impl *commanderImpl) Create(ctx context.Context, post *domain.Post) error 
 		if errors.As(err, &pgErr) && pgErr.Code == uniqueViolationCode {
 			return domain.ErrAlreadyExists
 		}
-		return errors.WithStack(err)
+		return err
 	}
 	return nil
 }
@@ -49,7 +49,7 @@ func (impl *commanderImpl) Update(ctx context.Context, post *domain.Post) error 
 		post.PostBody().String(), post.PostID().String(),
 	)
 	if err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 	if ct.RowsAffected() == 0 {
 		return domain.ErrNotFound
@@ -63,7 +63,7 @@ func (impl *commanderImpl) Delete(ctx context.Context, postID *domain.PostID) er
 		postID.String(),
 	)
 	if err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 	return nil
 }

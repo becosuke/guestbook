@@ -1,9 +1,8 @@
 package domain
 
 import (
+	"errors"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 type Environment string
