@@ -58,11 +58,11 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 				args: args{
 					ctx: ctx,
 					req: &pb.GetPostRequest{
-						Serial: 100,
+						PostId: "100",
 					},
 				},
 				want: &pb.Post{
-					Serial: 100,
+					PostId: "100",
 					Body:   "example",
 				},
 				wantErr: false,
@@ -83,7 +83,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 				args: args{
 					ctx: ctx,
 					req: &pb.GetPostRequest{
-						Serial: 100,
+						PostId: "100",
 					},
 				},
 				want:    nil,
@@ -152,7 +152,7 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 					},
 				},
 				want: &pb.Post{
-					Serial: 1,
+					PostId: "1",
 					Body:   "example",
 				},
 				wantErr: false,
@@ -214,13 +214,13 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 					ctx: ctx,
 					req: &pb.UpdatePostRequest{
 						Post: &pb.Post{
-							Serial: 100,
+							PostId: "100",
 							Body:   "example-value",
 						},
 					},
 				},
 				want: &pb.Post{
-					Serial: 100,
+					PostId: "100",
 					Body:   "example-value",
 				},
 				wantErr: false,
@@ -281,7 +281,7 @@ func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 				args: args{
 					ctx: ctx,
 					req: &pb.DeletePostRequest{
-						Serial: 100,
+						PostId: "100",
 					},
 				},
 				want:    &emptypb.Empty{},

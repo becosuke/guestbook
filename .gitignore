@@ -6,3 +6,7 @@ vendor
 bin
 build
 .pub_cache
+
+CLAUDE.md
+CLAUDE.local.md
+.claude
