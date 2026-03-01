@@ -1,3 +1,4 @@
+//go:generate moq -out commander_mock.go -pkg repository . Commander
 package repository
 
 import (
