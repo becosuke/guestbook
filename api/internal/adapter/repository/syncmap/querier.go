@@ -26,8 +26,8 @@ type querierImpl struct {
 	store  syncmap.Syncmap
 }
 
-func (impl *querierImpl) Get(_ context.Context, serial *domain.Serial) (*domain.Post, error) {
-	value, err := impl.store.Get(serial.String())
+func (impl *querierImpl) Get(_ context.Context, postID *domain.PostID) (*domain.Post, error) {
+	value, err := impl.store.Get(postID.String())
 	if err != nil {
 		switch {
 		case errors.Is(err, syncmap.ErrInvalidArgument):
@@ -43,7 +43,7 @@ func (impl *querierImpl) Get(_ context.Context, serial *domain.Serial) (*domain.
 		return nil, repository.ErrInvalidData
 	}
 
-	return domain.NewPost(serial, domain.NewBody(body)), nil
+	return domain.NewPost(postID, domain.NewBody(body)), nil
 }
 
 func (impl *querierImpl) Range(_ context.Context, pageOption *domain.PageOption) ([]*domain.Post, error) {

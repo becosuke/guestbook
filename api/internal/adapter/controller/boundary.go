@@ -5,12 +5,12 @@ import (
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
 
-func (impl *guestbookServiceServerImpl) serialDomainToResource(domainSerial *post.Serial) string {
-	return domainSerial.String()
+func (impl *guestbookServiceServerImpl) postIDDomainToResource(domainPostID *post.PostID) string {
+	return domainPostID.String()
 }
 
-func (impl *guestbookServiceServerImpl) serialResourceToDomain(resourcePostId string) *post.Serial {
-	return post.NewSerial(resourcePostId)
+func (impl *guestbookServiceServerImpl) postIDResourceToDomain(resourcePostId string) *post.PostID {
+	return post.NewPostID(resourcePostId)
 }
 
 func (impl *guestbookServiceServerImpl) bodyDomainToResource(domainBody *post.Body) string {
@@ -23,14 +23,14 @@ func (impl *guestbookServiceServerImpl) bodyResourceToDomain(resourceBody string
 
 func (impl *guestbookServiceServerImpl) postDomainToResource(domainPost *post.Post) *pb.Post {
 	return &pb.Post{
-		PostId: impl.serialDomainToResource(domainPost.Serial()),
+		PostId: impl.postIDDomainToResource(domainPost.PostID()),
 		Body:   impl.bodyDomainToResource(domainPost.Body()),
 	}
 }
 
 func (impl *guestbookServiceServerImpl) postResourceToDomain(resourcePost *pb.Post) *post.Post {
 	return post.NewPost(
-		impl.serialResourceToDomain(resourcePost.GetPostId()),
+		impl.postIDResourceToDomain(resourcePost.GetPostId()),
 		impl.bodyResourceToDomain(resourcePost.GetBody()),
 	)
 }

@@ -41,13 +41,13 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 			ctx := context.Background()
 			config := pkgconfig.NewConfig(ctx)
 			mockUsecase := mock.NewMockUsecase(ctrl)
-			serial := domain.NewSerial("550e8400-e29b-41d4-a716-446655440000")
+			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			body := domain.NewBody("example")
-			post := domain.NewPost(serial, body)
-			mockUsecase.EXPECT().Get(ctx, serial).
+			post := domain.NewPost(postID, body)
+			mockUsecase.EXPECT().Get(ctx, postID).
 				Return(post, nil).
-				Do(func(ctx context.Context, serial *domain.Serial) {
-					assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", serial.String())
+				Do(func(ctx context.Context, postID *domain.PostID) {
+					assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", postID.String())
 				})
 			return testCase{
 				name: "normal",
@@ -72,8 +72,8 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 			ctx := context.Background()
 			config := pkgconfig.NewConfig(ctx)
 			mockUsecase := mock.NewMockUsecase(ctrl)
-			serial := domain.NewSerial("550e8400-e29b-41d4-a716-446655440000")
-			mockUsecase.EXPECT().Get(ctx, serial).Return(nil, repository.ErrNotFound)
+			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
+			mockUsecase.EXPECT().Get(ctx, postID).Return(nil, repository.ErrNotFound)
 			return testCase{
 				name: "not found",
 				fields: fields{
@@ -134,8 +134,8 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 			ctx := context.Background()
 			config := pkgconfig.NewConfig(ctx)
 			mockUsecase := mock.NewMockUsecase(ctrl)
-			req := domain.NewPost(domain.NewSerial(""), domain.NewBody("example"))
-			res := domain.NewPost(domain.NewSerial("550e8400-e29b-41d4-a716-446655440000"), domain.NewBody("example"))
+			req := domain.NewPost(domain.NewPostID(""), domain.NewBody("example"))
+			res := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewBody("example"))
 			mockUsecase.EXPECT().Create(ctx, req).Return(res, nil)
 			return testCase{
 				name: "normal",
@@ -202,7 +202,7 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 			ctx := context.Background()
 			config := pkgconfig.NewConfig(ctx)
 			mockUsecase := mock.NewMockUsecase(ctrl)
-			post := domain.NewPost(domain.NewSerial("550e8400-e29b-41d4-a716-446655440000"), domain.NewBody("example-value"))
+			post := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewBody("example-value"))
 			mockUsecase.EXPECT().Update(ctx, post).Return(post, nil)
 			return testCase{
 				name: "normal",
@@ -270,8 +270,8 @@ func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 			ctx := context.Background()
 			config := pkgconfig.NewConfig(ctx)
 			mockUsecase := mock.NewMockUsecase(ctrl)
-			serial := domain.NewSerial("550e8400-e29b-41d4-a716-446655440000")
-			mockUsecase.EXPECT().Delete(ctx, serial).Return(nil)
+			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
+			mockUsecase.EXPECT().Delete(ctx, postID).Return(nil)
 			return testCase{
 				name: "normal",
 				fields: fields{

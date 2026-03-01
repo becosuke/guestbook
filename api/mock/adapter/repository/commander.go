@@ -50,7 +50,7 @@ func (mr *MockCommanderMockRecorder) Create(arg0, arg1 interface{}) *gomock.Call
 }
 
 // Delete mocks base method.
-func (m *MockCommander) Delete(arg0 context.Context, arg1 *post.Serial) error {
+func (m *MockCommander) Delete(arg0 context.Context, arg1 *post.PostID) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", arg0, arg1)
 	ret0, _ := ret[0].(error)

@@ -27,7 +27,7 @@ type commanderImpl struct {
 }
 
 func (impl *commanderImpl) Create(_ context.Context, post *domain.Post) error {
-	err := impl.store.Create(post.Serial().String(), post.Body().String())
+	err := impl.store.Create(post.PostID().String(), post.Body().String())
 	if err != nil {
 		switch {
 		case errors.Is(err, syncmap.ErrInvalidArgument):
@@ -42,7 +42,7 @@ func (impl *commanderImpl) Create(_ context.Context, post *domain.Post) error {
 }
 
 func (impl *commanderImpl) Update(_ context.Context, post *domain.Post) error {
-	err := impl.store.Update(post.Serial().String(), post.Body().String())
+	err := impl.store.Update(post.PostID().String(), post.Body().String())
 	if err != nil {
 		switch {
 		case errors.Is(err, syncmap.ErrInvalidArgument):
@@ -56,8 +56,8 @@ func (impl *commanderImpl) Update(_ context.Context, post *domain.Post) error {
 	return nil
 }
 
-func (impl *commanderImpl) Delete(_ context.Context, serial *domain.Serial) error {
-	err := impl.store.Delete(serial.String())
+func (impl *commanderImpl) Delete(_ context.Context, postID *domain.PostID) error {
+	err := impl.store.Delete(postID.String())
 	if err != nil {
 		return errors.WithStack(err)
 	}

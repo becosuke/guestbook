@@ -1,19 +1,19 @@
 package post
 
 type Post struct {
-	serial *Serial
+	postID *PostID
 	body   *Body
 }
 
-func NewPost(serial *Serial, body *Body) *Post {
+func NewPost(postID *PostID, body *Body) *Post {
 	return &Post{
-		serial: serial,
+		postID: postID,
 		body:   body,
 	}
 }
 
-func (p *Post) Serial() *Serial {
-	return p.serial
+func (p *Post) PostID() *PostID {
+	return p.postID
 }
 
 func (p *Post) Body() *Body {
