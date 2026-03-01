@@ -29,8 +29,8 @@ type usecaseImpl struct {
 	commander repository.Commander
 }
 
-func (impl *usecaseImpl) Get(ctx context.Context, serial *domain.Serial) (*domain.Post, error) {
-	result, err := impl.get(ctx, serial)
+func (impl *usecaseImpl) Get(ctx context.Context, postID *domain.PostID) (*domain.Post, error) {
+	result, err := impl.get(ctx, postID)
 	if err != nil {
 		return nil, err // Already stacked
 	}
@@ -38,8 +38,8 @@ func (impl *usecaseImpl) Get(ctx context.Context, serial *domain.Serial) (*domai
 	return result, nil
 }
 
-func (impl *usecaseImpl) get(ctx context.Context, serial *domain.Serial) (*domain.Post, error) {
-	result, err := impl.querier.Get(ctx, serial)
+func (impl *usecaseImpl) get(ctx context.Context, postID *domain.PostID) (*domain.Post, error) {
+	result, err := impl.querier.Get(ctx, postID)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -55,13 +55,13 @@ func (impl *usecaseImpl) Range(ctx context.Context, pageOption *domain.PageOptio
 }
 
 func (impl *usecaseImpl) Create(ctx context.Context, post *domain.Post) (*domain.Post, error) {
-	serial := domain.NewSerial(uuid.New().String())
-	post = domain.NewPost(serial, post.Body())
+	postID := domain.NewPostID(uuid.New().String())
+	post = domain.NewPost(postID, post.Body())
 	err := impl.commander.Create(ctx, post)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	return impl.get(ctx, serial)
+	return impl.get(ctx, postID)
 }
 
 func (impl *usecaseImpl) Update(ctx context.Context, post *domain.Post) (*domain.Post, error) {
@@ -69,11 +69,11 @@ func (impl *usecaseImpl) Update(ctx context.Context, post *domain.Post) (*domain
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	return impl.get(ctx, post.Serial())
+	return impl.get(ctx, post.PostID())
 }
 
-func (impl *usecaseImpl) Delete(ctx context.Context, serial *domain.Serial) error {
-	err := impl.commander.Delete(ctx, serial)
+func (impl *usecaseImpl) Delete(ctx context.Context, postID *domain.PostID) error {
+	err := impl.commander.Delete(ctx, postID)
 	if err != nil {
 		return errors.WithStack(err)
 	}

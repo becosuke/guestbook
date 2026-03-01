@@ -9,5 +9,5 @@ import (
 type Commander interface {
 	Create(context.Context, *domain.Post) error
 	Update(context.Context, *domain.Post) error
-	Delete(context.Context, *domain.Serial) error
+	Delete(context.Context, *domain.PostID) error
 }
