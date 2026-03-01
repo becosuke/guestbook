@@ -9,12 +9,12 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/becosuke/guestbook/api/internal/domain/entity"
-	domainrepo "github.com/becosuke/guestbook/api/internal/domain/repository"
+	"github.com/becosuke/guestbook/api/internal/domain/interfaces"
 )
 
 const uniqueViolationCode = "23505"
 
-func NewCommander(config *entity.Config, logger *zap.Logger, pool *pgxpool.Pool) domainrepo.Commander {
+func NewCommander(config *entity.Config, logger *zap.Logger, pool *pgxpool.Pool) interfaces.Commander {
 	return &commanderImpl{
 		config: config,
 		logger: logger,
@@ -36,7 +36,7 @@ func (impl *commanderImpl) Create(ctx context.Context, post *entity.Post) error 
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == uniqueViolationCode {
-			return domainrepo.ErrAlreadyExists
+			return interfaces.ErrAlreadyExists
 		}
 		return errors.WithStack(err)
 	}
@@ -52,7 +52,7 @@ func (impl *commanderImpl) Update(ctx context.Context, post *entity.Post) error 
 		return errors.WithStack(err)
 	}
 	if ct.RowsAffected() == 0 {
-		return domainrepo.ErrNotFound
+		return interfaces.ErrNotFound
 	}
 	return nil
 }

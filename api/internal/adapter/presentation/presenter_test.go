@@ -9,7 +9,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/becosuke/guestbook/api/internal/domain/entity"
-	"github.com/becosuke/guestbook/api/internal/domain/repository"
+	"github.com/becosuke/guestbook/api/internal/domain/interfaces"
 	pb "github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
 
@@ -67,7 +67,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 			config := &entity.Config{}
 			mockUsecase := &UsecaseMock{
 				GetFunc: func(ctx context.Context, id *entity.PostID) (*entity.Post, error) {
-					return nil, repository.ErrNotFound
+					return nil, interfaces.ErrNotFound
 				},
 			}
 			return testCase{

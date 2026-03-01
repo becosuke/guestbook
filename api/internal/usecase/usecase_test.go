@@ -9,13 +9,13 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/becosuke/guestbook/api/internal/domain/entity"
-	"github.com/becosuke/guestbook/api/internal/domain/repository"
+	"github.com/becosuke/guestbook/api/internal/domain/interfaces"
 )
 
 func TestUsecase_Get(t *testing.T) {
 	type fields struct {
-		querier   repository.Querier
-		commander repository.Commander
+		querier   interfaces.Querier
+		commander interfaces.Commander
 	}
 	type args struct {
 		ctx    context.Context
@@ -34,7 +34,7 @@ func TestUsecase_Get(t *testing.T) {
 			postID := entity.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			body := entity.NewPostBody("example")
 			post := entity.NewPost(postID, body)
-			mockQuerier := &repository.QuerierMock{
+			mockQuerier := &interfaces.QuerierMock{
 				GetFunc: func(ctx context.Context, id *entity.PostID) (*entity.Post, error) {
 					assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", id.String())
 					return post, nil
@@ -56,9 +56,9 @@ func TestUsecase_Get(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			postID := entity.NewPostID("550e8400-e29b-41d4-a716-446655440000")
-			mockQuerier := &repository.QuerierMock{
+			mockQuerier := &interfaces.QuerierMock{
 				GetFunc: func(ctx context.Context, id *entity.PostID) (*entity.Post, error) {
-					return nil, repository.ErrNotFound
+					return nil, interfaces.ErrNotFound
 				},
 			}
 			return testCase{
@@ -92,8 +92,8 @@ func TestUsecase_Get(t *testing.T) {
 
 func TestUsecase_Range(t *testing.T) {
 	type fields struct {
-		querier   repository.Querier
-		commander repository.Commander
+		querier   interfaces.Querier
+		commander interfaces.Commander
 	}
 	type args struct {
 		ctx        context.Context
@@ -115,7 +115,7 @@ func TestUsecase_Range(t *testing.T) {
 				entity.NewPost(entity.NewPostID("550e8400-e29b-41d4-a716-446655440000"), entity.NewPostBody("example1")),
 				entity.NewPost(entity.NewPostID("550e8400-e29b-41d4-a716-446655440001"), entity.NewPostBody("example2")),
 			}
-			mockQuerier := &repository.QuerierMock{
+			mockQuerier := &interfaces.QuerierMock{
 				RangeFunc: func(ctx context.Context, po *entity.PageOption) ([]*entity.Post, error) {
 					return posts, nil
 				},
@@ -137,9 +137,9 @@ func TestUsecase_Range(t *testing.T) {
 			ctx := context.Background()
 			pageSize := entity.PageSize(10)
 			pageOption := entity.NewPageOption(&pageSize, nil)
-			mockQuerier := &repository.QuerierMock{
+			mockQuerier := &interfaces.QuerierMock{
 				RangeFunc: func(ctx context.Context, po *entity.PageOption) ([]*entity.Post, error) {
-					return nil, repository.ErrInvalidArgument
+					return nil, interfaces.ErrInvalidArgument
 				},
 			}
 			return testCase{
@@ -173,8 +173,8 @@ func TestUsecase_Range(t *testing.T) {
 
 func TestUsecase_Create(t *testing.T) {
 	type fields struct {
-		querier   repository.Querier
-		commander repository.Commander
+		querier   interfaces.Querier
+		commander interfaces.Commander
 	}
 	type args struct {
 		ctx  context.Context
@@ -193,14 +193,14 @@ func TestUsecase_Create(t *testing.T) {
 			body := entity.NewPostBody("example")
 			inputPost := entity.NewPost(nil, body)
 			returnedPost := entity.NewPost(entity.NewPostID("550e8400-e29b-41d4-a716-446655440000"), body)
-			mockCommander := &repository.CommanderMock{
+			mockCommander := &interfaces.CommanderMock{
 				CreateFunc: func(ctx context.Context, p *entity.Post) error {
 					assert.Equal(t, "example", p.PostBody().String())
 					assert.NotEmpty(t, p.PostID().String())
 					return nil
 				},
 			}
-			mockQuerier := &repository.QuerierMock{
+			mockQuerier := &interfaces.QuerierMock{
 				GetFunc: func(ctx context.Context, id *entity.PostID) (*entity.Post, error) {
 					return returnedPost, nil
 				},
@@ -223,9 +223,9 @@ func TestUsecase_Create(t *testing.T) {
 			ctx := context.Background()
 			body := entity.NewPostBody("example")
 			inputPost := entity.NewPost(nil, body)
-			mockCommander := &repository.CommanderMock{
+			mockCommander := &interfaces.CommanderMock{
 				CreateFunc: func(ctx context.Context, p *entity.Post) error {
-					return repository.ErrAlreadyExists
+					return interfaces.ErrAlreadyExists
 				},
 			}
 			return testCase{
@@ -245,14 +245,14 @@ func TestUsecase_Create(t *testing.T) {
 			ctx := context.Background()
 			body := entity.NewPostBody("example")
 			inputPost := entity.NewPost(nil, body)
-			mockCommander := &repository.CommanderMock{
+			mockCommander := &interfaces.CommanderMock{
 				CreateFunc: func(ctx context.Context, p *entity.Post) error {
 					return nil
 				},
 			}
-			mockQuerier := &repository.QuerierMock{
+			mockQuerier := &interfaces.QuerierMock{
 				GetFunc: func(ctx context.Context, id *entity.PostID) (*entity.Post, error) {
-					return nil, repository.ErrNotFound
+					return nil, interfaces.ErrNotFound
 				},
 			}
 			return testCase{
@@ -287,8 +287,8 @@ func TestUsecase_Create(t *testing.T) {
 
 func TestUsecase_Update(t *testing.T) {
 	type fields struct {
-		querier   repository.Querier
-		commander repository.Commander
+		querier   interfaces.Querier
+		commander interfaces.Commander
 	}
 	type args struct {
 		ctx  context.Context
@@ -307,14 +307,14 @@ func TestUsecase_Update(t *testing.T) {
 			postID := entity.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			body := entity.NewPostBody("updated-example")
 			post := entity.NewPost(postID, body)
-			mockCommander := &repository.CommanderMock{
+			mockCommander := &interfaces.CommanderMock{
 				UpdateFunc: func(ctx context.Context, p *entity.Post) error {
 					assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", p.PostID().String())
 					assert.Equal(t, "updated-example", p.PostBody().String())
 					return nil
 				},
 			}
-			mockQuerier := &repository.QuerierMock{
+			mockQuerier := &interfaces.QuerierMock{
 				GetFunc: func(ctx context.Context, id *entity.PostID) (*entity.Post, error) {
 					assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", id.String())
 					return post, nil
@@ -339,9 +339,9 @@ func TestUsecase_Update(t *testing.T) {
 			postID := entity.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			body := entity.NewPostBody("updated-example")
 			post := entity.NewPost(postID, body)
-			mockCommander := &repository.CommanderMock{
+			mockCommander := &interfaces.CommanderMock{
 				UpdateFunc: func(ctx context.Context, p *entity.Post) error {
-					return repository.ErrNotFound
+					return interfaces.ErrNotFound
 				},
 			}
 			return testCase{
@@ -362,14 +362,14 @@ func TestUsecase_Update(t *testing.T) {
 			postID := entity.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			body := entity.NewPostBody("updated-example")
 			post := entity.NewPost(postID, body)
-			mockCommander := &repository.CommanderMock{
+			mockCommander := &interfaces.CommanderMock{
 				UpdateFunc: func(ctx context.Context, p *entity.Post) error {
 					return nil
 				},
 			}
-			mockQuerier := &repository.QuerierMock{
+			mockQuerier := &interfaces.QuerierMock{
 				GetFunc: func(ctx context.Context, id *entity.PostID) (*entity.Post, error) {
-					return nil, repository.ErrNotFound
+					return nil, interfaces.ErrNotFound
 				},
 			}
 			return testCase{
@@ -404,8 +404,8 @@ func TestUsecase_Update(t *testing.T) {
 
 func TestUsecase_Delete(t *testing.T) {
 	type fields struct {
-		querier   repository.Querier
-		commander repository.Commander
+		querier   interfaces.Querier
+		commander interfaces.Commander
 	}
 	type args struct {
 		ctx    context.Context
@@ -421,7 +421,7 @@ func TestUsecase_Delete(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			postID := entity.NewPostID("550e8400-e29b-41d4-a716-446655440000")
-			mockCommander := &repository.CommanderMock{
+			mockCommander := &interfaces.CommanderMock{
 				DeleteFunc: func(ctx context.Context, id *entity.PostID) error {
 					assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", id.String())
 					return nil
@@ -442,9 +442,9 @@ func TestUsecase_Delete(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			postID := entity.NewPostID("550e8400-e29b-41d4-a716-446655440000")
-			mockCommander := &repository.CommanderMock{
+			mockCommander := &interfaces.CommanderMock{
 				DeleteFunc: func(ctx context.Context, id *entity.PostID) error {
-					return repository.ErrNotFound
+					return interfaces.ErrNotFound
 				},
 			}
 			return testCase{

@@ -1,5 +1,5 @@
-//go:generate moq -out querier_mock.go -pkg repository . Querier
-package repository
+//go:generate moq -out querier_mock.go -pkg interfaces . Querier
+package interfaces
 
 import (
 	"context"
