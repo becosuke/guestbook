@@ -10,12 +10,12 @@ import (
 
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	"github.com/becosuke/guestbook/api/internal/domain/repository"
-	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
+	domainconfig "github.com/becosuke/guestbook/api/internal/domain/config"
 )
 
 const uniqueViolationCode = "23505"
 
-func NewCommander(config *pkgconfig.Config, logger *zap.Logger, pool *pgxpool.Pool) repository.Commander {
+func NewCommander(config *domainconfig.Config, logger *zap.Logger, pool *pgxpool.Pool) repository.Commander {
 	return &commanderImpl{
 		config: config,
 		logger: logger,
@@ -24,7 +24,7 @@ func NewCommander(config *pkgconfig.Config, logger *zap.Logger, pool *pgxpool.Po
 }
 
 type commanderImpl struct {
-	config *pkgconfig.Config
+	config *domainconfig.Config
 	logger *zap.Logger
 	pool   *pgxpool.Pool
 }

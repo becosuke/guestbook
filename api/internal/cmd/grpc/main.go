@@ -20,7 +20,8 @@ import (
 
 	"github.com/becosuke/guestbook/api/internal/adapter/presentation"
 	repository_postgres "github.com/becosuke/guestbook/api/internal/adapter/repository/postgres"
-	"github.com/becosuke/guestbook/api/internal/pkg/config"
+	infraconfig "github.com/becosuke/guestbook/api/internal/adapter/infrastructure/config"
+	"github.com/becosuke/guestbook/api/internal/domain/config"
 	"github.com/becosuke/guestbook/api/internal/pkg/logger"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 	"github.com/becosuke/guestbook/api/internal/usecase"
@@ -44,7 +45,7 @@ type App struct {
 }
 
 func InitializeApp(ctx context.Context) *App {
-	cfg := config.NewConfig(ctx)
+	cfg := infraconfig.NewConfig()
 	zapLogger := logger.NewLogger(ctx, cfg)
 	authFunc := func(ctx context.Context) (context.Context, error) {
 		return ctx, nil
