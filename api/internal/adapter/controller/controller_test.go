@@ -13,7 +13,6 @@ import (
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 	pb "github.com/becosuke/guestbook/api/internal/pkg/pb"
-	mock "github.com/becosuke/guestbook/api/mock/usecase"
 )
 
 func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
@@ -40,7 +39,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			body := domain.NewBody("example")
 			post := domain.NewPost(postID, body)
-			mockUsecase := &mock.UsecaseMock{
+			mockUsecase := &usecase.UsecaseMock{
 				GetFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
 					assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", id.String())
 					return post, nil
@@ -68,7 +67,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			config := pkgconfig.NewConfig(ctx)
-			mockUsecase := &mock.UsecaseMock{
+			mockUsecase := &usecase.UsecaseMock{
 				GetFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
 					return nil, repository.ErrNotFound
 				},
@@ -131,7 +130,7 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 			ctx := context.Background()
 			config := pkgconfig.NewConfig(ctx)
 			res := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewBody("example"))
-			mockUsecase := &mock.UsecaseMock{
+			mockUsecase := &usecase.UsecaseMock{
 				CreateFunc: func(ctx context.Context, post *domain.Post) (*domain.Post, error) {
 					return res, nil
 				},
@@ -199,7 +198,7 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 			ctx := context.Background()
 			config := pkgconfig.NewConfig(ctx)
 			post := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewBody("example-value"))
-			mockUsecase := &mock.UsecaseMock{
+			mockUsecase := &usecase.UsecaseMock{
 				UpdateFunc: func(ctx context.Context, p *domain.Post) (*domain.Post, error) {
 					return post, nil
 				},
@@ -267,7 +266,7 @@ func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			config := pkgconfig.NewConfig(ctx)
-			mockUsecase := &mock.UsecaseMock{
+			mockUsecase := &usecase.UsecaseMock{
 				DeleteFunc: func(ctx context.Context, id *domain.PostID) error {
 					return nil
 				},
