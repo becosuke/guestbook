@@ -10,7 +10,6 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/becosuke/guestbook/api/internal/adapter/repository"
-	"github.com/becosuke/guestbook/api/internal/usecase"
 	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
@@ -19,10 +18,10 @@ type guestbookServiceServerImpl struct {
 	pb.UnimplementedGuestbookServiceServer
 	config  *pkgconfig.Config
 	logger  *zap.Logger
-	usecase usecase.Usecase
+	usecase Usecase
 }
 
-func NewGuestbookServiceServer(config *pkgconfig.Config, logger *zap.Logger, usecase usecase.Usecase) pb.GuestbookServiceServer {
+func NewGuestbookServiceServer(config *pkgconfig.Config, logger *zap.Logger, usecase Usecase) pb.GuestbookServiceServer {
 	return &guestbookServiceServerImpl{
 		config:  config,
 		logger:  logger,

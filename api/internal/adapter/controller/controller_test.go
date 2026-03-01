@@ -9,7 +9,6 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/becosuke/guestbook/api/internal/adapter/repository"
-	"github.com/becosuke/guestbook/api/internal/usecase"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 	pb "github.com/becosuke/guestbook/api/internal/pkg/pb"
@@ -19,7 +18,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 	type fields struct {
 		UnimplementedGuestbookServiceServer pb.UnimplementedGuestbookServiceServer
 		config                              *pkgconfig.Config
-		usecase                             usecase.Usecase
+		usecase                             Usecase
 	}
 	type args struct {
 		ctx context.Context
@@ -39,7 +38,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			body := domain.NewBody("example")
 			post := domain.NewPost(postID, body)
-			mockUsecase := &usecase.UsecaseMock{
+			mockUsecase := &UsecaseMock{
 				GetFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
 					assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", id.String())
 					return post, nil
@@ -67,7 +66,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			config := pkgconfig.NewConfig(ctx)
-			mockUsecase := &usecase.UsecaseMock{
+			mockUsecase := &UsecaseMock{
 				GetFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
 					return nil, repository.ErrNotFound
 				},
@@ -112,7 +111,7 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 	type fields struct {
 		UnimplementedGuestbookServiceServer pb.UnimplementedGuestbookServiceServer
 		config                              *pkgconfig.Config
-		usecase                             usecase.Usecase
+		usecase                             Usecase
 	}
 	type args struct {
 		ctx context.Context
@@ -130,7 +129,7 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 			ctx := context.Background()
 			config := pkgconfig.NewConfig(ctx)
 			res := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewBody("example"))
-			mockUsecase := &usecase.UsecaseMock{
+			mockUsecase := &UsecaseMock{
 				CreateFunc: func(ctx context.Context, post *domain.Post) (*domain.Post, error) {
 					return res, nil
 				},
@@ -180,7 +179,7 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 	type fields struct {
 		UnimplementedGuestbookServiceServer pb.UnimplementedGuestbookServiceServer
 		config                              *pkgconfig.Config
-		usecase                             usecase.Usecase
+		usecase                             Usecase
 	}
 	type args struct {
 		ctx context.Context
@@ -198,7 +197,7 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 			ctx := context.Background()
 			config := pkgconfig.NewConfig(ctx)
 			post := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewBody("example-value"))
-			mockUsecase := &usecase.UsecaseMock{
+			mockUsecase := &UsecaseMock{
 				UpdateFunc: func(ctx context.Context, p *domain.Post) (*domain.Post, error) {
 					return post, nil
 				},
@@ -249,7 +248,7 @@ func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 	type fields struct {
 		UnimplementedGuestbookServiceServer pb.UnimplementedGuestbookServiceServer
 		config                              *pkgconfig.Config
-		usecase                             usecase.Usecase
+		usecase                             Usecase
 	}
 	type args struct {
 		ctx context.Context
@@ -266,7 +265,7 @@ func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			config := pkgconfig.NewConfig(ctx)
-			mockUsecase := &usecase.UsecaseMock{
+			mockUsecase := &UsecaseMock{
 				DeleteFunc: func(ctx context.Context, id *domain.PostID) error {
 					return nil
 				},
