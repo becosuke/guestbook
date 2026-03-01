@@ -22,6 +22,7 @@ type envConfig struct {
 	GrpcPort    int
 	RestHost    string
 	RestPort    int
+	DatabaseURL string
 }
 
 func NewConfig(ctx context.Context) *Config {
@@ -87,6 +88,8 @@ func newEnvConfig(ctx context.Context) envConfig {
 		restPort = 50080
 	}
 
+	databaseURL, _ := os.LookupEnv("DATABASE_URL")
+
 	return envConfig{
 		Environment: environment,
 		LogLevel:    logLevel,
@@ -94,5 +97,6 @@ func newEnvConfig(ctx context.Context) envConfig {
 		GrpcPort:    grpcPort,
 		RestHost:    restHost,
 		RestPort:    restPort,
+		DatabaseURL: databaseURL,
 	}
 }
