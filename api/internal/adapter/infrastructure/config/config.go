@@ -4,7 +4,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"go.uber.org/zap/zapcore"
 
-	"github.com/becosuke/guestbook/api/internal/domain/entity"
+	"github.com/becosuke/guestbook/api/internal/domain"
 )
 
 type envConfig struct {
@@ -17,15 +17,15 @@ type envConfig struct {
 	DatabaseURL string `envconfig:"DATABASE_URL"`
 }
 
-func NewConfig() *entity.Config {
+func NewConfig() *domain.Config {
 	var env envConfig
 	if err := envconfig.Process("", &env); err != nil {
 		panic("failed to process env config: " + err.Error())
 	}
 
-	environment, err := entity.NewEnvironment(env.Environment)
+	environment, err := domain.NewEnvironment(env.Environment)
 	if err != nil {
-		environment = entity.EnvDevelopment
+		environment = domain.EnvDevelopment
 	}
 
 	logLevel, err := zapcore.ParseLevel(env.LogLevel)
@@ -33,7 +33,7 @@ func NewConfig() *entity.Config {
 		logLevel = zapcore.DebugLevel
 	}
 
-	return &entity.Config{
+	return &domain.Config{
 		Environment: environment,
 		LogLevel:    logLevel,
 		GrpcHost:    env.GrpcHost,

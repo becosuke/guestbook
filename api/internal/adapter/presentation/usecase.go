@@ -4,13 +4,13 @@ package presentation
 import (
 	"context"
 
-	"github.com/becosuke/guestbook/api/internal/domain/entity"
+	"github.com/becosuke/guestbook/api/internal/domain"
 )
 
 type Usecase interface {
-	Get(context.Context, *entity.PostID) (*entity.Post, error)
-	Range(context.Context, *entity.PageOption) ([]*entity.Post, error)
-	Create(context.Context, *entity.Post) (*entity.Post, error)
-	Update(context.Context, *entity.Post) (*entity.Post, error)
-	Delete(context.Context, *entity.PostID) error
+	Get(context.Context, *domain.PostID) (*domain.Post, error)
+	Range(context.Context, *domain.PageOption) ([]*domain.Post, error)
+	Create(context.Context, *domain.Post) (*domain.Post, error)
+	Update(context.Context, *domain.Post) (*domain.Post, error)
+	Delete(context.Context, *domain.PostID) error
 }
