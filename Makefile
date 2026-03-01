@@ -18,7 +18,7 @@ buf-dep-update:
 
 .PHONY: schema-dump
 schema-dump:
-	docker compose exec postgres pg_dump -U guestbook -d guestbook --schema-only --no-owner --no-privileges --no-comments -t posts > api/configurations/postgres/schema.sql
+	docker compose exec postgres pg_dump -U guestbook -d guestbook --schema-only --no-owner --no-privileges --no-comments -t posts > api/configurations/database/schema.sql
 
 .PHONY: example/post
 example/post:
