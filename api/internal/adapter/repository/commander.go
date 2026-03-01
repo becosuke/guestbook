@@ -30,7 +30,7 @@ type commanderImpl struct {
 
 func (impl *commanderImpl) Create(ctx context.Context, post *domain.Post) error {
 	_, err := impl.pool.Exec(ctx,
-		`INSERT INTO posts (PostId, Body) VALUES ($1, $2)`,
+		`INSERT INTO Posts (PostId, PostBody) VALUES ($1, $2)`,
 		post.PostID().String(), post.PostBody().String(),
 	)
 	if err != nil {
@@ -45,7 +45,7 @@ func (impl *commanderImpl) Create(ctx context.Context, post *domain.Post) error 
 
 func (impl *commanderImpl) Update(ctx context.Context, post *domain.Post) error {
 	ct, err := impl.pool.Exec(ctx,
-		`UPDATE posts SET Body = $1, UpdateTime = NOW() WHERE PostId = $2`,
+		`UPDATE Posts SET PostBody = $1, UpdateTime = NOW() WHERE PostId = $2`,
 		post.PostBody().String(), post.PostID().String(),
 	)
 	if err != nil {
@@ -59,7 +59,7 @@ func (impl *commanderImpl) Update(ctx context.Context, post *domain.Post) error 
 
 func (impl *commanderImpl) Delete(ctx context.Context, postID *domain.PostID) error {
 	_, err := impl.pool.Exec(ctx,
-		`DELETE FROM posts WHERE PostId = $1`,
+		`DELETE FROM Posts WHERE PostId = $1`,
 		postID.String(),
 	)
 	if err != nil {

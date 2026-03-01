@@ -28,7 +28,7 @@ type querierImpl struct {
 
 func (impl *querierImpl) Get(ctx context.Context, postID *domain.PostID) (*domain.Post, error) {
 	var body string
-	err := impl.pool.QueryRow(ctx, `SELECT Body FROM posts WHERE PostId = $1`, postID.String()).Scan(&body)
+	err := impl.pool.QueryRow(ctx, `SELECT PostBody FROM Posts WHERE PostId = $1`, postID.String()).Scan(&body)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, domain.ErrNotFound
@@ -48,12 +48,12 @@ func (impl *querierImpl) Range(ctx context.Context, pageOption *domain.PageOptio
 	var err error
 	if pageOption.PageToken() != nil && string(*pageOption.PageToken()) != "" {
 		rows, err = impl.pool.Query(ctx,
-			`SELECT PostId, Body FROM posts WHERE PostId < $1 ORDER BY PostId DESC LIMIT $2`,
+			`SELECT PostId, PostBody FROM Posts WHERE PostId < $1 ORDER BY PostId DESC LIMIT $2`,
 			string(*pageOption.PageToken()), pageSize,
 		)
 	} else {
 		rows, err = impl.pool.Query(ctx,
-			`SELECT PostId, Body FROM posts ORDER BY PostId DESC LIMIT $1`,
+			`SELECT PostId, PostBody FROM Posts ORDER BY PostId DESC LIMIT $1`,
 			pageSize,
 		)
 	}
