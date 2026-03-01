@@ -8,9 +8,9 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
+	domainconfig "github.com/becosuke/guestbook/api/internal/domain/config"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	"github.com/becosuke/guestbook/api/internal/domain/repository"
-	domainconfig "github.com/becosuke/guestbook/api/internal/domain/config"
 )
 
 const uniqueViolationCode = "23505"

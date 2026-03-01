@@ -37,7 +37,7 @@ type App struct {
 
 func InitializeApp(ctx context.Context) *App {
 	cfg := infraconfig.NewConfig()
-	zapLogger := logger.NewLogger(ctx, cfg)
+	zapLogger := logger.NewLogger(serviceName, version, cfg.Environment.String(), cfg.LogLevel)
 	return &App{
 		Config: cfg,
 		Logger: zapLogger,
@@ -51,9 +51,6 @@ func main() {
 func run() int {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-
-	ctx = context.WithValue(ctx, config.ServiceName{}, serviceName)
-	ctx = context.WithValue(ctx, config.ServiceVersion{}, version)
 
 	app := InitializeApp(ctx)
 	cfg := app.Config

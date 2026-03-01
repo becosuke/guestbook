@@ -9,8 +9,8 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/becosuke/guestbook/api/internal/domain/repository"
 	domainconfig "github.com/becosuke/guestbook/api/internal/domain/config"
+	"github.com/becosuke/guestbook/api/internal/domain/repository"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
 

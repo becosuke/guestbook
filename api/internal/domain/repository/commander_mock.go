@@ -5,8 +5,9 @@ package repository
 
 import (
 	"context"
-	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	"sync"
+
+	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 )
 
 // Ensure, that CommanderMock does implement Commander.

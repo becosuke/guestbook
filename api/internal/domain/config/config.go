@@ -13,8 +13,3 @@ type Config struct {
 	RestPort    int
 	DatabaseURL string
 }
-
-type (
-	ServiceName    struct{}
-	ServiceVersion struct{}
-)
