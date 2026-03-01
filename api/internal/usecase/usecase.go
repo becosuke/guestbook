@@ -8,10 +8,10 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/becosuke/guestbook/api/internal/domain/entity"
-	"github.com/becosuke/guestbook/api/internal/domain/repository"
+	"github.com/becosuke/guestbook/api/internal/domain/interfaces"
 )
 
-func NewUsecase(config *entity.Config, logger *zap.Logger, querier repository.Querier, commander repository.Commander) *Usecase {
+func NewUsecase(config *entity.Config, logger *zap.Logger, querier interfaces.Querier, commander interfaces.Commander) *Usecase {
 	return &Usecase{
 		config:    config,
 		logger:    logger,
@@ -23,8 +23,8 @@ func NewUsecase(config *entity.Config, logger *zap.Logger, querier repository.Qu
 type Usecase struct {
 	config    *entity.Config
 	logger    *zap.Logger
-	querier   repository.Querier
-	commander repository.Commander
+	querier   interfaces.Querier
+	commander interfaces.Commander
 }
 
 func (impl *Usecase) Get(ctx context.Context, postID *entity.PostID) (*entity.Post, error) {
