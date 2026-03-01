@@ -10,10 +10,10 @@ import (
 
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	"github.com/becosuke/guestbook/api/internal/domain/repository"
-	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
+	domainconfig "github.com/becosuke/guestbook/api/internal/domain/config"
 )
 
-func NewQuerier(config *pkgconfig.Config, logger *zap.Logger, pool *pgxpool.Pool) repository.Querier {
+func NewQuerier(config *domainconfig.Config, logger *zap.Logger, pool *pgxpool.Pool) repository.Querier {
 	return &querierImpl{
 		config: config,
 		logger: logger,
@@ -22,7 +22,7 @@ func NewQuerier(config *pkgconfig.Config, logger *zap.Logger, pool *pgxpool.Pool
 }
 
 type querierImpl struct {
-	config *pkgconfig.Config
+	config *domainconfig.Config
 	logger *zap.Logger
 	pool   *pgxpool.Pool
 }

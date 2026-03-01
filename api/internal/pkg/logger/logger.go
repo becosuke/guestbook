@@ -5,15 +5,15 @@ import (
 
 	"go.uber.org/zap"
 
-	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
+	domainconfig "github.com/becosuke/guestbook/api/internal/domain/config"
 )
 
-func NewLogger(ctx context.Context, config *pkgconfig.Config) *zap.Logger {
-	serviceName, ok := ctx.Value(pkgconfig.ServiceName{}).(string)
+func NewLogger(ctx context.Context, config *domainconfig.Config) *zap.Logger {
+	serviceName, ok := ctx.Value(domainconfig.ServiceName{}).(string)
 	if !ok {
 		serviceName = ""
 	}
-	serviceVersion, ok := ctx.Value(pkgconfig.ServiceVersion{}).(string)
+	serviceVersion, ok := ctx.Value(domainconfig.ServiceVersion{}).(string)
 	if !ok {
 		serviceVersion = ""
 	}

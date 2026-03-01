@@ -8,9 +8,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 
+	"github.com/becosuke/guestbook/api/internal/domain/config"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
 	"github.com/becosuke/guestbook/api/internal/domain/repository"
-	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 )
 
 func TestUsecase_Get(t *testing.T) {
@@ -78,7 +78,7 @@ func TestUsecase_Get(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uc := NewUsecase(pkgconfig.NewConfig(tt.args.ctx), zap.NewNop(), tt.fields.querier, tt.fields.commander)
+			uc := NewUsecase(&config.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
 			got, err := uc.Get(tt.args.ctx, tt.args.postID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Usecase.Get() error = %v, wantErr %v", err, tt.wantErr)
@@ -159,7 +159,7 @@ func TestUsecase_Range(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uc := NewUsecase(pkgconfig.NewConfig(tt.args.ctx), zap.NewNop(), tt.fields.querier, tt.fields.commander)
+			uc := NewUsecase(&config.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
 			got, err := uc.Range(tt.args.ctx, tt.args.pageOption)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Usecase.Range() error = %v, wantErr %v", err, tt.wantErr)
@@ -273,7 +273,7 @@ func TestUsecase_Create(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uc := NewUsecase(pkgconfig.NewConfig(tt.args.ctx), zap.NewNop(), tt.fields.querier, tt.fields.commander)
+			uc := NewUsecase(&config.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
 			got, err := uc.Create(tt.args.ctx, tt.args.post)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Usecase.Create() error = %v, wantErr %v", err, tt.wantErr)
@@ -390,7 +390,7 @@ func TestUsecase_Update(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uc := NewUsecase(pkgconfig.NewConfig(tt.args.ctx), zap.NewNop(), tt.fields.querier, tt.fields.commander)
+			uc := NewUsecase(&config.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
 			got, err := uc.Update(tt.args.ctx, tt.args.post)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Usecase.Update() error = %v, wantErr %v", err, tt.wantErr)
@@ -463,7 +463,7 @@ func TestUsecase_Delete(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uc := NewUsecase(pkgconfig.NewConfig(tt.args.ctx), zap.NewNop(), tt.fields.querier, tt.fields.commander)
+			uc := NewUsecase(&config.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
 			err := uc.Delete(tt.args.ctx, tt.args.postID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Usecase.Delete() error = %v, wantErr %v", err, tt.wantErr)

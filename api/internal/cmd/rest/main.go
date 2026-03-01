@@ -14,7 +14,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/becosuke/guestbook/api/internal/pkg/config"
+	infraconfig "github.com/becosuke/guestbook/api/internal/adapter/infrastructure/config"
+	"github.com/becosuke/guestbook/api/internal/domain/config"
 	"github.com/becosuke/guestbook/api/internal/pkg/logger"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
@@ -35,7 +36,7 @@ type App struct {
 }
 
 func InitializeApp(ctx context.Context) *App {
-	cfg := config.NewConfig(ctx)
+	cfg := infraconfig.NewConfig()
 	zapLogger := logger.NewLogger(ctx, cfg)
 	return &App{
 		Config: cfg,
