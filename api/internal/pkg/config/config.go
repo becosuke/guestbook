@@ -9,11 +9,8 @@ import (
 )
 
 type Config struct {
-	constConfig
 	envConfig
 }
-
-type constConfig struct{}
 
 type envConfig struct {
 	Environment Environment
@@ -27,8 +24,7 @@ type envConfig struct {
 
 func NewConfig(ctx context.Context) *Config {
 	return &Config{
-		constConfig: newConstConfig(ctx),
-		envConfig:   newEnvConfig(ctx),
+		envConfig: newEnvConfig(ctx),
 	}
 }
 
@@ -36,10 +32,6 @@ type (
 	ServiceName    struct{}
 	ServiceVersion struct{}
 )
-
-func newConstConfig(ctx context.Context) constConfig {
-	return constConfig{}
-}
 
 func newEnvConfig(ctx context.Context) envConfig {
 	environmentString, ok := os.LookupEnv("ENVIRONMENT")
