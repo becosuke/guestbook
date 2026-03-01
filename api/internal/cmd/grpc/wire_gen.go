@@ -8,6 +8,12 @@ package main
 
 import (
 	"context"
+
+	"github.com/becosuke/syncmap"
+	"github.com/google/wire"
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
+
 	"github.com/becosuke/guestbook/api/internal/adapter/controller"
 	syncmap2 "github.com/becosuke/guestbook/api/internal/adapter/repository/syncmap"
 	"github.com/becosuke/guestbook/api/internal/application/interactor"
@@ -16,10 +22,6 @@ import (
 	"github.com/becosuke/guestbook/api/internal/pkg/config"
 	"github.com/becosuke/guestbook/api/internal/pkg/logger"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
-	"github.com/becosuke/syncmap"
-	"github.com/google/wire"
-	"go.uber.org/zap"
-	"google.golang.org/grpc"
 )
 
 // Injectors from wire.go:
