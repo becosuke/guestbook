@@ -4,6 +4,8 @@
 vendor
 
 api/build/*
+api/grpc
+api/rest
 .pub_cache
 
 CLAUDE.md
