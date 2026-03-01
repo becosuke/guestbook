@@ -1,16 +1,19 @@
 package controller
 
 import (
+	"strconv"
+
 	"github.com/becosuke/guestbook/api/internal/domain/post"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
 
-func (impl *guestbookServiceServerImpl) serialDomainToResource(domainSerial *post.Serial) int64 {
-	return domainSerial.Int64()
+func (impl *guestbookServiceServerImpl) serialDomainToResource(domainSerial *post.Serial) string {
+	return strconv.FormatInt(domainSerial.Int64(), 10)
 }
 
-func (impl *guestbookServiceServerImpl) serialResourceToDomain(resourceSerial int64) *post.Serial {
-	return post.NewSerial(resourceSerial)
+func (impl *guestbookServiceServerImpl) serialResourceToDomain(resourcePostId string) *post.Serial {
+	v, _ := strconv.ParseInt(resourcePostId, 10, 64)
+	return post.NewSerial(v)
 }
 
 func (impl *guestbookServiceServerImpl) bodyDomainToResource(domainBody *post.Body) string {
@@ -23,14 +26,14 @@ func (impl *guestbookServiceServerImpl) bodyResourceToDomain(resourceBody string
 
 func (impl *guestbookServiceServerImpl) postDomainToResource(domainPost *post.Post) *pb.Post {
 	return &pb.Post{
-		Serial: impl.serialDomainToResource(domainPost.Serial()),
+		PostId: impl.serialDomainToResource(domainPost.Serial()),
 		Body:   impl.bodyDomainToResource(domainPost.Body()),
 	}
 }
 
 func (impl *guestbookServiceServerImpl) postResourceToDomain(resourcePost *pb.Post) *post.Post {
 	return post.NewPost(
-		impl.serialResourceToDomain(resourcePost.GetSerial()),
+		impl.serialResourceToDomain(resourcePost.GetPostId()),
 		impl.bodyResourceToDomain(resourcePost.GetBody()),
 	)
 }

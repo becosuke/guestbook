@@ -1,4 +1,4 @@
-GO_VERSION=1.20.7
+GO_VERSION=1.25.7
 GO_BINARY=go
 
 PROJECT_REPOSITORY_ORIGIN=github.com/becosuke/guestbook

@@ -31,7 +31,7 @@ func NewGuestbookServiceServer(config *pkgconfig.Config, logger *zap.Logger, use
 }
 
 func (impl *guestbookServiceServerImpl) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb.Post, error) {
-	res, err := impl.usecase.Get(ctx, impl.serialResourceToDomain(req.GetSerial()))
+	res, err := impl.usecase.Get(ctx, impl.serialResourceToDomain(req.GetPostId()))
 	if err != nil {
 		switch {
 		case errors.Is(err, repository.ErrNotFound):
@@ -71,8 +71,12 @@ func (impl *guestbookServiceServerImpl) UpdatePost(ctx context.Context, req *pb.
 	return impl.postDomainToResource(res), nil
 }
 
+func (impl *guestbookServiceServerImpl) ListPosts(ctx context.Context, req *pb.ListPostsRequest) (*pb.ListPostsResponse, error) {
+	return &pb.ListPostsResponse{}, nil
+}
+
 func (impl *guestbookServiceServerImpl) DeletePost(ctx context.Context, req *pb.DeletePostRequest) (*emptypb.Empty, error) {
-	err := impl.usecase.Delete(ctx, impl.serialResourceToDomain(req.GetSerial()))
+	err := impl.usecase.Delete(ctx, impl.serialResourceToDomain(req.GetPostId()))
 	if err != nil {
 		return nil, err
 	}
