@@ -87,12 +87,10 @@ build/rest/container:
 	cd $(BUILD_DIR) && \
 	docker build . --no-cache --build-arg name=$(PROJECT_NAME)-rest -t $(PROJECT_NAME)-rest:latest -t $(PROJECT_NAME)-rest:$(VERSION)
 
-gen: gen-mock
+gen: gen/go
 
-gen-mock:
-	moq -out internal/domain/repository/commander_mock.go -pkg repository ./internal/domain/repository Commander
-	moq -out internal/domain/repository/querier_mock.go -pkg repository ./internal/domain/repository Querier
-	moq -out internal/adapter/controller/usecase_mock.go -pkg controller ./internal/adapter/controller Usecase
+gen/go:
+	$(GO_BINARY) generate ./internal/...
 
 tools-install: tools-tidy
 	@for tool in $$(sed -n 's/[ \f\n\r\t]*_ "\(.*\)"/\1/p' tools/tools.go); do GOBIN=$(shell pwd)/bin $(GO_BINARY) install $${tool}@latest; done

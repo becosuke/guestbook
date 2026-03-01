@@ -1,3 +1,4 @@
+//go:generate moq -out querier_mock.go -pkg repository . Querier
 package repository
 
 import (

@@ -1,3 +1,4 @@
+//go:generate moq -out usecase_mock.go -pkg controller . Usecase
 package controller
 
 import (
