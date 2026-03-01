@@ -7,7 +7,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/becosuke/guestbook/api/internal/domain/entity"
+	"github.com/becosuke/guestbook/api/internal/domain"
 )
 
 // Ensure, that CommanderMock does implement Commander.
@@ -20,13 +20,13 @@ var _ Commander = &CommanderMock{}
 //
 //		// make and configure a mocked Commander
 //		mockedCommander := &CommanderMock{
-//			CreateFunc: func(contextMoqParam context.Context, post *entity.Post) error {
+//			CreateFunc: func(contextMoqParam context.Context, post *domain.Post) error {
 //				panic("mock out the Create method")
 //			},
-//			DeleteFunc: func(contextMoqParam context.Context, postID *entity.PostID) error {
+//			DeleteFunc: func(contextMoqParam context.Context, postID *domain.PostID) error {
 //				panic("mock out the Delete method")
 //			},
-//			UpdateFunc: func(contextMoqParam context.Context, post *entity.Post) error {
+//			UpdateFunc: func(contextMoqParam context.Context, post *domain.Post) error {
 //				panic("mock out the Update method")
 //			},
 //		}
@@ -37,13 +37,13 @@ var _ Commander = &CommanderMock{}
 //	}
 type CommanderMock struct {
 	// CreateFunc mocks the Create method.
-	CreateFunc func(contextMoqParam context.Context, post *entity.Post) error
+	CreateFunc func(contextMoqParam context.Context, post *domain.Post) error
 
 	// DeleteFunc mocks the Delete method.
-	DeleteFunc func(contextMoqParam context.Context, postID *entity.PostID) error
+	DeleteFunc func(contextMoqParam context.Context, postID *domain.PostID) error
 
 	// UpdateFunc mocks the Update method.
-	UpdateFunc func(contextMoqParam context.Context, post *entity.Post) error
+	UpdateFunc func(contextMoqParam context.Context, post *domain.Post) error
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -52,21 +52,21 @@ type CommanderMock struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// Post is the post argument value.
-			Post *entity.Post
+			Post *domain.Post
 		}
 		// Delete holds details about calls to the Delete method.
 		Delete []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// PostID is the postID argument value.
-			PostID *entity.PostID
+			PostID *domain.PostID
 		}
 		// Update holds details about calls to the Update method.
 		Update []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// Post is the post argument value.
-			Post *entity.Post
+			Post *domain.Post
 		}
 	}
 	lockCreate sync.RWMutex
@@ -75,13 +75,13 @@ type CommanderMock struct {
 }
 
 // Create calls CreateFunc.
-func (mock *CommanderMock) Create(contextMoqParam context.Context, post *entity.Post) error {
+func (mock *CommanderMock) Create(contextMoqParam context.Context, post *domain.Post) error {
 	if mock.CreateFunc == nil {
 		panic("CommanderMock.CreateFunc: method is nil but Commander.Create was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
-		Post            *entity.Post
+		Post            *domain.Post
 	}{
 		ContextMoqParam: contextMoqParam,
 		Post:            post,
@@ -98,11 +98,11 @@ func (mock *CommanderMock) Create(contextMoqParam context.Context, post *entity.
 //	len(mockedCommander.CreateCalls())
 func (mock *CommanderMock) CreateCalls() []struct {
 	ContextMoqParam context.Context
-	Post            *entity.Post
+	Post            *domain.Post
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		Post            *entity.Post
+		Post            *domain.Post
 	}
 	mock.lockCreate.RLock()
 	calls = mock.calls.Create
@@ -111,13 +111,13 @@ func (mock *CommanderMock) CreateCalls() []struct {
 }
 
 // Delete calls DeleteFunc.
-func (mock *CommanderMock) Delete(contextMoqParam context.Context, postID *entity.PostID) error {
+func (mock *CommanderMock) Delete(contextMoqParam context.Context, postID *domain.PostID) error {
 	if mock.DeleteFunc == nil {
 		panic("CommanderMock.DeleteFunc: method is nil but Commander.Delete was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
-		PostID          *entity.PostID
+		PostID          *domain.PostID
 	}{
 		ContextMoqParam: contextMoqParam,
 		PostID:          postID,
@@ -134,11 +134,11 @@ func (mock *CommanderMock) Delete(contextMoqParam context.Context, postID *entit
 //	len(mockedCommander.DeleteCalls())
 func (mock *CommanderMock) DeleteCalls() []struct {
 	ContextMoqParam context.Context
-	PostID          *entity.PostID
+	PostID          *domain.PostID
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		PostID          *entity.PostID
+		PostID          *domain.PostID
 	}
 	mock.lockDelete.RLock()
 	calls = mock.calls.Delete
@@ -147,13 +147,13 @@ func (mock *CommanderMock) DeleteCalls() []struct {
 }
 
 // Update calls UpdateFunc.
-func (mock *CommanderMock) Update(contextMoqParam context.Context, post *entity.Post) error {
+func (mock *CommanderMock) Update(contextMoqParam context.Context, post *domain.Post) error {
 	if mock.UpdateFunc == nil {
 		panic("CommanderMock.UpdateFunc: method is nil but Commander.Update was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
-		Post            *entity.Post
+		Post            *domain.Post
 	}{
 		ContextMoqParam: contextMoqParam,
 		Post:            post,
@@ -170,11 +170,11 @@ func (mock *CommanderMock) Update(contextMoqParam context.Context, post *entity.
 //	len(mockedCommander.UpdateCalls())
 func (mock *CommanderMock) UpdateCalls() []struct {
 	ContextMoqParam context.Context
-	Post            *entity.Post
+	Post            *domain.Post
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		Post            *entity.Post
+		Post            *domain.Post
 	}
 	mock.lockUpdate.RLock()
 	calls = mock.calls.Update

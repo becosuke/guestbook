@@ -4,10 +4,10 @@ package interfaces
 import (
 	"context"
 
-	"github.com/becosuke/guestbook/api/internal/domain/entity"
+	"github.com/becosuke/guestbook/api/internal/domain"
 )
 
 type Querier interface {
-	Get(context.Context, *entity.PostID) (*entity.Post, error)
-	Range(context.Context, *entity.PageOption) ([]*entity.Post, error)
+	Get(context.Context, *domain.PostID) (*domain.Post, error)
+	Range(context.Context, *domain.PageOption) ([]*domain.Post, error)
 }

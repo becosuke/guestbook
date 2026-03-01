@@ -1,4 +1,4 @@
-package entity
+package domain
 
 type PageSize int32
 type PageToken string

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 
-	"github.com/becosuke/guestbook/api/internal/domain/entity"
+	"github.com/becosuke/guestbook/api/internal/domain"
 	"github.com/becosuke/guestbook/api/internal/domain/interfaces"
 )
 
@@ -19,23 +19,23 @@ func TestUsecase_Get(t *testing.T) {
 	}
 	type args struct {
 		ctx    context.Context
-		postID *entity.PostID
+		postID *domain.PostID
 	}
 	type testCase struct {
 		name    string
 		fields  fields
 		args    args
-		want    *entity.Post
+		want    *domain.Post
 		wantErr bool
 	}
 	tests := []testCase{
 		func() testCase {
 			ctx := context.Background()
-			postID := entity.NewPostID("550e8400-e29b-41d4-a716-446655440000")
-			body := entity.NewPostBody("example")
-			post := entity.NewPost(postID, body)
+			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
+			body := domain.NewPostBody("example")
+			post := domain.NewPost(postID, body)
 			mockQuerier := &interfaces.QuerierMock{
-				GetFunc: func(ctx context.Context, id *entity.PostID) (*entity.Post, error) {
+				GetFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
 					assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", id.String())
 					return post, nil
 				},
@@ -55,10 +55,10 @@ func TestUsecase_Get(t *testing.T) {
 		}(),
 		func() testCase {
 			ctx := context.Background()
-			postID := entity.NewPostID("550e8400-e29b-41d4-a716-446655440000")
+			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			mockQuerier := &interfaces.QuerierMock{
-				GetFunc: func(ctx context.Context, id *entity.PostID) (*entity.Post, error) {
-					return nil, interfaces.ErrNotFound
+				GetFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
+					return nil, domain.ErrNotFound
 				},
 			}
 			return testCase{
@@ -77,7 +77,7 @@ func TestUsecase_Get(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uc := NewUsecase(&entity.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
+			uc := NewUsecase(&domain.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
 			got, err := uc.Get(tt.args.ctx, tt.args.postID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Usecase.Get() error = %v, wantErr %v", err, tt.wantErr)
@@ -97,26 +97,26 @@ func TestUsecase_Range(t *testing.T) {
 	}
 	type args struct {
 		ctx        context.Context
-		pageOption *entity.PageOption
+		pageOption *domain.PageOption
 	}
 	type testCase struct {
 		name    string
 		fields  fields
 		args    args
-		want    []*entity.Post
+		want    []*domain.Post
 		wantErr bool
 	}
 	tests := []testCase{
 		func() testCase {
 			ctx := context.Background()
-			pageSize := entity.PageSize(10)
-			pageOption := entity.NewPageOption(&pageSize, nil)
-			posts := []*entity.Post{
-				entity.NewPost(entity.NewPostID("550e8400-e29b-41d4-a716-446655440000"), entity.NewPostBody("example1")),
-				entity.NewPost(entity.NewPostID("550e8400-e29b-41d4-a716-446655440001"), entity.NewPostBody("example2")),
+			pageSize := domain.PageSize(10)
+			pageOption := domain.NewPageOption(&pageSize, nil)
+			posts := []*domain.Post{
+				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewPostBody("example1")),
+				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440001"), domain.NewPostBody("example2")),
 			}
 			mockQuerier := &interfaces.QuerierMock{
-				RangeFunc: func(ctx context.Context, po *entity.PageOption) ([]*entity.Post, error) {
+				RangeFunc: func(ctx context.Context, po *domain.PageOption) ([]*domain.Post, error) {
 					return posts, nil
 				},
 			}
@@ -135,11 +135,11 @@ func TestUsecase_Range(t *testing.T) {
 		}(),
 		func() testCase {
 			ctx := context.Background()
-			pageSize := entity.PageSize(10)
-			pageOption := entity.NewPageOption(&pageSize, nil)
+			pageSize := domain.PageSize(10)
+			pageOption := domain.NewPageOption(&pageSize, nil)
 			mockQuerier := &interfaces.QuerierMock{
-				RangeFunc: func(ctx context.Context, po *entity.PageOption) ([]*entity.Post, error) {
-					return nil, interfaces.ErrInvalidArgument
+				RangeFunc: func(ctx context.Context, po *domain.PageOption) ([]*domain.Post, error) {
+					return nil, domain.ErrInvalidArgument
 				},
 			}
 			return testCase{
@@ -158,7 +158,7 @@ func TestUsecase_Range(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uc := NewUsecase(&entity.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
+			uc := NewUsecase(&domain.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
 			got, err := uc.Range(tt.args.ctx, tt.args.pageOption)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Usecase.Range() error = %v, wantErr %v", err, tt.wantErr)
@@ -178,30 +178,30 @@ func TestUsecase_Create(t *testing.T) {
 	}
 	type args struct {
 		ctx  context.Context
-		post *entity.Post
+		post *domain.Post
 	}
 	type testCase struct {
 		name    string
 		fields  fields
 		args    args
-		want    *entity.Post
+		want    *domain.Post
 		wantErr bool
 	}
 	tests := []testCase{
 		func() testCase {
 			ctx := context.Background()
-			body := entity.NewPostBody("example")
-			inputPost := entity.NewPost(nil, body)
-			returnedPost := entity.NewPost(entity.NewPostID("550e8400-e29b-41d4-a716-446655440000"), body)
+			body := domain.NewPostBody("example")
+			inputPost := domain.NewPost(nil, body)
+			returnedPost := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), body)
 			mockCommander := &interfaces.CommanderMock{
-				CreateFunc: func(ctx context.Context, p *entity.Post) error {
+				CreateFunc: func(ctx context.Context, p *domain.Post) error {
 					assert.Equal(t, "example", p.PostBody().String())
 					assert.NotEmpty(t, p.PostID().String())
 					return nil
 				},
 			}
 			mockQuerier := &interfaces.QuerierMock{
-				GetFunc: func(ctx context.Context, id *entity.PostID) (*entity.Post, error) {
+				GetFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
 					return returnedPost, nil
 				},
 			}
@@ -221,11 +221,11 @@ func TestUsecase_Create(t *testing.T) {
 		}(),
 		func() testCase {
 			ctx := context.Background()
-			body := entity.NewPostBody("example")
-			inputPost := entity.NewPost(nil, body)
+			body := domain.NewPostBody("example")
+			inputPost := domain.NewPost(nil, body)
 			mockCommander := &interfaces.CommanderMock{
-				CreateFunc: func(ctx context.Context, p *entity.Post) error {
-					return interfaces.ErrAlreadyExists
+				CreateFunc: func(ctx context.Context, p *domain.Post) error {
+					return domain.ErrAlreadyExists
 				},
 			}
 			return testCase{
@@ -243,16 +243,16 @@ func TestUsecase_Create(t *testing.T) {
 		}(),
 		func() testCase {
 			ctx := context.Background()
-			body := entity.NewPostBody("example")
-			inputPost := entity.NewPost(nil, body)
+			body := domain.NewPostBody("example")
+			inputPost := domain.NewPost(nil, body)
 			mockCommander := &interfaces.CommanderMock{
-				CreateFunc: func(ctx context.Context, p *entity.Post) error {
+				CreateFunc: func(ctx context.Context, p *domain.Post) error {
 					return nil
 				},
 			}
 			mockQuerier := &interfaces.QuerierMock{
-				GetFunc: func(ctx context.Context, id *entity.PostID) (*entity.Post, error) {
-					return nil, interfaces.ErrNotFound
+				GetFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
+					return nil, domain.ErrNotFound
 				},
 			}
 			return testCase{
@@ -272,7 +272,7 @@ func TestUsecase_Create(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uc := NewUsecase(&entity.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
+			uc := NewUsecase(&domain.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
 			got, err := uc.Create(tt.args.ctx, tt.args.post)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Usecase.Create() error = %v, wantErr %v", err, tt.wantErr)
@@ -292,30 +292,30 @@ func TestUsecase_Update(t *testing.T) {
 	}
 	type args struct {
 		ctx  context.Context
-		post *entity.Post
+		post *domain.Post
 	}
 	type testCase struct {
 		name    string
 		fields  fields
 		args    args
-		want    *entity.Post
+		want    *domain.Post
 		wantErr bool
 	}
 	tests := []testCase{
 		func() testCase {
 			ctx := context.Background()
-			postID := entity.NewPostID("550e8400-e29b-41d4-a716-446655440000")
-			body := entity.NewPostBody("updated-example")
-			post := entity.NewPost(postID, body)
+			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
+			body := domain.NewPostBody("updated-example")
+			post := domain.NewPost(postID, body)
 			mockCommander := &interfaces.CommanderMock{
-				UpdateFunc: func(ctx context.Context, p *entity.Post) error {
+				UpdateFunc: func(ctx context.Context, p *domain.Post) error {
 					assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", p.PostID().String())
 					assert.Equal(t, "updated-example", p.PostBody().String())
 					return nil
 				},
 			}
 			mockQuerier := &interfaces.QuerierMock{
-				GetFunc: func(ctx context.Context, id *entity.PostID) (*entity.Post, error) {
+				GetFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
 					assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", id.String())
 					return post, nil
 				},
@@ -336,12 +336,12 @@ func TestUsecase_Update(t *testing.T) {
 		}(),
 		func() testCase {
 			ctx := context.Background()
-			postID := entity.NewPostID("550e8400-e29b-41d4-a716-446655440000")
-			body := entity.NewPostBody("updated-example")
-			post := entity.NewPost(postID, body)
+			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
+			body := domain.NewPostBody("updated-example")
+			post := domain.NewPost(postID, body)
 			mockCommander := &interfaces.CommanderMock{
-				UpdateFunc: func(ctx context.Context, p *entity.Post) error {
-					return interfaces.ErrNotFound
+				UpdateFunc: func(ctx context.Context, p *domain.Post) error {
+					return domain.ErrNotFound
 				},
 			}
 			return testCase{
@@ -359,17 +359,17 @@ func TestUsecase_Update(t *testing.T) {
 		}(),
 		func() testCase {
 			ctx := context.Background()
-			postID := entity.NewPostID("550e8400-e29b-41d4-a716-446655440000")
-			body := entity.NewPostBody("updated-example")
-			post := entity.NewPost(postID, body)
+			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
+			body := domain.NewPostBody("updated-example")
+			post := domain.NewPost(postID, body)
 			mockCommander := &interfaces.CommanderMock{
-				UpdateFunc: func(ctx context.Context, p *entity.Post) error {
+				UpdateFunc: func(ctx context.Context, p *domain.Post) error {
 					return nil
 				},
 			}
 			mockQuerier := &interfaces.QuerierMock{
-				GetFunc: func(ctx context.Context, id *entity.PostID) (*entity.Post, error) {
-					return nil, interfaces.ErrNotFound
+				GetFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
+					return nil, domain.ErrNotFound
 				},
 			}
 			return testCase{
@@ -389,7 +389,7 @@ func TestUsecase_Update(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uc := NewUsecase(&entity.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
+			uc := NewUsecase(&domain.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
 			got, err := uc.Update(tt.args.ctx, tt.args.post)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Usecase.Update() error = %v, wantErr %v", err, tt.wantErr)
@@ -409,7 +409,7 @@ func TestUsecase_Delete(t *testing.T) {
 	}
 	type args struct {
 		ctx    context.Context
-		postID *entity.PostID
+		postID *domain.PostID
 	}
 	type testCase struct {
 		name    string
@@ -420,9 +420,9 @@ func TestUsecase_Delete(t *testing.T) {
 	tests := []testCase{
 		func() testCase {
 			ctx := context.Background()
-			postID := entity.NewPostID("550e8400-e29b-41d4-a716-446655440000")
+			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			mockCommander := &interfaces.CommanderMock{
-				DeleteFunc: func(ctx context.Context, id *entity.PostID) error {
+				DeleteFunc: func(ctx context.Context, id *domain.PostID) error {
 					assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", id.String())
 					return nil
 				},
@@ -441,10 +441,10 @@ func TestUsecase_Delete(t *testing.T) {
 		}(),
 		func() testCase {
 			ctx := context.Background()
-			postID := entity.NewPostID("550e8400-e29b-41d4-a716-446655440000")
+			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			mockCommander := &interfaces.CommanderMock{
-				DeleteFunc: func(ctx context.Context, id *entity.PostID) error {
-					return interfaces.ErrNotFound
+				DeleteFunc: func(ctx context.Context, id *domain.PostID) error {
+					return domain.ErrNotFound
 				},
 			}
 			return testCase{
@@ -462,7 +462,7 @@ func TestUsecase_Delete(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uc := NewUsecase(&entity.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
+			uc := NewUsecase(&domain.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
 			err := uc.Delete(tt.args.ctx, tt.args.postID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Usecase.Delete() error = %v, wantErr %v", err, tt.wantErr)
