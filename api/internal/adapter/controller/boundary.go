@@ -1,19 +1,16 @@
 package controller
 
 import (
-	"strconv"
-
 	"github.com/becosuke/guestbook/api/internal/domain/post"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
 
 func (impl *guestbookServiceServerImpl) serialDomainToResource(domainSerial *post.Serial) string {
-	return strconv.FormatInt(domainSerial.Int64(), 10)
+	return domainSerial.String()
 }
 
 func (impl *guestbookServiceServerImpl) serialResourceToDomain(resourcePostId string) *post.Serial {
-	v, _ := strconv.ParseInt(resourcePostId, 10, 64)
-	return post.NewSerial(v)
+	return post.NewSerial(resourcePostId)
 }
 
 func (impl *guestbookServiceServerImpl) bodyDomainToResource(domainBody *post.Body) string {

@@ -12,7 +12,6 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/becosuke/guestbook/api/internal/adapter/controller"
-	"github.com/becosuke/guestbook/api/internal/adapter/repository/generator"
 	repository_syncmap "github.com/becosuke/guestbook/api/internal/adapter/repository/syncmap"
 	"github.com/becosuke/guestbook/api/internal/application/interactor"
 	"github.com/becosuke/guestbook/api/internal/driver/grpcserver"
@@ -38,7 +37,6 @@ var usecaseSet = wire.NewSet(
 )
 
 var repositorySet = wire.NewSet(
-	generator.NewGenerator,
 	repository_syncmap.NewQuerier,
 	repository_syncmap.NewCommander,
 )

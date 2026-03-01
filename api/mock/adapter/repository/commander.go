@@ -36,12 +36,11 @@ func (m *MockCommander) EXPECT() *MockCommanderMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockCommander) Create(arg0 context.Context, arg1 *post.Post) (*post.Serial, error) {
+func (m *MockCommander) Create(arg0 context.Context, arg1 *post.Post) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", arg0, arg1)
-	ret0, _ := ret[0].(*post.Serial)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Create indicates an expected call of Create.
