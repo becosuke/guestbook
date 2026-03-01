@@ -1,7 +1,7 @@
 package presentation
 
 import (
-	"github.com/becosuke/guestbook/api/internal/domain/post"
+	"github.com/becosuke/guestbook/api/internal/domain/entity/post"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
 

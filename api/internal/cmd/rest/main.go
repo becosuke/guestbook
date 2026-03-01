@@ -15,7 +15,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	infraconfig "github.com/becosuke/guestbook/api/internal/adapter/infrastructure/config"
-	"github.com/becosuke/guestbook/api/internal/domain/config"
+	"github.com/becosuke/guestbook/api/internal/domain/entity/config"
 	"github.com/becosuke/guestbook/api/internal/pkg/logger"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )

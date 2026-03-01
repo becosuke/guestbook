@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/becosuke/guestbook/api/internal/domain/config"
-	domain "github.com/becosuke/guestbook/api/internal/domain/post"
+	"github.com/becosuke/guestbook/api/internal/domain/entity/config"
+	entity "github.com/becosuke/guestbook/api/internal/domain/entity/post"
 	"github.com/becosuke/guestbook/api/internal/domain/repository"
 	pb "github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
@@ -35,11 +35,11 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			config := &config.Config{}
-			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
-			body := domain.NewBody("example")
-			post := domain.NewPost(postID, body)
+			postID := entity.NewPostID("550e8400-e29b-41d4-a716-446655440000")
+			body := entity.NewBody("example")
+			post := entity.NewPost(postID, body)
 			mockUsecase := &UsecaseMock{
-				GetFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
+				GetFunc: func(ctx context.Context, id *entity.PostID) (*entity.Post, error) {
 					assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", id.String())
 					return post, nil
 				},
@@ -67,7 +67,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 			ctx := context.Background()
 			config := &config.Config{}
 			mockUsecase := &UsecaseMock{
-				GetFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
+				GetFunc: func(ctx context.Context, id *entity.PostID) (*entity.Post, error) {
 					return nil, repository.ErrNotFound
 				},
 			}
@@ -128,9 +128,9 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			config := &config.Config{}
-			res := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewBody("example"))
+			res := entity.NewPost(entity.NewPostID("550e8400-e29b-41d4-a716-446655440000"), entity.NewBody("example"))
 			mockUsecase := &UsecaseMock{
-				CreateFunc: func(ctx context.Context, post *domain.Post) (*domain.Post, error) {
+				CreateFunc: func(ctx context.Context, post *entity.Post) (*entity.Post, error) {
 					return res, nil
 				},
 			}
@@ -196,9 +196,9 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			config := &config.Config{}
-			post := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewBody("example-value"))
+			post := entity.NewPost(entity.NewPostID("550e8400-e29b-41d4-a716-446655440000"), entity.NewBody("example-value"))
 			mockUsecase := &UsecaseMock{
-				UpdateFunc: func(ctx context.Context, p *domain.Post) (*domain.Post, error) {
+				UpdateFunc: func(ctx context.Context, p *entity.Post) (*entity.Post, error) {
 					return post, nil
 				},
 			}
@@ -266,7 +266,7 @@ func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 			ctx := context.Background()
 			config := &config.Config{}
 			mockUsecase := &UsecaseMock{
-				DeleteFunc: func(ctx context.Context, id *domain.PostID) error {
+				DeleteFunc: func(ctx context.Context, id *entity.PostID) error {
 					return nil
 				},
 			}

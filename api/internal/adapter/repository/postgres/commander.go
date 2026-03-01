@@ -8,14 +8,14 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
-	domainconfig "github.com/becosuke/guestbook/api/internal/domain/config"
-	domain "github.com/becosuke/guestbook/api/internal/domain/post"
+	entityconfig "github.com/becosuke/guestbook/api/internal/domain/entity/config"
+	entity "github.com/becosuke/guestbook/api/internal/domain/entity/post"
 	"github.com/becosuke/guestbook/api/internal/domain/repository"
 )
 
 const uniqueViolationCode = "23505"
 
-func NewCommander(config *domainconfig.Config, logger *zap.Logger, pool *pgxpool.Pool) repository.Commander {
+func NewCommander(config *entityconfig.Config, logger *zap.Logger, pool *pgxpool.Pool) repository.Commander {
 	return &commanderImpl{
 		config: config,
 		logger: logger,
@@ -24,12 +24,12 @@ func NewCommander(config *domainconfig.Config, logger *zap.Logger, pool *pgxpool
 }
 
 type commanderImpl struct {
-	config *domainconfig.Config
+	config *entityconfig.Config
 	logger *zap.Logger
 	pool   *pgxpool.Pool
 }
 
-func (impl *commanderImpl) Create(ctx context.Context, post *domain.Post) error {
+func (impl *commanderImpl) Create(ctx context.Context, post *entity.Post) error {
 	_, err := impl.pool.Exec(ctx,
 		"INSERT INTO posts (post_id, body) VALUES ($1, $2)",
 		post.PostID().String(), post.Body().String(),
@@ -44,7 +44,7 @@ func (impl *commanderImpl) Create(ctx context.Context, post *domain.Post) error 
 	return nil
 }
 
-func (impl *commanderImpl) Update(ctx context.Context, post *domain.Post) error {
+func (impl *commanderImpl) Update(ctx context.Context, post *entity.Post) error {
 	ct, err := impl.pool.Exec(ctx,
 		"UPDATE posts SET body = $1, update_time = NOW() WHERE post_id = $2",
 		post.Body().String(), post.PostID().String(),
@@ -58,7 +58,7 @@ func (impl *commanderImpl) Update(ctx context.Context, post *domain.Post) error 
 	return nil
 }
 
-func (impl *commanderImpl) Delete(ctx context.Context, postID *domain.PostID) error {
+func (impl *commanderImpl) Delete(ctx context.Context, postID *entity.PostID) error {
 	_, err := impl.pool.Exec(ctx,
 		"DELETE FROM posts WHERE post_id = $1",
 		postID.String(),

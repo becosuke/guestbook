@@ -7,7 +7,7 @@ import (
 	"context"
 	"sync"
 
-	domain "github.com/becosuke/guestbook/api/internal/domain/post"
+	entity "github.com/becosuke/guestbook/api/internal/domain/entity/post"
 )
 
 // Ensure, that UsecaseMock does implement Usecase.
@@ -20,19 +20,19 @@ var _ Usecase = &UsecaseMock{}
 //
 //		// make and configure a mocked Usecase
 //		mockedUsecase := &UsecaseMock{
-//			CreateFunc: func(contextMoqParam context.Context, post *domain.Post) (*domain.Post, error) {
+//			CreateFunc: func(contextMoqParam context.Context, post *entity.Post) (*entity.Post, error) {
 //				panic("mock out the Create method")
 //			},
-//			DeleteFunc: func(contextMoqParam context.Context, postID *domain.PostID) error {
+//			DeleteFunc: func(contextMoqParam context.Context, postID *entity.PostID) error {
 //				panic("mock out the Delete method")
 //			},
-//			GetFunc: func(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error) {
+//			GetFunc: func(contextMoqParam context.Context, postID *entity.PostID) (*entity.Post, error) {
 //				panic("mock out the Get method")
 //			},
-//			RangeFunc: func(contextMoqParam context.Context, pageOption *domain.PageOption) ([]*domain.Post, error) {
+//			RangeFunc: func(contextMoqParam context.Context, pageOption *entity.PageOption) ([]*entity.Post, error) {
 //				panic("mock out the Range method")
 //			},
-//			UpdateFunc: func(contextMoqParam context.Context, post *domain.Post) (*domain.Post, error) {
+//			UpdateFunc: func(contextMoqParam context.Context, post *entity.Post) (*entity.Post, error) {
 //				panic("mock out the Update method")
 //			},
 //		}
@@ -43,19 +43,19 @@ var _ Usecase = &UsecaseMock{}
 //	}
 type UsecaseMock struct {
 	// CreateFunc mocks the Create method.
-	CreateFunc func(contextMoqParam context.Context, post *domain.Post) (*domain.Post, error)
+	CreateFunc func(contextMoqParam context.Context, post *entity.Post) (*entity.Post, error)
 
 	// DeleteFunc mocks the Delete method.
-	DeleteFunc func(contextMoqParam context.Context, postID *domain.PostID) error
+	DeleteFunc func(contextMoqParam context.Context, postID *entity.PostID) error
 
 	// GetFunc mocks the Get method.
-	GetFunc func(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error)
+	GetFunc func(contextMoqParam context.Context, postID *entity.PostID) (*entity.Post, error)
 
 	// RangeFunc mocks the Range method.
-	RangeFunc func(contextMoqParam context.Context, pageOption *domain.PageOption) ([]*domain.Post, error)
+	RangeFunc func(contextMoqParam context.Context, pageOption *entity.PageOption) ([]*entity.Post, error)
 
 	// UpdateFunc mocks the Update method.
-	UpdateFunc func(contextMoqParam context.Context, post *domain.Post) (*domain.Post, error)
+	UpdateFunc func(contextMoqParam context.Context, post *entity.Post) (*entity.Post, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -64,35 +64,35 @@ type UsecaseMock struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// Post is the post argument value.
-			Post *domain.Post
+			Post *entity.Post
 		}
 		// Delete holds details about calls to the Delete method.
 		Delete []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// PostID is the postID argument value.
-			PostID *domain.PostID
+			PostID *entity.PostID
 		}
 		// Get holds details about calls to the Get method.
 		Get []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// PostID is the postID argument value.
-			PostID *domain.PostID
+			PostID *entity.PostID
 		}
 		// Range holds details about calls to the Range method.
 		Range []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// PageOption is the pageOption argument value.
-			PageOption *domain.PageOption
+			PageOption *entity.PageOption
 		}
 		// Update holds details about calls to the Update method.
 		Update []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// Post is the post argument value.
-			Post *domain.Post
+			Post *entity.Post
 		}
 	}
 	lockCreate sync.RWMutex
@@ -103,13 +103,13 @@ type UsecaseMock struct {
 }
 
 // Create calls CreateFunc.
-func (mock *UsecaseMock) Create(contextMoqParam context.Context, post *domain.Post) (*domain.Post, error) {
+func (mock *UsecaseMock) Create(contextMoqParam context.Context, post *entity.Post) (*entity.Post, error) {
 	if mock.CreateFunc == nil {
 		panic("UsecaseMock.CreateFunc: method is nil but Usecase.Create was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
-		Post            *domain.Post
+		Post            *entity.Post
 	}{
 		ContextMoqParam: contextMoqParam,
 		Post:            post,
@@ -126,11 +126,11 @@ func (mock *UsecaseMock) Create(contextMoqParam context.Context, post *domain.Po
 //	len(mockedUsecase.CreateCalls())
 func (mock *UsecaseMock) CreateCalls() []struct {
 	ContextMoqParam context.Context
-	Post            *domain.Post
+	Post            *entity.Post
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		Post            *domain.Post
+		Post            *entity.Post
 	}
 	mock.lockCreate.RLock()
 	calls = mock.calls.Create
@@ -139,13 +139,13 @@ func (mock *UsecaseMock) CreateCalls() []struct {
 }
 
 // Delete calls DeleteFunc.
-func (mock *UsecaseMock) Delete(contextMoqParam context.Context, postID *domain.PostID) error {
+func (mock *UsecaseMock) Delete(contextMoqParam context.Context, postID *entity.PostID) error {
 	if mock.DeleteFunc == nil {
 		panic("UsecaseMock.DeleteFunc: method is nil but Usecase.Delete was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
-		PostID          *domain.PostID
+		PostID          *entity.PostID
 	}{
 		ContextMoqParam: contextMoqParam,
 		PostID:          postID,
@@ -162,11 +162,11 @@ func (mock *UsecaseMock) Delete(contextMoqParam context.Context, postID *domain.
 //	len(mockedUsecase.DeleteCalls())
 func (mock *UsecaseMock) DeleteCalls() []struct {
 	ContextMoqParam context.Context
-	PostID          *domain.PostID
+	PostID          *entity.PostID
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		PostID          *domain.PostID
+		PostID          *entity.PostID
 	}
 	mock.lockDelete.RLock()
 	calls = mock.calls.Delete
@@ -175,13 +175,13 @@ func (mock *UsecaseMock) DeleteCalls() []struct {
 }
 
 // Get calls GetFunc.
-func (mock *UsecaseMock) Get(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error) {
+func (mock *UsecaseMock) Get(contextMoqParam context.Context, postID *entity.PostID) (*entity.Post, error) {
 	if mock.GetFunc == nil {
 		panic("UsecaseMock.GetFunc: method is nil but Usecase.Get was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
-		PostID          *domain.PostID
+		PostID          *entity.PostID
 	}{
 		ContextMoqParam: contextMoqParam,
 		PostID:          postID,
@@ -198,11 +198,11 @@ func (mock *UsecaseMock) Get(contextMoqParam context.Context, postID *domain.Pos
 //	len(mockedUsecase.GetCalls())
 func (mock *UsecaseMock) GetCalls() []struct {
 	ContextMoqParam context.Context
-	PostID          *domain.PostID
+	PostID          *entity.PostID
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		PostID          *domain.PostID
+		PostID          *entity.PostID
 	}
 	mock.lockGet.RLock()
 	calls = mock.calls.Get
@@ -211,13 +211,13 @@ func (mock *UsecaseMock) GetCalls() []struct {
 }
 
 // Range calls RangeFunc.
-func (mock *UsecaseMock) Range(contextMoqParam context.Context, pageOption *domain.PageOption) ([]*domain.Post, error) {
+func (mock *UsecaseMock) Range(contextMoqParam context.Context, pageOption *entity.PageOption) ([]*entity.Post, error) {
 	if mock.RangeFunc == nil {
 		panic("UsecaseMock.RangeFunc: method is nil but Usecase.Range was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
-		PageOption      *domain.PageOption
+		PageOption      *entity.PageOption
 	}{
 		ContextMoqParam: contextMoqParam,
 		PageOption:      pageOption,
@@ -234,11 +234,11 @@ func (mock *UsecaseMock) Range(contextMoqParam context.Context, pageOption *doma
 //	len(mockedUsecase.RangeCalls())
 func (mock *UsecaseMock) RangeCalls() []struct {
 	ContextMoqParam context.Context
-	PageOption      *domain.PageOption
+	PageOption      *entity.PageOption
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		PageOption      *domain.PageOption
+		PageOption      *entity.PageOption
 	}
 	mock.lockRange.RLock()
 	calls = mock.calls.Range
@@ -247,13 +247,13 @@ func (mock *UsecaseMock) RangeCalls() []struct {
 }
 
 // Update calls UpdateFunc.
-func (mock *UsecaseMock) Update(contextMoqParam context.Context, post *domain.Post) (*domain.Post, error) {
+func (mock *UsecaseMock) Update(contextMoqParam context.Context, post *entity.Post) (*entity.Post, error) {
 	if mock.UpdateFunc == nil {
 		panic("UsecaseMock.UpdateFunc: method is nil but Usecase.Update was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
-		Post            *domain.Post
+		Post            *entity.Post
 	}{
 		ContextMoqParam: contextMoqParam,
 		Post:            post,
@@ -270,11 +270,11 @@ func (mock *UsecaseMock) Update(contextMoqParam context.Context, post *domain.Po
 //	len(mockedUsecase.UpdateCalls())
 func (mock *UsecaseMock) UpdateCalls() []struct {
 	ContextMoqParam context.Context
-	Post            *domain.Post
+	Post            *entity.Post
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		Post            *domain.Post
+		Post            *entity.Post
 	}
 	mock.lockUpdate.RLock()
 	calls = mock.calls.Update
