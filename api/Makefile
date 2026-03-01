@@ -70,7 +70,7 @@ build-grpc: build-grpc-binary build-grpc-container
 build-grpc-binary:
 	CGO_ENABLED=0 GOOS=linux $(GO_BINARY) build -a -installsuffix cgo \
 	-ldflags "-w -X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-grpc" \
-	-o $(BUILD_DIR)/$(PROJECT_NAME)-grpc $(COMMAND_DIR)/grpc/main.go $(COMMAND_DIR)/grpc/wire_gen.go
+	-o $(BUILD_DIR)/$(PROJECT_NAME)-grpc $(COMMAND_DIR)/grpc/
 
 build-grpc-container:
 	cd $(BUILD_DIR) && \
@@ -81,21 +81,18 @@ build-rest: build-rest-binary build-rest-container
 build-rest-binary:
 	CGO_ENABLED=0 GOOS=linux $(GO_BINARY) build -a -installsuffix cgo \
 	-ldflags "-w -X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-rest" \
-	-o $(BUILD_DIR)/$(PROJECT_NAME)-rest $(COMMAND_DIR)/rest/main.go $(COMMAND_DIR)/rest/wire_gen.go
+	-o $(BUILD_DIR)/$(PROJECT_NAME)-rest $(COMMAND_DIR)/rest/
 
 build-rest-container:
 	cd $(BUILD_DIR) && \
 	docker build . --no-cache --build-arg name=$(PROJECT_NAME)-rest -t $(PROJECT_NAME)-rest:latest -t $(PROJECT_NAME)-rest:$(VERSION)
 
-gen: gen-mock gen-wire
+gen: gen-mock
 
 gen-mock:
 	moq -out mock/adapter/repository/commander.go -pkg mock_repository ./internal/adapter/repository Commander
 	moq -out mock/adapter/repository/querier.go -pkg mock_repository ./internal/adapter/repository Querier
 	moq -out mock/usecase/usecase.go -pkg mock_usecase ./internal/usecase Usecase
-
-gen-wire:
-	./bin/wire $(CODE_DIRS)
 
 tools-install: tools-tidy
 	@for tool in $$(sed -n 's/[ \f\n\r\t]*_ "\(.*\)"/\1/p' tools/tools.go); do GOBIN=$(shell pwd)/bin $(GO_BINARY) install $${tool}@latest; done
