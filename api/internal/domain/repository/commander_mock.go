@@ -7,7 +7,7 @@ import (
 	"context"
 	"sync"
 
-	entity "github.com/becosuke/guestbook/api/internal/domain/entity/post"
+	"github.com/becosuke/guestbook/api/internal/domain/entity"
 )
 
 // Ensure, that CommanderMock does implement Commander.

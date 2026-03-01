@@ -7,12 +7,11 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
-	entityconfig "github.com/becosuke/guestbook/api/internal/domain/entity/config"
-	entity "github.com/becosuke/guestbook/api/internal/domain/entity/post"
+	"github.com/becosuke/guestbook/api/internal/domain/entity"
 	"github.com/becosuke/guestbook/api/internal/domain/repository"
 )
 
-func NewUsecase(config *entityconfig.Config, logger *zap.Logger, querier repository.Querier, commander repository.Commander) *Usecase {
+func NewUsecase(config *entity.Config, logger *zap.Logger, querier repository.Querier, commander repository.Commander) *Usecase {
 	return &Usecase{
 		config:    config,
 		logger:    logger,
@@ -22,7 +21,7 @@ func NewUsecase(config *entityconfig.Config, logger *zap.Logger, querier reposit
 }
 
 type Usecase struct {
-	config    *entityconfig.Config
+	config    *entity.Config
 	logger    *zap.Logger
 	querier   repository.Querier
 	commander repository.Commander
@@ -55,7 +54,7 @@ func (impl *Usecase) Range(ctx context.Context, pageOption *entity.PageOption) (
 
 func (impl *Usecase) Create(ctx context.Context, post *entity.Post) (*entity.Post, error) {
 	postID := entity.NewPostID(uuid.New().String())
-	post = entity.NewPost(postID, post.Body())
+	post = entity.NewPost(postID, post.PostBody())
 	err := impl.commander.Create(ctx, post)
 	if err != nil {
 		return nil, errors.WithStack(err)

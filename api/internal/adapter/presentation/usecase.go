@@ -4,7 +4,7 @@ package presentation
 import (
 	"context"
 
-	entity "github.com/becosuke/guestbook/api/internal/domain/entity/post"
+	"github.com/becosuke/guestbook/api/internal/domain/entity"
 )
 
 type Usecase interface {

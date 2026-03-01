@@ -8,12 +8,11 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
-	entityconfig "github.com/becosuke/guestbook/api/internal/domain/entity/config"
-	entity "github.com/becosuke/guestbook/api/internal/domain/entity/post"
+	"github.com/becosuke/guestbook/api/internal/domain/entity"
 	"github.com/becosuke/guestbook/api/internal/domain/repository"
 )
 
-func NewQuerier(config *entityconfig.Config, logger *zap.Logger, pool *pgxpool.Pool) repository.Querier {
+func NewQuerier(config *entity.Config, logger *zap.Logger, pool *pgxpool.Pool) repository.Querier {
 	return &querierImpl{
 		config: config,
 		logger: logger,
@@ -22,7 +21,7 @@ func NewQuerier(config *entityconfig.Config, logger *zap.Logger, pool *pgxpool.P
 }
 
 type querierImpl struct {
-	config *entityconfig.Config
+	config *entity.Config
 	logger *zap.Logger
 	pool   *pgxpool.Pool
 }
@@ -36,7 +35,7 @@ func (impl *querierImpl) Get(ctx context.Context, postID *entity.PostID) (*entit
 		}
 		return nil, errors.WithStack(err)
 	}
-	return entity.NewPost(postID, entity.NewBody(body)), nil
+	return entity.NewPost(postID, entity.NewPostBody(body)), nil
 }
 
 func (impl *querierImpl) Range(ctx context.Context, pageOption *entity.PageOption) ([]*entity.Post, error) {
@@ -69,7 +68,7 @@ func (impl *querierImpl) Range(ctx context.Context, pageOption *entity.PageOptio
 		if err := rows.Scan(&postID, &body); err != nil {
 			return nil, errors.WithStack(err)
 		}
-		posts = append(posts, entity.NewPost(entity.NewPostID(postID), entity.NewBody(body)))
+		posts = append(posts, entity.NewPost(entity.NewPostID(postID), entity.NewPostBody(body)))
 	}
 	if err := rows.Err(); err != nil {
 		return nil, errors.WithStack(err)

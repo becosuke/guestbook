@@ -8,14 +8,13 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
-	entityconfig "github.com/becosuke/guestbook/api/internal/domain/entity/config"
-	entity "github.com/becosuke/guestbook/api/internal/domain/entity/post"
+	"github.com/becosuke/guestbook/api/internal/domain/entity"
 	"github.com/becosuke/guestbook/api/internal/domain/repository"
 )
 
 const uniqueViolationCode = "23505"
 
-func NewCommander(config *entityconfig.Config, logger *zap.Logger, pool *pgxpool.Pool) repository.Commander {
+func NewCommander(config *entity.Config, logger *zap.Logger, pool *pgxpool.Pool) repository.Commander {
 	return &commanderImpl{
 		config: config,
 		logger: logger,
@@ -24,7 +23,7 @@ func NewCommander(config *entityconfig.Config, logger *zap.Logger, pool *pgxpool
 }
 
 type commanderImpl struct {
-	config *entityconfig.Config
+	config *entity.Config
 	logger *zap.Logger
 	pool   *pgxpool.Pool
 }
@@ -32,7 +31,7 @@ type commanderImpl struct {
 func (impl *commanderImpl) Create(ctx context.Context, post *entity.Post) error {
 	_, err := impl.pool.Exec(ctx,
 		"INSERT INTO posts (post_id, body) VALUES ($1, $2)",
-		post.PostID().String(), post.Body().String(),
+		post.PostID().String(), post.PostBody().String(),
 	)
 	if err != nil {
 		var pgErr *pgconn.PgError
@@ -47,7 +46,7 @@ func (impl *commanderImpl) Create(ctx context.Context, post *entity.Post) error 
 func (impl *commanderImpl) Update(ctx context.Context, post *entity.Post) error {
 	ct, err := impl.pool.Exec(ctx,
 		"UPDATE posts SET body = $1, update_time = NOW() WHERE post_id = $2",
-		post.Body().String(), post.PostID().String(),
+		post.PostBody().String(), post.PostID().String(),
 	)
 	if err != nil {
 		return errors.WithStack(err)

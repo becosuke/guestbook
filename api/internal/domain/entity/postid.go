@@ -1,4 +1,4 @@
-package post
+package entity
 
 type PostID string
 
