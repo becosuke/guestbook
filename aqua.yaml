@@ -10,6 +10,9 @@
 registries:
 - type: standard
   ref: v4.475.0 # renovate: depName=aquaproj/aqua-registry
+- name: local
+  type: local
+  path: registry.yaml
 packages:
 - name: daixiang0/gci@v0.13.7
 - name: cloudspannerecosystem/wrench@v1.13.1
@@ -20,3 +23,5 @@ packages:
 - name: grpc/grpc-go/protoc-gen-go-grpc@cmd/protoc-gen-go-grpc/v1.6.1
 - name: grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v2.28.0
 - name: bufbuild/buf@v1.66.0
+- name: quasilyte/go-consistent@v0.6.2
+  registry: local

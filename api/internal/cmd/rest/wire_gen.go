@@ -8,9 +8,11 @@ package main
 
 import (
 	"context"
+
+	"go.uber.org/zap"
+
 	"github.com/becosuke/guestbook/api/internal/pkg/config"
 	"github.com/becosuke/guestbook/api/internal/pkg/logger"
-	"go.uber.org/zap"
 )
 
 // Injectors from wire.go:
