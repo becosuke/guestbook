@@ -9,7 +9,6 @@ package main
 import (
 	"context"
 	"github.com/becosuke/guestbook/api/internal/adapter/controller"
-	"github.com/becosuke/guestbook/api/internal/adapter/repository/generator"
 	syncmap2 "github.com/becosuke/guestbook/api/internal/adapter/repository/syncmap"
 	"github.com/becosuke/guestbook/api/internal/application/interactor"
 	"github.com/becosuke/guestbook/api/internal/driver/grpcserver"
@@ -32,8 +31,7 @@ func InitializeApp(ctx context.Context) *App {
 	server := grpcserver.NewGrpcServer(ctx, zapLogger, authFunc)
 	syncmapSyncmap := syncmap.NewSyncmap()
 	querier := syncmap2.NewQuerier(configConfig, zapLogger, syncmapSyncmap)
-	repositoryGenerator := generator.NewGenerator()
-	commander := syncmap2.NewCommander(configConfig, zapLogger, syncmapSyncmap, repositoryGenerator)
+	commander := syncmap2.NewCommander(configConfig, zapLogger, syncmapSyncmap)
 	usecase := interactor.NewUsecase(configConfig, zapLogger, querier, commander)
 	guestbookServiceServer := controller.NewGuestbookServiceServer(configConfig, zapLogger, usecase)
 	app := &App{
@@ -58,4 +56,4 @@ var controllerSet = wire.NewSet(controller.NewGuestbookServiceServer)
 
 var usecaseSet = wire.NewSet(interactor.NewUsecase)
 
-var repositorySet = wire.NewSet(generator.NewGenerator, syncmap2.NewQuerier, syncmap2.NewCommander)
+var repositorySet = wire.NewSet(syncmap2.NewQuerier, syncmap2.NewCommander)

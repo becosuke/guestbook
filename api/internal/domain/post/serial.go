@@ -1,15 +1,15 @@
 package post
 
-type Serial int64
+type Serial string
 
-func NewSerial(serial int64) *Serial {
+func NewSerial(serial string) *Serial {
 	s := Serial(serial)
 	return &s
 }
 
-func (s *Serial) Int64() int64 {
+func (s *Serial) String() string {
 	if s == nil {
-		return 0
+		return ""
 	}
-	return int64(*s)
+	return string(*s)
 }

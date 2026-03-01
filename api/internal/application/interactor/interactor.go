@@ -3,6 +3,7 @@ package interactor
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
@@ -54,7 +55,9 @@ func (impl *usecaseImpl) Range(ctx context.Context, pageOption *domain.PageOptio
 }
 
 func (impl *usecaseImpl) Create(ctx context.Context, post *domain.Post) (*domain.Post, error) {
-	serial, err := impl.commander.Create(ctx, post)
+	serial := domain.NewSerial(uuid.New().String())
+	post = domain.NewPost(serial, post.Body())
+	err := impl.commander.Create(ctx, post)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}

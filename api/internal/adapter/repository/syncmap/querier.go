@@ -27,7 +27,7 @@ type querierImpl struct {
 }
 
 func (impl *querierImpl) Get(_ context.Context, serial *domain.Serial) (*domain.Post, error) {
-	value, err := impl.store.Get(serial.Int64())
+	value, err := impl.store.Get(serial.String())
 	if err != nil {
 		switch {
 		case errors.Is(err, syncmap.ErrInvalidArgument):

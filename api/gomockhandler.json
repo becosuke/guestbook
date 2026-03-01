@@ -9,15 +9,6 @@
 				"destination": "mock/adapter/repository/commander.go"
 			}
 		},
-		"mock/adapter/repository/generator.go": {
-			"checksum": "rMXxI77u9f1NQSM19UZkZw==",
-			"source_checksum": "BW0tZ+m337E1e7dWFcBwbg==",
-			"mode": "SOURCE_MODE",
-			"source_mode_runner": {
-				"source": "internal/adapter/repository/generator.go",
-				"destination": "mock/adapter/repository/generator.go"
-			}
-		},
 		"mock/adapter/repository/querier.go": {
 			"checksum": "Bap7CsoKllPmqpMmdR8vGQ==",
 			"source_checksum": "g0DdOeuKT6W4jyowIint4Q==",

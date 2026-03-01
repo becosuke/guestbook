@@ -7,7 +7,7 @@ import (
 )
 
 type Commander interface {
-	Create(context.Context, *domain.Post) (*domain.Serial, error)
+	Create(context.Context, *domain.Post) error
 	Update(context.Context, *domain.Post) error
 	Delete(context.Context, *domain.Serial) error
 }
