@@ -14,7 +14,7 @@ import (
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
 
-type guestbookServiceServerImpl struct {
+type guestbookServiceServer struct {
 	pb.UnimplementedGuestbookServiceServer
 	config  *pkgconfig.Config
 	logger  *zap.Logger
@@ -22,14 +22,14 @@ type guestbookServiceServerImpl struct {
 }
 
 func NewGuestbookServiceServer(config *pkgconfig.Config, logger *zap.Logger, usecase Usecase) pb.GuestbookServiceServer {
-	return &guestbookServiceServerImpl{
+	return &guestbookServiceServer{
 		config:  config,
 		logger:  logger,
 		usecase: usecase,
 	}
 }
 
-func (impl *guestbookServiceServerImpl) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb.Post, error) {
+func (impl *guestbookServiceServer) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb.Post, error) {
 	res, err := impl.usecase.Get(ctx, impl.postIDResourceToDomain(req.GetPostId()))
 	if err != nil {
 		switch {
@@ -44,7 +44,7 @@ func (impl *guestbookServiceServerImpl) GetPost(ctx context.Context, req *pb.Get
 	return impl.postDomainToResource(res), nil
 }
 
-func (impl *guestbookServiceServerImpl) CreatePost(ctx context.Context, req *pb.CreatePostRequest) (*pb.Post, error) {
+func (impl *guestbookServiceServer) CreatePost(ctx context.Context, req *pb.CreatePostRequest) (*pb.Post, error) {
 	res, err := impl.usecase.Create(ctx, impl.postResourceToDomain(req.GetPost()))
 	if err != nil {
 		switch {
@@ -57,7 +57,7 @@ func (impl *guestbookServiceServerImpl) CreatePost(ctx context.Context, req *pb.
 	return impl.postDomainToResource(res), nil
 }
 
-func (impl *guestbookServiceServerImpl) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest) (*pb.Post, error) {
+func (impl *guestbookServiceServer) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest) (*pb.Post, error) {
 	res, err := impl.usecase.Update(ctx, impl.postResourceToDomain(req.GetPost()))
 	if err != nil {
 		switch {
@@ -70,11 +70,11 @@ func (impl *guestbookServiceServerImpl) UpdatePost(ctx context.Context, req *pb.
 	return impl.postDomainToResource(res), nil
 }
 
-func (impl *guestbookServiceServerImpl) ListPosts(ctx context.Context, req *pb.ListPostsRequest) (*pb.ListPostsResponse, error) {
+func (impl *guestbookServiceServer) ListPosts(ctx context.Context, req *pb.ListPostsRequest) (*pb.ListPostsResponse, error) {
 	return &pb.ListPostsResponse{}, nil
 }
 
-func (impl *guestbookServiceServerImpl) DeletePost(ctx context.Context, req *pb.DeletePostRequest) (*emptypb.Empty, error) {
+func (impl *guestbookServiceServer) DeletePost(ctx context.Context, req *pb.DeletePostRequest) (*emptypb.Empty, error) {
 	err := impl.usecase.Delete(ctx, impl.postIDResourceToDomain(req.GetPostId()))
 	if err != nil {
 		return nil, err

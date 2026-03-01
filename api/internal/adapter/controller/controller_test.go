@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/becosuke/guestbook/api/internal/domain/repository"
 	domain "github.com/becosuke/guestbook/api/internal/domain/post"
+	"github.com/becosuke/guestbook/api/internal/domain/repository"
 	pkgconfig "github.com/becosuke/guestbook/api/internal/pkg/config"
 	pb "github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
@@ -90,18 +90,18 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			impl := &guestbookServiceServerImpl{
+			impl := &guestbookServiceServer{
 				UnimplementedGuestbookServiceServer: tt.fields.UnimplementedGuestbookServiceServer,
 				config:                              tt.fields.config,
 				usecase:                             tt.fields.usecase,
 			}
 			got, err := impl.GetPost(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("guestbookServiceServerImpl.GetPost() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("guestbookServiceServer.GetPost() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("guestbookServiceServerImpl.GetPost() = %v, want %v", got, tt.want)
+				t.Errorf("guestbookServiceServer.GetPost() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -158,18 +158,18 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			impl := &guestbookServiceServerImpl{
+			impl := &guestbookServiceServer{
 				UnimplementedGuestbookServiceServer: tt.fields.UnimplementedGuestbookServiceServer,
 				config:                              tt.fields.config,
 				usecase:                             tt.fields.usecase,
 			}
 			got, err := impl.CreatePost(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("guestbookServiceServerImpl.CreatePost() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("guestbookServiceServer.CreatePost() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("guestbookServiceServerImpl.CreatePost() = %v, want %v", got, tt.want)
+				t.Errorf("guestbookServiceServer.CreatePost() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -227,18 +227,18 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			impl := &guestbookServiceServerImpl{
+			impl := &guestbookServiceServer{
 				UnimplementedGuestbookServiceServer: tt.fields.UnimplementedGuestbookServiceServer,
 				config:                              tt.fields.config,
 				usecase:                             tt.fields.usecase,
 			}
 			got, err := impl.UpdatePost(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("guestbookServiceServerImpl.UpdatePost() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("guestbookServiceServer.UpdatePost() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("guestbookServiceServerImpl.UpdatePost() = %v, want %v", got, tt.want)
+				t.Errorf("guestbookServiceServer.UpdatePost() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -289,18 +289,18 @@ func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			impl := &guestbookServiceServerImpl{
+			impl := &guestbookServiceServer{
 				UnimplementedGuestbookServiceServer: tt.fields.UnimplementedGuestbookServiceServer,
 				config:                              tt.fields.config,
 				usecase:                             tt.fields.usecase,
 			}
 			got, err := impl.DeletePost(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("guestbookServiceServerImpl.DeletePost() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("guestbookServiceServer.DeletePost() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("guestbookServiceServerImpl.DeletePost() = %v, want %v", got, tt.want)
+				t.Errorf("guestbookServiceServer.DeletePost() = %v, want %v", got, tt.want)
 			}
 		})
 	}
