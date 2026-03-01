@@ -18,7 +18,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/becosuke/guestbook/api/internal/adapter/controller"
+	"github.com/becosuke/guestbook/api/internal/adapter/presentation"
 	repository_postgres "github.com/becosuke/guestbook/api/internal/adapter/repository/postgres"
 	"github.com/becosuke/guestbook/api/internal/pkg/config"
 	"github.com/becosuke/guestbook/api/internal/pkg/logger"
@@ -70,7 +70,7 @@ func InitializeApp(ctx context.Context) *App {
 	querier := repository_postgres.NewQuerier(cfg, zapLogger, pool)
 	commander := repository_postgres.NewCommander(cfg, zapLogger, pool)
 	uc := usecase.NewUsecase(cfg, zapLogger, querier, commander)
-	ctrl := controller.NewGuestbookServiceServer(cfg, zapLogger, uc)
+	ctrl := presentation.NewGuestbookServiceServer(cfg, zapLogger, uc)
 	return &App{
 		Config:     cfg,
 		Logger:     zapLogger,
