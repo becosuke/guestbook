@@ -1,4 +1,4 @@
-package post
+package entity
 
 type PageSize int32
 type PageToken string

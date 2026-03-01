@@ -1,4 +1,4 @@
-package post
+package entity
 
 import (
 	"testing"
@@ -43,38 +43,38 @@ func TestPostID_String(t *testing.T) {
 	}
 }
 
-func TestBody_String(t *testing.T) {
+func TestPostBody_String(t *testing.T) {
 	type testCase struct {
-		name string
-		body *Body
-		want string
+		name     string
+		postBody *PostBody
+		want     string
 	}
 	tests := []testCase{
 		func() testCase {
 			return testCase{
-				name: "normal",
-				body: NewBody("example"),
-				want: "example",
+				name:     "normal",
+				postBody: NewPostBody("example"),
+				want:     "example",
 			}
 		}(),
 		func() testCase {
 			return testCase{
-				name: "empty",
-				body: NewBody(""),
-				want: "",
+				name:     "empty",
+				postBody: NewPostBody(""),
+				want:     "",
 			}
 		}(),
 		func() testCase {
 			return testCase{
-				name: "nil",
-				body: nil,
-				want: "",
+				name:     "nil",
+				postBody: nil,
+				want:     "",
 			}
 		}(),
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := tt.body.String()
+			got := tt.postBody.String()
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -82,47 +82,47 @@ func TestBody_String(t *testing.T) {
 
 func TestNewPost(t *testing.T) {
 	type args struct {
-		postID *PostID
-		body   *Body
+		postID   *PostID
+		postBody *PostBody
 	}
 	type testCase struct {
-		name       string
-		args       args
-		wantPostID *PostID
-		wantBody   *Body
+		name         string
+		args         args
+		wantPostID   *PostID
+		wantPostBody *PostBody
 	}
 	tests := []testCase{
 		func() testCase {
 			postID := NewPostID("550e8400-e29b-41d4-a716-446655440000")
-			body := NewBody("example")
+			postBody := NewPostBody("example")
 			return testCase{
 				name: "normal",
 				args: args{
-					postID: postID,
-					body:   body,
+					postID:   postID,
+					postBody: postBody,
 				},
-				wantPostID: postID,
-				wantBody:   body,
+				wantPostID:   postID,
+				wantPostBody: postBody,
 			}
 		}(),
 		func() testCase {
 			return testCase{
 				name: "nil fields",
 				args: args{
-					postID: nil,
-					body:   nil,
+					postID:   nil,
+					postBody: nil,
 				},
-				wantPostID: nil,
-				wantBody:   nil,
+				wantPostID:   nil,
+				wantPostBody: nil,
 			}
 		}(),
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := NewPost(tt.args.postID, tt.args.body)
+			got := NewPost(tt.args.postID, tt.args.postBody)
 			assert.NotNil(t, got)
 			assert.Equal(t, tt.wantPostID, got.PostID())
-			assert.Equal(t, tt.wantBody, got.Body())
+			assert.Equal(t, tt.wantPostBody, got.PostBody())
 		})
 	}
 }
