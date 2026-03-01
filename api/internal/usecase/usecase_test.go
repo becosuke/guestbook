@@ -8,8 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 
-	"github.com/becosuke/guestbook/api/internal/domain/entity/config"
-	entity "github.com/becosuke/guestbook/api/internal/domain/entity/post"
+	"github.com/becosuke/guestbook/api/internal/domain/entity"
 	"github.com/becosuke/guestbook/api/internal/domain/repository"
 )
 
@@ -33,7 +32,7 @@ func TestUsecase_Get(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			postID := entity.NewPostID("550e8400-e29b-41d4-a716-446655440000")
-			body := entity.NewBody("example")
+			body := entity.NewPostBody("example")
 			post := entity.NewPost(postID, body)
 			mockQuerier := &repository.QuerierMock{
 				GetFunc: func(ctx context.Context, id *entity.PostID) (*entity.Post, error) {
@@ -78,7 +77,7 @@ func TestUsecase_Get(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uc := NewUsecase(&config.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
+			uc := NewUsecase(&entity.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
 			got, err := uc.Get(tt.args.ctx, tt.args.postID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Usecase.Get() error = %v, wantErr %v", err, tt.wantErr)
@@ -113,8 +112,8 @@ func TestUsecase_Range(t *testing.T) {
 			pageSize := entity.PageSize(10)
 			pageOption := entity.NewPageOption(&pageSize, nil)
 			posts := []*entity.Post{
-				entity.NewPost(entity.NewPostID("550e8400-e29b-41d4-a716-446655440000"), entity.NewBody("example1")),
-				entity.NewPost(entity.NewPostID("550e8400-e29b-41d4-a716-446655440001"), entity.NewBody("example2")),
+				entity.NewPost(entity.NewPostID("550e8400-e29b-41d4-a716-446655440000"), entity.NewPostBody("example1")),
+				entity.NewPost(entity.NewPostID("550e8400-e29b-41d4-a716-446655440001"), entity.NewPostBody("example2")),
 			}
 			mockQuerier := &repository.QuerierMock{
 				RangeFunc: func(ctx context.Context, po *entity.PageOption) ([]*entity.Post, error) {
@@ -159,7 +158,7 @@ func TestUsecase_Range(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uc := NewUsecase(&config.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
+			uc := NewUsecase(&entity.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
 			got, err := uc.Range(tt.args.ctx, tt.args.pageOption)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Usecase.Range() error = %v, wantErr %v", err, tt.wantErr)
@@ -191,12 +190,12 @@ func TestUsecase_Create(t *testing.T) {
 	tests := []testCase{
 		func() testCase {
 			ctx := context.Background()
-			body := entity.NewBody("example")
+			body := entity.NewPostBody("example")
 			inputPost := entity.NewPost(nil, body)
 			returnedPost := entity.NewPost(entity.NewPostID("550e8400-e29b-41d4-a716-446655440000"), body)
 			mockCommander := &repository.CommanderMock{
 				CreateFunc: func(ctx context.Context, p *entity.Post) error {
-					assert.Equal(t, "example", p.Body().String())
+					assert.Equal(t, "example", p.PostBody().String())
 					assert.NotEmpty(t, p.PostID().String())
 					return nil
 				},
@@ -222,7 +221,7 @@ func TestUsecase_Create(t *testing.T) {
 		}(),
 		func() testCase {
 			ctx := context.Background()
-			body := entity.NewBody("example")
+			body := entity.NewPostBody("example")
 			inputPost := entity.NewPost(nil, body)
 			mockCommander := &repository.CommanderMock{
 				CreateFunc: func(ctx context.Context, p *entity.Post) error {
@@ -244,7 +243,7 @@ func TestUsecase_Create(t *testing.T) {
 		}(),
 		func() testCase {
 			ctx := context.Background()
-			body := entity.NewBody("example")
+			body := entity.NewPostBody("example")
 			inputPost := entity.NewPost(nil, body)
 			mockCommander := &repository.CommanderMock{
 				CreateFunc: func(ctx context.Context, p *entity.Post) error {
@@ -273,7 +272,7 @@ func TestUsecase_Create(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uc := NewUsecase(&config.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
+			uc := NewUsecase(&entity.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
 			got, err := uc.Create(tt.args.ctx, tt.args.post)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Usecase.Create() error = %v, wantErr %v", err, tt.wantErr)
@@ -306,12 +305,12 @@ func TestUsecase_Update(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			postID := entity.NewPostID("550e8400-e29b-41d4-a716-446655440000")
-			body := entity.NewBody("updated-example")
+			body := entity.NewPostBody("updated-example")
 			post := entity.NewPost(postID, body)
 			mockCommander := &repository.CommanderMock{
 				UpdateFunc: func(ctx context.Context, p *entity.Post) error {
 					assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", p.PostID().String())
-					assert.Equal(t, "updated-example", p.Body().String())
+					assert.Equal(t, "updated-example", p.PostBody().String())
 					return nil
 				},
 			}
@@ -338,7 +337,7 @@ func TestUsecase_Update(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			postID := entity.NewPostID("550e8400-e29b-41d4-a716-446655440000")
-			body := entity.NewBody("updated-example")
+			body := entity.NewPostBody("updated-example")
 			post := entity.NewPost(postID, body)
 			mockCommander := &repository.CommanderMock{
 				UpdateFunc: func(ctx context.Context, p *entity.Post) error {
@@ -361,7 +360,7 @@ func TestUsecase_Update(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			postID := entity.NewPostID("550e8400-e29b-41d4-a716-446655440000")
-			body := entity.NewBody("updated-example")
+			body := entity.NewPostBody("updated-example")
 			post := entity.NewPost(postID, body)
 			mockCommander := &repository.CommanderMock{
 				UpdateFunc: func(ctx context.Context, p *entity.Post) error {
@@ -390,7 +389,7 @@ func TestUsecase_Update(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uc := NewUsecase(&config.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
+			uc := NewUsecase(&entity.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
 			got, err := uc.Update(tt.args.ctx, tt.args.post)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Usecase.Update() error = %v, wantErr %v", err, tt.wantErr)
@@ -463,7 +462,7 @@ func TestUsecase_Delete(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uc := NewUsecase(&config.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
+			uc := NewUsecase(&entity.Config{}, zap.NewNop(), tt.fields.querier, tt.fields.commander)
 			err := uc.Delete(tt.args.ctx, tt.args.postID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Usecase.Delete() error = %v, wantErr %v", err, tt.wantErr)

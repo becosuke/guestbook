@@ -9,19 +9,19 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	entityconfig "github.com/becosuke/guestbook/api/internal/domain/entity/config"
+	"github.com/becosuke/guestbook/api/internal/domain/entity"
 	"github.com/becosuke/guestbook/api/internal/domain/repository"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
 
 type guestbookServiceServer struct {
 	pb.UnimplementedGuestbookServiceServer
-	config  *entityconfig.Config
+	config  *entity.Config
 	logger  *zap.Logger
 	usecase Usecase
 }
 
-func NewGuestbookServiceServer(config *entityconfig.Config, logger *zap.Logger, usecase Usecase) pb.GuestbookServiceServer {
+func NewGuestbookServiceServer(config *entity.Config, logger *zap.Logger, usecase Usecase) pb.GuestbookServiceServer {
 	return &guestbookServiceServer{
 		config:  config,
 		logger:  logger,
