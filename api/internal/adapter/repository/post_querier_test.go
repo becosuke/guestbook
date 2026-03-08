@@ -20,7 +20,7 @@ func TestGetPost(t *testing.T) {
 	t.Run("existing post", func(t *testing.T) {
 		id := newUUID()
 		body := "test body"
-		post := domain.NewPost(domain.NewPostID(id), domain.NewPostBody(body), time.Time{}, time.Time{}, time.Time{})
+		post := domain.NewPost(domain.NewPostID(id), domain.NewPostBody(body), domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
 		err := testCommander.CreatePost(ctx, post)
 		require.NoError(t, err)
 
@@ -40,7 +40,7 @@ func TestGetPost(t *testing.T) {
 
 	t.Run("deleted post is still returned by GetPost", func(t *testing.T) {
 		id := newUUID()
-		post := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("to be deleted"), time.Time{}, time.Time{}, time.Time{})
+		post := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("to be deleted"), domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
 		err := testCommander.CreatePost(ctx, post)
 		require.NoError(t, err)
 
@@ -69,7 +69,7 @@ func TestRangePosts(t *testing.T) {
 		ids := make([]string, 3)
 		for i := range ids {
 			ids[i] = newUUID()
-			post := domain.NewPost(domain.NewPostID(ids[i]), domain.NewPostBody("body "+ids[i][:8]), time.Time{}, time.Time{}, time.Time{})
+			post := domain.NewPost(domain.NewPostID(ids[i]), domain.NewPostBody("body "+ids[i][:8]), domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
 			err := testCommander.CreatePost(ctx, post)
 			require.NoError(t, err)
 			// Sleep briefly to ensure distinct CreateTime values
@@ -90,7 +90,7 @@ func TestRangePosts(t *testing.T) {
 		ids := make([]string, 5)
 		for i := range ids {
 			ids[i] = newUUID()
-			post := domain.NewPost(domain.NewPostID(ids[i]), domain.NewPostBody("body "+ids[i][:8]), time.Time{}, time.Time{}, time.Time{})
+			post := domain.NewPost(domain.NewPostID(ids[i]), domain.NewPostBody("body "+ids[i][:8]), domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
 			err := testCommander.CreatePost(ctx, post)
 			require.NoError(t, err)
 			time.Sleep(10 * time.Millisecond)
@@ -122,7 +122,7 @@ func TestRangePosts(t *testing.T) {
 	t.Run("respects page size", func(t *testing.T) {
 		truncateTables(t)
 		for i := 0; i < 5; i++ {
-			post := domain.NewPost(domain.NewPostID(newUUID()), domain.NewPostBody("body"), time.Time{}, time.Time{}, time.Time{})
+			post := domain.NewPost(domain.NewPostID(newUUID()), domain.NewPostBody("body"), domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
 			err := testCommander.CreatePost(ctx, post)
 			require.NoError(t, err)
 			time.Sleep(10 * time.Millisecond)

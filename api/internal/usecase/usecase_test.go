@@ -30,7 +30,7 @@ func TestUsecase_Get(t *testing.T) {
 			ctx := context.Background()
 			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			body := domain.NewPostBody("example")
-			post := domain.NewPost(postID, body, time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC), time.Time{}, time.Time{})
+			post := domain.NewPost(postID, body, domain.NewPostBody(""), time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC), time.Time{}, time.Time{})
 			return testCase{
 				name: "normal",
 				repos: &interfaces.RepositoriesMock{
@@ -101,8 +101,8 @@ func TestUsecase_Range(t *testing.T) {
 			pageSize := domain.PageSize(10)
 			pageOption := domain.NewPageOption(&pageSize, nil)
 			posts := []*domain.Post{
-				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewPostBody("example1"), now, time.Time{}, time.Time{}),
-				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440001"), domain.NewPostBody("example2"), now, time.Time{}, time.Time{}),
+				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewPostBody("example1"), domain.NewPostBody(""), now, time.Time{}, time.Time{}),
+				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440001"), domain.NewPostBody("example2"), domain.NewPostBody(""), now, time.Time{}, time.Time{}),
 			}
 			return testCase{
 				name: "no next page",
@@ -127,9 +127,9 @@ func TestUsecase_Range(t *testing.T) {
 			pageSize := domain.PageSize(2)
 			pageOption := domain.NewPageOption(&pageSize, nil)
 			allPosts := []*domain.Post{
-				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewPostBody("example1"), now, time.Time{}, time.Time{}),
-				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440001"), domain.NewPostBody("example2"), now, time.Time{}, time.Time{}),
-				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440002"), domain.NewPostBody("example3"), now, time.Time{}, time.Time{}),
+				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewPostBody("example1"), domain.NewPostBody(""), now, time.Time{}, time.Time{}),
+				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440001"), domain.NewPostBody("example2"), domain.NewPostBody(""), now, time.Time{}, time.Time{}),
+				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440002"), domain.NewPostBody("example3"), domain.NewPostBody(""), now, time.Time{}, time.Time{}),
 			}
 			return testCase{
 				name: "has next page",
@@ -208,8 +208,8 @@ func TestUsecase_Create(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			body := domain.NewPostBody("example")
-			inputPost := domain.NewPost(nil, body, time.Time{}, time.Time{}, time.Time{})
-			returnedPost := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), body, time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC), time.Time{}, time.Time{})
+			inputPost := domain.NewPost(nil, body, domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
+			returnedPost := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), body, domain.NewPostBody(""), time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC), time.Time{}, time.Time{})
 			return testCase{
 				name: "normal",
 				repos: &interfaces.RepositoriesMock{
@@ -233,7 +233,7 @@ func TestUsecase_Create(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			body := domain.NewPostBody("example")
-			inputPost := domain.NewPost(nil, body, time.Time{}, time.Time{}, time.Time{})
+			inputPost := domain.NewPost(nil, body, domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
 			return testCase{
 				name: "create error",
 				repos: &interfaces.RepositoriesMock{
@@ -252,7 +252,7 @@ func TestUsecase_Create(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			body := domain.NewPostBody("example")
-			inputPost := domain.NewPost(nil, body, time.Time{}, time.Time{}, time.Time{})
+			inputPost := domain.NewPost(nil, body, domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
 			return testCase{
 				name: "get error",
 				repos: &interfaces.RepositoriesMock{
@@ -304,7 +304,7 @@ func TestUsecase_Update(t *testing.T) {
 			ctx := context.Background()
 			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			body := domain.NewPostBody("updated-example")
-			post := domain.NewPost(postID, body, time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC), time.Time{}, time.Time{})
+			post := domain.NewPost(postID, body, domain.NewPostBody(""), time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC), time.Time{}, time.Time{})
 			return testCase{
 				name: "normal",
 				repos: &interfaces.RepositoriesMock{
@@ -330,7 +330,7 @@ func TestUsecase_Update(t *testing.T) {
 			ctx := context.Background()
 			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			body := domain.NewPostBody("updated-example")
-			post := domain.NewPost(postID, body, time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC), time.Time{}, time.Time{})
+			post := domain.NewPost(postID, body, domain.NewPostBody(""), time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC), time.Time{}, time.Time{})
 			return testCase{
 				name: "update error",
 				repos: &interfaces.RepositoriesMock{
@@ -350,7 +350,7 @@ func TestUsecase_Update(t *testing.T) {
 			ctx := context.Background()
 			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			body := domain.NewPostBody("updated-example")
-			post := domain.NewPost(postID, body, time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC), time.Time{}, time.Time{})
+			post := domain.NewPost(postID, body, domain.NewPostBody(""), time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC), time.Time{}, time.Time{})
 			return testCase{
 				name: "get error",
 				repos: &interfaces.RepositoriesMock{

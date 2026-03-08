@@ -178,7 +178,12 @@ export default function PostManager() {
               )
               : (
                 <div class="post-content">
-                  <p class="post-body">{post.body}</p>
+                  <div class="post-body-group">
+                    <p class="post-body">{post.body}</p>
+                    {post.previousBody && (
+                      <p class="post-previous-body">{post.previousBody}</p>
+                    )}
+                  </div>
                   <div class="post-actions">
                     <button
                       class="btn btn-small"

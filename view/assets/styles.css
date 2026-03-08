@@ -137,10 +137,21 @@ html {
   gap: 0.75rem;
 }
 
-.post-body {
+.post-body-group {
   flex: 1;
+}
+
+.post-body {
   word-break: break-word;
   font-size: 0.9375rem;
+}
+
+.post-previous-body {
+  text-decoration: line-through;
+  color: #9ca3af;
+  word-break: break-word;
+  font-size: 0.8125rem;
+  margin-top: 0.25rem;
 }
 
 .post-actions {

@@ -41,6 +41,9 @@ func (impl *guestbookServiceServer) postDomainToResource(domainPost *domain.Post
 	if !domainPost.UpdateTime().IsZero() {
 		res.UpdateTime = timestamppb.New(domainPost.UpdateTime())
 	}
+	if domainPost.PreviousBody() != nil && domainPost.PreviousBody().String() != "" {
+		res.PreviousBody = impl.postBodyDomainToResource(domainPost.PreviousBody())
+	}
 	return res
 }
 
@@ -48,6 +51,7 @@ func (impl *guestbookServiceServer) postResourceToDomain(resourcePost *pb.Post) 
 	return domain.NewPost(
 		impl.postIDResourceToDomain(resourcePost.GetPostId()),
 		impl.postBodyResourceToDomain(resourcePost.GetBody()),
+		domain.NewPostBody(""),
 		time.Time{},
 		time.Time{},
 		time.Time{},
