@@ -1,10 +1,10 @@
-// gRPC-Gateway JSON uses camelCase field names
+// gRPC-Gateway JSON uses proto field names (snake_case) with UseProtoNames: true
 export interface Post {
-  postId: string;
+  post_id: string;
   body: string;
 }
 
 export interface ListPostsResponse {
   posts: Post[];
-  nextPageToken: string;
+  next_page_token: string;
 }

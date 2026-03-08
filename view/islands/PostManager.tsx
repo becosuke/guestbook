@@ -22,7 +22,7 @@ export default function PostManager() {
       posts.value = pageToken
         ? [...posts.value, ...res.posts]
         : res.posts;
-      nextPageToken.value = res.nextPageToken;
+      nextPageToken.value = res.next_page_token;
     } catch (e) {
       error.value = e instanceof Error ? e.message : "Failed to load posts";
     } finally {
@@ -61,7 +61,7 @@ export default function PostManager() {
     try {
       const updated = await updatePost(postId, body);
       posts.value = posts.value.map((p) =>
-        p.postId === postId ? updated : p
+        p.post_id === postId ? updated : p
       );
       editingId.value = null;
       editingBody.value = "";
@@ -77,7 +77,7 @@ export default function PostManager() {
     error.value = "";
     try {
       await deletePost(postId);
-      posts.value = posts.value.filter((p) => p.postId !== postId);
+      posts.value = posts.value.filter((p) => p.post_id !== postId);
     } catch (e) {
       error.value = e instanceof Error ? e.message : "Failed to delete post";
     } finally {
@@ -86,7 +86,7 @@ export default function PostManager() {
   }
 
   function startEdit(post: Post) {
-    editingId.value = post.postId;
+    editingId.value = post.post_id;
     editingBody.value = post.body;
   }
 
@@ -123,8 +123,8 @@ export default function PostManager() {
 
       <div class="post-list">
         {posts.value.map((post) => (
-          <div class="post-card" key={post.postId}>
-            {editingId.value === post.postId
+          <div class="post-card" key={post.post_id}>
+            {editingId.value === post.post_id
               ? (
                 <div class="edit-form">
                   <input
@@ -135,14 +135,14 @@ export default function PostManager() {
                       editingBody.value =
                         (e.target as HTMLInputElement).value}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") handleUpdate(post.postId);
+                      if (e.key === "Enter") handleUpdate(post.post_id);
                       if (e.key === "Escape") cancelEdit();
                     }}
                     maxLength={128}
                   />
                   <button
                     class="btn btn-primary"
-                    onClick={() => handleUpdate(post.postId)}
+                    onClick={() => handleUpdate(post.post_id)}
                     disabled={loading.value || !editingBody.value.trim()}
                   >
                     Save
@@ -164,7 +164,7 @@ export default function PostManager() {
                     </button>
                     <button
                       class="btn btn-small btn-danger"
-                      onClick={() => handleDelete(post.postId)}
+                      onClick={() => handleDelete(post.post_id)}
                       disabled={loading.value}
                     >
                       Delete
@@ -172,7 +172,7 @@ export default function PostManager() {
                   </div>
                 </div>
               )}
-            <div class="post-id">{post.postId}</div>
+            <div class="post-id">{post.post_id}</div>
           </div>
         ))}
       </div>
