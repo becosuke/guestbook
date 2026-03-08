@@ -19,7 +19,7 @@ func TestCreatePost(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		id := newUUID()
-		post := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("hello world"), time.Time{}, time.Time{}, nil)
+		post := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("hello world"), time.Time{}, time.Time{}, time.Time{})
 		err := testCommander.CreatePost(ctx, post)
 		require.NoError(t, err)
 
@@ -32,11 +32,11 @@ func TestCreatePost(t *testing.T) {
 
 	t.Run("duplicate id", func(t *testing.T) {
 		id := newUUID()
-		post := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("first"), time.Time{}, time.Time{}, nil)
+		post := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("first"), time.Time{}, time.Time{}, time.Time{})
 		err := testCommander.CreatePost(ctx, post)
 		require.NoError(t, err)
 
-		dup := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("second"), time.Time{}, time.Time{}, nil)
+		dup := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("second"), time.Time{}, time.Time{}, time.Time{})
 		err = testCommander.CreatePost(ctx, dup)
 		assert.ErrorIs(t, err, domain.ErrAlreadyExists)
 	})
@@ -48,11 +48,11 @@ func TestUpdatePost(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		id := newUUID()
-		post := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("original"), time.Time{}, time.Time{}, nil)
+		post := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("original"), time.Time{}, time.Time{}, time.Time{})
 		err := testCommander.CreatePost(ctx, post)
 		require.NoError(t, err)
 
-		updated := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("updated"), time.Time{}, time.Time{}, nil)
+		updated := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("updated"), time.Time{}, time.Time{}, time.Time{})
 		err = testCommander.UpdatePost(ctx, updated)
 		require.NoError(t, err)
 
@@ -62,21 +62,21 @@ func TestUpdatePost(t *testing.T) {
 	})
 
 	t.Run("not found", func(t *testing.T) {
-		post := domain.NewPost(domain.NewPostID(newUUID()), domain.NewPostBody("body"), time.Time{}, time.Time{}, nil)
+		post := domain.NewPost(domain.NewPostID(newUUID()), domain.NewPostBody("body"), time.Time{}, time.Time{}, time.Time{})
 		err := testCommander.UpdatePost(ctx, post)
 		assert.ErrorIs(t, err, domain.ErrNotFound)
 	})
 
 	t.Run("deleted post", func(t *testing.T) {
 		id := newUUID()
-		post := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("to delete"), time.Time{}, time.Time{}, nil)
+		post := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("to delete"), time.Time{}, time.Time{}, time.Time{})
 		err := testCommander.CreatePost(ctx, post)
 		require.NoError(t, err)
 
 		err = testCommander.DeletePost(ctx, domain.NewPostID(id))
 		require.NoError(t, err)
 
-		updated := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("should fail"), time.Time{}, time.Time{}, nil)
+		updated := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("should fail"), time.Time{}, time.Time{}, time.Time{})
 		err = testCommander.UpdatePost(ctx, updated)
 		assert.ErrorIs(t, err, domain.ErrNotFound)
 	})
@@ -88,7 +88,7 @@ func TestDeletePost(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		id := newUUID()
-		post := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("to delete"), time.Time{}, time.Time{}, nil)
+		post := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("to delete"), time.Time{}, time.Time{}, time.Time{})
 		err := testCommander.CreatePost(ctx, post)
 		require.NoError(t, err)
 
@@ -98,7 +98,7 @@ func TestDeletePost(t *testing.T) {
 		got, err := testQuerier.GetPost(ctx, domain.NewPostID(id))
 		require.NoError(t, err)
 		assert.False(t, got.Valid())
-		assert.NotNil(t, got.DeleteTime())
+		assert.False(t, got.DeleteTime().IsZero())
 	})
 
 	t.Run("not found", func(t *testing.T) {
@@ -108,7 +108,7 @@ func TestDeletePost(t *testing.T) {
 
 	t.Run("double delete", func(t *testing.T) {
 		id := newUUID()
-		post := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("double delete"), time.Time{}, time.Time{}, nil)
+		post := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("double delete"), time.Time{}, time.Time{}, time.Time{})
 		err := testCommander.CreatePost(ctx, post)
 		require.NoError(t, err)
 
