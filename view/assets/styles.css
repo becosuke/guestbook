@@ -156,6 +156,7 @@ textarea.text-input {
 .post-body {
   word-break: break-word;
   font-size: 0.9375rem;
+  white-space: pre-wrap;
 }
 
 .post-previous-body {
@@ -164,6 +165,7 @@ textarea.text-input {
   word-break: break-word;
   font-size: 0.8125rem;
   margin-top: 0.25rem;
+  white-space: pre-wrap;
 }
 
 .post-actions {
