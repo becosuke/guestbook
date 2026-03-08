@@ -24,7 +24,7 @@ reset-db:
 
 .PHONY: schema-dump
 schema-dump:
-	docker compose exec postgres pg_dump -U guestbook -d guestbook --schema-only --no-owner --no-privileges --no-comments -t Posts > api/configurations/database/schema.sql
+	docker compose exec postgres pg_dump -U guestbook -d guestbook --schema-only --no-owner --no-privileges --no-comments -t Posts -t Paginations > api/configurations/database/schema.sql
 
 .PHONY: example/post
 example/post:
@@ -37,6 +37,10 @@ example/put:
 .PHONY: example/get
 example/get:
 	curl -v 'http://localhost:50080/api/v1/post/100'
+
+.PHONY: example/list
+example/list:
+	curl -v 'http://localhost:50080/api/v1/posts/list/10/'
 
 .PHONY: example/delete
 example/delete:
