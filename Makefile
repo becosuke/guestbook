@@ -16,6 +16,12 @@ buf-generate: buf-dep-update
 buf-dep-update:
 	buf dep update
 
+.PHONY: reset-db
+reset-db:
+	docker compose rm -sfv postgres
+	docker volume rm -f $$(docker volume ls -q --filter name=guestbook_postgres-data)
+	docker compose up -d postgres
+
 .PHONY: schema-dump
 schema-dump:
 	docker compose exec postgres pg_dump -U guestbook -d guestbook --schema-only --no-owner --no-privileges --no-comments -t Posts > api/configurations/database/schema.sql
