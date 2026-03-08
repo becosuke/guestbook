@@ -77,7 +77,9 @@ export default function PostManager() {
     error.value = "";
     try {
       await deletePost(postId);
-      posts.value = posts.value.filter((p) => p.postId !== postId);
+      posts.value = posts.value.map((p) =>
+        p.postId === postId ? { ...p, valid: false } : p
+      );
     } catch (e) {
       error.value = e instanceof Error ? e.message : "Failed to delete post";
     } finally {
@@ -123,8 +125,14 @@ export default function PostManager() {
 
       <div class="post-list">
         {posts.value.map((post) => (
-          <div class="post-card" key={post.postId}>
-            {editingId.value === post.postId
+          <div class={`post-card${post.valid ? "" : " post-deleted"}`} key={post.postId}>
+            {!post.valid
+              ? (
+                <div class="post-content">
+                  <p class="post-body post-body-deleted">deleted</p>
+                </div>
+              )
+              : editingId.value === post.postId
               ? (
                 <div class="edit-form">
                   <input
