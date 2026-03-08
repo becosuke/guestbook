@@ -70,7 +70,31 @@ func (impl *guestbookServiceServer) UpdatePost(ctx context.Context, req *pb.Upda
 }
 
 func (impl *guestbookServiceServer) ListPosts(ctx context.Context, req *pb.ListPostsRequest) (*pb.ListPostsResponse, error) {
-	return &pb.ListPostsResponse{}, nil
+	pageOption := impl.pageOptionResourceToDomain(req.GetPageSize(), req.GetPageToken())
+	posts, nextPaginationID, err := impl.usecase.Range(ctx, pageOption)
+	if err != nil {
+		switch {
+		case errors.Is(err, domain.ErrNotFound):
+			return nil, status.New(codes.NotFound, err.Error()).Err()
+		case errors.Is(err, domain.ErrInvalidData), errors.Is(err, domain.ErrInvalidArgument):
+			return nil, status.New(codes.Internal, err.Error()).Err()
+		default:
+			return nil, status.New(codes.Unknown, err.Error()).Err()
+		}
+	}
+
+	pbPosts := make([]*pb.Post, 0, len(posts))
+	for _, post := range posts {
+		pbPosts = append(pbPosts, impl.postDomainToResource(post))
+	}
+
+	resp := &pb.ListPostsResponse{
+		Posts: pbPosts,
+	}
+	if nextPaginationID != nil {
+		resp.NextPageToken = nextPaginationID.String()
+	}
+	return resp, nil
 }
 
 func (impl *guestbookServiceServer) DeletePost(ctx context.Context, req *pb.DeletePostRequest) (*emptypb.Empty, error) {

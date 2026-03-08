@@ -9,34 +9,34 @@ import (
 	"sync"
 )
 
-// Ensure, that QuerierMock does implement Querier.
+// Ensure, that PostQuerierMock does implement PostQuerier.
 // If this is not the case, regenerate this file with moq.
-var _ Querier = &QuerierMock{}
+var _ PostQuerier = &PostQuerierMock{}
 
-// QuerierMock is a mock implementation of Querier.
+// PostQuerierMock is a mock implementation of PostQuerier.
 //
-//	func TestSomethingThatUsesQuerier(t *testing.T) {
+//	func TestSomethingThatUsesPostQuerier(t *testing.T) {
 //
-//		// make and configure a mocked Querier
-//		mockedQuerier := &QuerierMock{
+//		// make and configure a mocked PostQuerier
+//		mockedPostQuerier := &PostQuerierMock{
 //			GetFunc: func(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error) {
 //				panic("mock out the Get method")
 //			},
-//			RangeFunc: func(contextMoqParam context.Context, pageOption *domain.PageOption) ([]*domain.Post, error) {
+//			RangeFunc: func(ctx context.Context, pageSize int32, cursor *domain.PostCursor) ([]*domain.Post, error) {
 //				panic("mock out the Range method")
 //			},
 //		}
 //
-//		// use mockedQuerier in code that requires Querier
+//		// use mockedPostQuerier in code that requires PostQuerier
 //		// and then make assertions.
 //
 //	}
-type QuerierMock struct {
+type PostQuerierMock struct {
 	// GetFunc mocks the Get method.
 	GetFunc func(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error)
 
 	// RangeFunc mocks the Range method.
-	RangeFunc func(contextMoqParam context.Context, pageOption *domain.PageOption) ([]*domain.Post, error)
+	RangeFunc func(ctx context.Context, pageSize int32, cursor *domain.PostCursor) ([]*domain.Post, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -49,10 +49,12 @@ type QuerierMock struct {
 		}
 		// Range holds details about calls to the Range method.
 		Range []struct {
-			// ContextMoqParam is the contextMoqParam argument value.
-			ContextMoqParam context.Context
-			// PageOption is the pageOption argument value.
-			PageOption *domain.PageOption
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PageSize is the pageSize argument value.
+			PageSize int32
+			// Cursor is the cursor argument value.
+			Cursor *domain.PostCursor
 		}
 	}
 	lockGet   sync.RWMutex
@@ -60,9 +62,9 @@ type QuerierMock struct {
 }
 
 // Get calls GetFunc.
-func (mock *QuerierMock) Get(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error) {
+func (mock *PostQuerierMock) Get(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error) {
 	if mock.GetFunc == nil {
-		panic("QuerierMock.GetFunc: method is nil but Querier.Get was just called")
+		panic("PostQuerierMock.GetFunc: method is nil but PostQuerier.Get was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
@@ -80,8 +82,8 @@ func (mock *QuerierMock) Get(contextMoqParam context.Context, postID *domain.Pos
 // GetCalls gets all the calls that were made to Get.
 // Check the length with:
 //
-//	len(mockedQuerier.GetCalls())
-func (mock *QuerierMock) GetCalls() []struct {
+//	len(mockedPostQuerier.GetCalls())
+func (mock *PostQuerierMock) GetCalls() []struct {
 	ContextMoqParam context.Context
 	PostID          *domain.PostID
 } {
@@ -96,34 +98,38 @@ func (mock *QuerierMock) GetCalls() []struct {
 }
 
 // Range calls RangeFunc.
-func (mock *QuerierMock) Range(contextMoqParam context.Context, pageOption *domain.PageOption) ([]*domain.Post, error) {
+func (mock *PostQuerierMock) Range(ctx context.Context, pageSize int32, cursor *domain.PostCursor) ([]*domain.Post, error) {
 	if mock.RangeFunc == nil {
-		panic("QuerierMock.RangeFunc: method is nil but Querier.Range was just called")
+		panic("PostQuerierMock.RangeFunc: method is nil but PostQuerier.Range was just called")
 	}
 	callInfo := struct {
-		ContextMoqParam context.Context
-		PageOption      *domain.PageOption
+		Ctx      context.Context
+		PageSize int32
+		Cursor   *domain.PostCursor
 	}{
-		ContextMoqParam: contextMoqParam,
-		PageOption:      pageOption,
+		Ctx:      ctx,
+		PageSize: pageSize,
+		Cursor:   cursor,
 	}
 	mock.lockRange.Lock()
 	mock.calls.Range = append(mock.calls.Range, callInfo)
 	mock.lockRange.Unlock()
-	return mock.RangeFunc(contextMoqParam, pageOption)
+	return mock.RangeFunc(ctx, pageSize, cursor)
 }
 
 // RangeCalls gets all the calls that were made to Range.
 // Check the length with:
 //
-//	len(mockedQuerier.RangeCalls())
-func (mock *QuerierMock) RangeCalls() []struct {
-	ContextMoqParam context.Context
-	PageOption      *domain.PageOption
+//	len(mockedPostQuerier.RangeCalls())
+func (mock *PostQuerierMock) RangeCalls() []struct {
+	Ctx      context.Context
+	PageSize int32
+	Cursor   *domain.PostCursor
 } {
 	var calls []struct {
-		ContextMoqParam context.Context
-		PageOption      *domain.PageOption
+		Ctx      context.Context
+		PageSize int32
+		Cursor   *domain.PostCursor
 	}
 	mock.lockRange.RLock()
 	calls = mock.calls.Range

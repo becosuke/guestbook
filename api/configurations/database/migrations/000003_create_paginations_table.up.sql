@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS Paginations (
+    PaginationId UUID PRIMARY KEY,
+    Cursor JSONB NOT NULL,
+    CreateTime TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

@@ -1,4 +1,4 @@
-//go:generate moq -out commander_mock.go -pkg interfaces . Commander
+//go:generate moq -out post_commander_mock.go -pkg interfaces . PostCommander
 package interfaces
 
 import (
@@ -7,7 +7,7 @@ import (
 	"github.com/becosuke/guestbook/api/internal/domain"
 )
 
-type Commander interface {
+type PostCommander interface {
 	Create(context.Context, *domain.Post) error
 	Update(context.Context, *domain.Post) error
 	Delete(context.Context, *domain.PostID) error
