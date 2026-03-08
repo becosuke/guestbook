@@ -1,9 +1,11 @@
 package domain
 
+import "strings"
+
 type PostBody string
 
 func NewPostBody(postBody string) *PostBody {
-	b := PostBody(postBody)
+	b := PostBody(strings.TrimSpace(postBody))
 	return &b
 }
 
