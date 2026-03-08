@@ -23,6 +23,15 @@ services:
     depends_on:
       - grpc
 
+  view:
+    image: guestbook-view
+    environment:
+      API_UPSTREAM: http://rest:50080
+    ports:
+      - "8000:8000"
+    depends_on:
+      - rest
+
   postgres:
     image: postgres:17-alpine
     environment:

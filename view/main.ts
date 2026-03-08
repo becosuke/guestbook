@@ -1,7 +1,7 @@
 import { App, staticFiles } from "fresh";
 import type { State } from "./utils.ts";
 
-const API_UPSTREAM = "http://localhost:50080";
+const API_UPSTREAM = Deno.env.get("API_UPSTREAM") ?? "http://localhost:50080";
 
 export const app = new App<State>();
 
