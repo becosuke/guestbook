@@ -9,16 +9,16 @@ import (
 	"sync"
 )
 
-// Ensure, that CommanderMock does implement Commander.
+// Ensure, that PostCommanderMock does implement PostCommander.
 // If this is not the case, regenerate this file with moq.
-var _ Commander = &CommanderMock{}
+var _ PostCommander = &PostCommanderMock{}
 
-// CommanderMock is a mock implementation of Commander.
+// PostCommanderMock is a mock implementation of PostCommander.
 //
-//	func TestSomethingThatUsesCommander(t *testing.T) {
+//	func TestSomethingThatUsesPostCommander(t *testing.T) {
 //
-//		// make and configure a mocked Commander
-//		mockedCommander := &CommanderMock{
+//		// make and configure a mocked PostCommander
+//		mockedPostCommander := &PostCommanderMock{
 //			CreateFunc: func(contextMoqParam context.Context, post *domain.Post) error {
 //				panic("mock out the Create method")
 //			},
@@ -30,11 +30,11 @@ var _ Commander = &CommanderMock{}
 //			},
 //		}
 //
-//		// use mockedCommander in code that requires Commander
+//		// use mockedPostCommander in code that requires PostCommander
 //		// and then make assertions.
 //
 //	}
-type CommanderMock struct {
+type PostCommanderMock struct {
 	// CreateFunc mocks the Create method.
 	CreateFunc func(contextMoqParam context.Context, post *domain.Post) error
 
@@ -74,9 +74,9 @@ type CommanderMock struct {
 }
 
 // Create calls CreateFunc.
-func (mock *CommanderMock) Create(contextMoqParam context.Context, post *domain.Post) error {
+func (mock *PostCommanderMock) Create(contextMoqParam context.Context, post *domain.Post) error {
 	if mock.CreateFunc == nil {
-		panic("CommanderMock.CreateFunc: method is nil but Commander.Create was just called")
+		panic("PostCommanderMock.CreateFunc: method is nil but PostCommander.Create was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
@@ -94,8 +94,8 @@ func (mock *CommanderMock) Create(contextMoqParam context.Context, post *domain.
 // CreateCalls gets all the calls that were made to Create.
 // Check the length with:
 //
-//	len(mockedCommander.CreateCalls())
-func (mock *CommanderMock) CreateCalls() []struct {
+//	len(mockedPostCommander.CreateCalls())
+func (mock *PostCommanderMock) CreateCalls() []struct {
 	ContextMoqParam context.Context
 	Post            *domain.Post
 } {
@@ -110,9 +110,9 @@ func (mock *CommanderMock) CreateCalls() []struct {
 }
 
 // Delete calls DeleteFunc.
-func (mock *CommanderMock) Delete(contextMoqParam context.Context, postID *domain.PostID) error {
+func (mock *PostCommanderMock) Delete(contextMoqParam context.Context, postID *domain.PostID) error {
 	if mock.DeleteFunc == nil {
-		panic("CommanderMock.DeleteFunc: method is nil but Commander.Delete was just called")
+		panic("PostCommanderMock.DeleteFunc: method is nil but PostCommander.Delete was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
@@ -130,8 +130,8 @@ func (mock *CommanderMock) Delete(contextMoqParam context.Context, postID *domai
 // DeleteCalls gets all the calls that were made to Delete.
 // Check the length with:
 //
-//	len(mockedCommander.DeleteCalls())
-func (mock *CommanderMock) DeleteCalls() []struct {
+//	len(mockedPostCommander.DeleteCalls())
+func (mock *PostCommanderMock) DeleteCalls() []struct {
 	ContextMoqParam context.Context
 	PostID          *domain.PostID
 } {
@@ -146,9 +146,9 @@ func (mock *CommanderMock) DeleteCalls() []struct {
 }
 
 // Update calls UpdateFunc.
-func (mock *CommanderMock) Update(contextMoqParam context.Context, post *domain.Post) error {
+func (mock *PostCommanderMock) Update(contextMoqParam context.Context, post *domain.Post) error {
 	if mock.UpdateFunc == nil {
-		panic("CommanderMock.UpdateFunc: method is nil but Commander.Update was just called")
+		panic("PostCommanderMock.UpdateFunc: method is nil but PostCommander.Update was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
@@ -166,8 +166,8 @@ func (mock *CommanderMock) Update(contextMoqParam context.Context, post *domain.
 // UpdateCalls gets all the calls that were made to Update.
 // Check the length with:
 //
-//	len(mockedCommander.UpdateCalls())
-func (mock *CommanderMock) UpdateCalls() []struct {
+//	len(mockedPostCommander.UpdateCalls())
+func (mock *PostCommanderMock) UpdateCalls() []struct {
 	ContextMoqParam context.Context
 	Post            *domain.Post
 } {

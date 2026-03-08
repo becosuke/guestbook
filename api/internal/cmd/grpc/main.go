@@ -68,9 +68,10 @@ func InitializeApp(ctx context.Context) *App {
 	if err != nil {
 		zapLogger.Fatal("failed to connect to database", zap.Error(err))
 	}
-	querier := repository.NewQuerier(cfg, zapLogger, pool)
-	commander := repository.NewCommander(cfg, zapLogger, pool)
-	uc := usecase.NewUsecase(cfg, zapLogger, querier, commander)
+	postQuerier := repository.NewPostQuerier(cfg, zapLogger, pool)
+	postCommander := repository.NewPostCommander(cfg, zapLogger, pool)
+	paginator := repository.NewPaginator(cfg, zapLogger, pool)
+	uc := usecase.NewUsecase(cfg, zapLogger, postQuerier, postCommander, paginator)
 	ctrl := presentation.NewGuestbookServiceServer(cfg, zapLogger, uc)
 	return &App{
 		Config:     cfg,

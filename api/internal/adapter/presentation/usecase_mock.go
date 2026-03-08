@@ -28,7 +28,7 @@ var _ Usecase = &UsecaseMock{}
 //			GetFunc: func(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error) {
 //				panic("mock out the Get method")
 //			},
-//			RangeFunc: func(contextMoqParam context.Context, pageOption *domain.PageOption) ([]*domain.Post, error) {
+//			RangeFunc: func(contextMoqParam context.Context, pageOption *domain.PageOption) ([]*domain.Post, *domain.PaginationID, error) {
 //				panic("mock out the Range method")
 //			},
 //			UpdateFunc: func(contextMoqParam context.Context, post *domain.Post) (*domain.Post, error) {
@@ -51,7 +51,7 @@ type UsecaseMock struct {
 	GetFunc func(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error)
 
 	// RangeFunc mocks the Range method.
-	RangeFunc func(contextMoqParam context.Context, pageOption *domain.PageOption) ([]*domain.Post, error)
+	RangeFunc func(contextMoqParam context.Context, pageOption *domain.PageOption) ([]*domain.Post, *domain.PaginationID, error)
 
 	// UpdateFunc mocks the Update method.
 	UpdateFunc func(contextMoqParam context.Context, post *domain.Post) (*domain.Post, error)
@@ -210,7 +210,7 @@ func (mock *UsecaseMock) GetCalls() []struct {
 }
 
 // Range calls RangeFunc.
-func (mock *UsecaseMock) Range(contextMoqParam context.Context, pageOption *domain.PageOption) ([]*domain.Post, error) {
+func (mock *UsecaseMock) Range(contextMoqParam context.Context, pageOption *domain.PageOption) ([]*domain.Post, *domain.PaginationID, error) {
 	if mock.RangeFunc == nil {
 		panic("UsecaseMock.RangeFunc: method is nil but Usecase.Range was just called")
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -35,7 +36,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 			config := &domain.Config{}
 			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			body := domain.NewPostBody("example")
-			post := domain.NewPost(postID, body, nil)
+			post := domain.NewPost(postID, body, time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC), nil)
 			mockUsecase := &UsecaseMock{
 				GetFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
 					assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", id.String())
@@ -127,7 +128,7 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			config := &domain.Config{}
-			res := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewPostBody("example"), nil)
+			res := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewPostBody("example"), time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC), nil)
 			mockUsecase := &UsecaseMock{
 				CreateFunc: func(ctx context.Context, post *domain.Post) (*domain.Post, error) {
 					return res, nil
@@ -196,7 +197,7 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			config := &domain.Config{}
-			post := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewPostBody("example-value"), nil)
+			post := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewPostBody("example-value"), time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC), nil)
 			mockUsecase := &UsecaseMock{
 				UpdateFunc: func(ctx context.Context, p *domain.Post) (*domain.Post, error) {
 					return post, nil
@@ -302,6 +303,135 @@ func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("guestbookServiceServer.DeletePost() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_guestbookServiceServerImpl_ListPosts(t *testing.T) {
+	type fields struct {
+		UnimplementedGuestbookServiceServer pb.UnimplementedGuestbookServiceServer
+		config                              *domain.Config
+		usecase                             Usecase
+	}
+	type args struct {
+		ctx context.Context
+		req *pb.ListPostsRequest
+	}
+	type testCase struct {
+		name    string
+		fields  fields
+		args    args
+		want    *pb.ListPostsResponse
+		wantErr bool
+	}
+	now := time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
+	tests := []testCase{
+		func() testCase {
+			ctx := context.Background()
+			config := &domain.Config{}
+			posts := []*domain.Post{
+				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewPostBody("example1"), now, nil),
+				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440001"), domain.NewPostBody("example2"), now, nil),
+			}
+			mockUsecase := &UsecaseMock{
+				RangeFunc: func(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, *domain.PaginationID, error) {
+					return posts, nil, nil
+				},
+			}
+			return testCase{
+				name: "normal without next page",
+				fields: fields{
+					config:  config,
+					usecase: mockUsecase,
+				},
+				args: args{
+					ctx: ctx,
+					req: &pb.ListPostsRequest{
+						PageSize: 10,
+					},
+				},
+				want: &pb.ListPostsResponse{
+					Posts: []*pb.Post{
+						{PostId: "550e8400-e29b-41d4-a716-446655440000", Body: "example1", Valid: true},
+						{PostId: "550e8400-e29b-41d4-a716-446655440001", Body: "example2", Valid: true},
+					},
+				},
+				wantErr: false,
+			}
+		}(),
+		func() testCase {
+			ctx := context.Background()
+			config := &domain.Config{}
+			posts := []*domain.Post{
+				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewPostBody("example1"), now, nil),
+			}
+			nextPaginationID := domain.NewPaginationID("660e8400-e29b-41d4-a716-446655440000")
+			mockUsecase := &UsecaseMock{
+				RangeFunc: func(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, *domain.PaginationID, error) {
+					return posts, nextPaginationID, nil
+				},
+			}
+			return testCase{
+				name: "normal with next page",
+				fields: fields{
+					config:  config,
+					usecase: mockUsecase,
+				},
+				args: args{
+					ctx: ctx,
+					req: &pb.ListPostsRequest{
+						PageSize: 1,
+					},
+				},
+				want: &pb.ListPostsResponse{
+					Posts: []*pb.Post{
+						{PostId: "550e8400-e29b-41d4-a716-446655440000", Body: "example1", Valid: true},
+					},
+					NextPageToken: "660e8400-e29b-41d4-a716-446655440000",
+				},
+				wantErr: false,
+			}
+		}(),
+		func() testCase {
+			ctx := context.Background()
+			config := &domain.Config{}
+			mockUsecase := &UsecaseMock{
+				RangeFunc: func(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, *domain.PaginationID, error) {
+					return nil, nil, domain.ErrInvalidArgument
+				},
+			}
+			return testCase{
+				name: "error",
+				fields: fields{
+					config:  config,
+					usecase: mockUsecase,
+				},
+				args: args{
+					ctx: ctx,
+					req: &pb.ListPostsRequest{
+						PageSize: 10,
+					},
+				},
+				want:    nil,
+				wantErr: true,
+			}
+		}(),
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			impl := &guestbookServiceServer{
+				UnimplementedGuestbookServiceServer: tt.fields.UnimplementedGuestbookServiceServer,
+				config:                              tt.fields.config,
+				usecase:                             tt.fields.usecase,
+			}
+			got, err := impl.ListPosts(tt.args.ctx, tt.args.req)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("guestbookServiceServer.ListPosts() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("guestbookServiceServer.ListPosts() = %v, want %v", got, tt.want)
 			}
 		})
 	}

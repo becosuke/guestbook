@@ -1,6 +1,8 @@
 package presentation
 
 import (
+	"time"
+
 	"github.com/becosuke/guestbook/api/internal/domain"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
@@ -39,6 +41,17 @@ func (impl *guestbookServiceServer) postResourceToDomain(resourcePost *pb.Post) 
 	return domain.NewPost(
 		impl.postIDResourceToDomain(resourcePost.GetPostId()),
 		impl.postBodyResourceToDomain(resourcePost.GetBody()),
+		time.Time{},
 		nil,
 	)
+}
+
+func (impl *guestbookServiceServer) pageOptionResourceToDomain(pageSize int32, pageToken string) *domain.PageOption {
+	ps := domain.PageSize(pageSize)
+	var pt *domain.PageToken
+	if pageToken != "" {
+		t := domain.PageToken(pageToken)
+		pt = &t
+	}
+	return domain.NewPageOption(&ps, pt)
 }
