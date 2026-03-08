@@ -28,7 +28,7 @@ type postCommanderImpl struct {
 	pool   *pgxpool.Pool
 }
 
-func (impl *postCommanderImpl) Create(ctx context.Context, post *domain.Post) error {
+func (impl *postCommanderImpl) CreatePost(ctx context.Context, post *domain.Post) error {
 	_, err := impl.pool.Exec(ctx,
 		`INSERT INTO Posts (PostId, PostBody) VALUES ($1, $2)`,
 		post.PostID().String(), post.PostBody().String(),
@@ -43,7 +43,7 @@ func (impl *postCommanderImpl) Create(ctx context.Context, post *domain.Post) er
 	return nil
 }
 
-func (impl *postCommanderImpl) Update(ctx context.Context, post *domain.Post) error {
+func (impl *postCommanderImpl) UpdatePost(ctx context.Context, post *domain.Post) error {
 	ct, err := impl.pool.Exec(ctx,
 		`UPDATE Posts SET PostBody = $1, UpdateTime = NOW() WHERE PostId = $2 AND DeleteTime IS NULL`,
 		post.PostBody().String(), post.PostID().String(),
@@ -57,7 +57,7 @@ func (impl *postCommanderImpl) Update(ctx context.Context, post *domain.Post) er
 	return nil
 }
 
-func (impl *postCommanderImpl) Delete(ctx context.Context, postID *domain.PostID) error {
+func (impl *postCommanderImpl) DeletePost(ctx context.Context, postID *domain.PostID) error {
 	ct, err := impl.pool.Exec(ctx,
 		`UPDATE Posts SET DeleteTime = NOW(), UpdateTime = NOW() WHERE PostId = $1 AND DeleteTime IS NULL`,
 		postID.String(),

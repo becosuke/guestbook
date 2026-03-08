@@ -11,22 +11,18 @@ import (
 	"github.com/becosuke/guestbook/api/internal/domain/interfaces"
 )
 
-func NewUsecase(config *domain.Config, logger *zap.Logger, postQuerier interfaces.PostQuerier, postCommander interfaces.PostCommander, paginator interfaces.Paginator) *Usecase {
+func NewUsecase(config *domain.Config, logger *zap.Logger, repos interfaces.Repositories) *Usecase {
 	return &Usecase{
-		config:        config,
-		logger:        logger,
-		postQuerier:   postQuerier,
-		postCommander: postCommander,
-		paginator:     paginator,
+		config: config,
+		logger: logger,
+		repos:  repos,
 	}
 }
 
 type Usecase struct {
-	config        *domain.Config
-	logger        *zap.Logger
-	postQuerier   interfaces.PostQuerier
-	postCommander interfaces.PostCommander
-	paginator     interfaces.Paginator
+	config *domain.Config
+	logger *zap.Logger
+	repos  interfaces.Repositories
 }
 
 func (impl *Usecase) Get(ctx context.Context, postID *domain.PostID) (*domain.Post, error) {
@@ -38,7 +34,7 @@ func (impl *Usecase) Get(ctx context.Context, postID *domain.PostID) (*domain.Po
 }
 
 func (impl *Usecase) get(ctx context.Context, postID *domain.PostID) (*domain.Post, error) {
-	result, err := impl.postQuerier.Get(ctx, postID)
+	result, err := impl.repos.GetPost(ctx, postID)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +49,7 @@ func (impl *Usecase) Range(ctx context.Context, pageOption *domain.PageOption) (
 
 	var cursor *domain.PostCursor
 	if pageOption.PageToken() != nil && string(*pageOption.PageToken()) != "" {
-		pagination, err := impl.paginator.Get(ctx, domain.NewPaginationID(string(*pageOption.PageToken())))
+		pagination, err := impl.repos.GetPagination(ctx, domain.NewPaginationID(string(*pageOption.PageToken())))
 		if err != nil {
 			return nil, nil, err
 		}
@@ -64,7 +60,7 @@ func (impl *Usecase) Range(ctx context.Context, pageOption *domain.PageOption) (
 		cursor = c
 	}
 
-	results, err := impl.postQuerier.Range(ctx, pageSize+1, cursor)
+	results, err := impl.repos.RangePosts(ctx, pageSize+1, cursor)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -81,7 +77,7 @@ func (impl *Usecase) Range(ctx context.Context, pageOption *domain.PageOption) (
 
 		nextPaginationID := domain.NewPaginationID(uuid.New().String())
 		pagination := domain.NewPagination(nextPaginationID, cursorBytes)
-		if err := impl.paginator.Save(ctx, pagination); err != nil {
+		if err := impl.repos.SavePagination(ctx, pagination); err != nil {
 			return nil, nil, err
 		}
 		return results, nextPaginationID, nil
@@ -93,7 +89,7 @@ func (impl *Usecase) Range(ctx context.Context, pageOption *domain.PageOption) (
 func (impl *Usecase) Create(ctx context.Context, post *domain.Post) (*domain.Post, error) {
 	postID := domain.NewPostID(uuid.New().String())
 	post = domain.NewPost(postID, post.PostBody(), time.Time{}, nil)
-	err := impl.postCommander.Create(ctx, post)
+	err := impl.repos.CreatePost(ctx, post)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +97,7 @@ func (impl *Usecase) Create(ctx context.Context, post *domain.Post) (*domain.Pos
 }
 
 func (impl *Usecase) Update(ctx context.Context, post *domain.Post) (*domain.Post, error) {
-	err := impl.postCommander.Update(ctx, post)
+	err := impl.repos.UpdatePost(ctx, post)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +105,7 @@ func (impl *Usecase) Update(ctx context.Context, post *domain.Post) (*domain.Pos
 }
 
 func (impl *Usecase) Delete(ctx context.Context, postID *domain.PostID) error {
-	err := impl.postCommander.Delete(ctx, postID)
+	err := impl.repos.DeletePost(ctx, postID)
 	if err != nil {
 		return err
 	}

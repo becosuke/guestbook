@@ -27,7 +27,7 @@ type postQuerierImpl struct {
 	pool   *pgxpool.Pool
 }
 
-func (impl *postQuerierImpl) Get(ctx context.Context, postID *domain.PostID) (*domain.Post, error) {
+func (impl *postQuerierImpl) GetPost(ctx context.Context, postID *domain.PostID) (*domain.Post, error) {
 	var body string
 	var createTime time.Time
 	var deleteTime *time.Time
@@ -41,7 +41,7 @@ func (impl *postQuerierImpl) Get(ctx context.Context, postID *domain.PostID) (*d
 	return domain.NewPost(postID, domain.NewPostBody(body), createTime, deleteTime), nil
 }
 
-func (impl *postQuerierImpl) Range(ctx context.Context, pageSize int32, cursor *domain.PostCursor) ([]*domain.Post, error) {
+func (impl *postQuerierImpl) RangePosts(ctx context.Context, pageSize int32, cursor *domain.PostCursor) ([]*domain.Post, error) {
 	var rows pgx.Rows
 	var err error
 	if cursor != nil {

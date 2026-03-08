@@ -8,6 +8,6 @@ import (
 )
 
 type PostQuerier interface {
-	Get(context.Context, *domain.PostID) (*domain.Post, error)
-	Range(ctx context.Context, pageSize int32, cursor *domain.PostCursor) ([]*domain.Post, error)
+	GetPost(context.Context, *domain.PostID) (*domain.Post, error)
+	RangePosts(ctx context.Context, pageSize int32, cursor *domain.PostCursor) ([]*domain.Post, error)
 }
