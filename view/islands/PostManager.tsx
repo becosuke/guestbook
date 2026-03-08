@@ -183,6 +183,7 @@ export default function PostManager() {
                     <button
                       class="btn btn-small"
                       onClick={() => startEdit(post)}
+                      disabled={isUpdated(post)}
                     >
                       Edit
                     </button>

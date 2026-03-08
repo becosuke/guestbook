@@ -5,8 +5,9 @@ import (
 )
 
 var (
-	ErrInvalidArgument = errors.New("invalid argument")
-	ErrAlreadyExists   = errors.New("already exists")
-	ErrNotFound        = errors.New("not found")
-	ErrInvalidData     = errors.New("returns invalid data")
+	ErrInvalidArgument    = errors.New("invalid argument")
+	ErrAlreadyExists      = errors.New("already exists")
+	ErrNotFound           = errors.New("not found")
+	ErrInvalidData        = errors.New("returns invalid data")
+	ErrFailedPrecondition = errors.New("failed precondition")
 )

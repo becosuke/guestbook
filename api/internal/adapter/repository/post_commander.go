@@ -45,13 +45,24 @@ func (impl *postCommanderImpl) CreatePost(ctx context.Context, post *domain.Post
 
 func (impl *postCommanderImpl) UpdatePost(ctx context.Context, post *domain.Post) error {
 	ct, err := impl.pool.Exec(ctx,
-		`UPDATE Posts SET PostBody = $1, UpdateTime = NOW() WHERE PostId = $2 AND DeleteTime IS NULL`,
+		`UPDATE Posts SET PostBody = $1, UpdateTime = NOW() WHERE PostId = $2 AND DeleteTime IS NULL AND CreateTime = UpdateTime`,
 		post.PostBody().String(), post.PostID().String(),
 	)
 	if err != nil {
 		return err
 	}
 	if ct.RowsAffected() == 0 {
+		var exists bool
+		err := impl.pool.QueryRow(ctx,
+			`SELECT EXISTS(SELECT 1 FROM Posts WHERE PostId = $1 AND DeleteTime IS NULL)`,
+			post.PostID().String(),
+		).Scan(&exists)
+		if err != nil {
+			return err
+		}
+		if exists {
+			return domain.ErrFailedPrecondition
+		}
 		return domain.ErrNotFound
 	}
 	return nil
