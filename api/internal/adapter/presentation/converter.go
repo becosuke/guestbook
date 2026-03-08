@@ -22,9 +22,16 @@ func (impl *guestbookServiceServer) postBodyResourceToDomain(resourceBody string
 }
 
 func (impl *guestbookServiceServer) postDomainToResource(domainPost *domain.Post) *pb.Post {
+	if !domainPost.Valid() {
+		return &pb.Post{
+			PostId: impl.postIDDomainToResource(domainPost.PostID()),
+			Valid:  false,
+		}
+	}
 	return &pb.Post{
 		PostId: impl.postIDDomainToResource(domainPost.PostID()),
 		Body:   impl.postBodyDomainToResource(domainPost.PostBody()),
+		Valid:  true,
 	}
 }
 
@@ -32,5 +39,6 @@ func (impl *guestbookServiceServer) postResourceToDomain(resourcePost *pb.Post) 
 	return domain.NewPost(
 		impl.postIDResourceToDomain(resourcePost.GetPostId()),
 		impl.postBodyResourceToDomain(resourcePost.GetBody()),
+		nil,
 	)
 }

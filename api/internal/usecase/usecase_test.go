@@ -33,7 +33,7 @@ func TestUsecase_Get(t *testing.T) {
 			ctx := context.Background()
 			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			body := domain.NewPostBody("example")
-			post := domain.NewPost(postID, body)
+			post := domain.NewPost(postID, body, nil)
 			mockQuerier := &interfaces.QuerierMock{
 				GetFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
 					assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", id.String())
@@ -112,8 +112,8 @@ func TestUsecase_Range(t *testing.T) {
 			pageSize := domain.PageSize(10)
 			pageOption := domain.NewPageOption(&pageSize, nil)
 			posts := []*domain.Post{
-				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewPostBody("example1")),
-				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440001"), domain.NewPostBody("example2")),
+				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewPostBody("example1"), nil),
+				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440001"), domain.NewPostBody("example2"), nil),
 			}
 			mockQuerier := &interfaces.QuerierMock{
 				RangeFunc: func(ctx context.Context, po *domain.PageOption) ([]*domain.Post, error) {
@@ -191,8 +191,8 @@ func TestUsecase_Create(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			body := domain.NewPostBody("example")
-			inputPost := domain.NewPost(nil, body)
-			returnedPost := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), body)
+			inputPost := domain.NewPost(nil, body, nil)
+			returnedPost := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), body, nil)
 			mockCommander := &interfaces.CommanderMock{
 				CreateFunc: func(ctx context.Context, p *domain.Post) error {
 					assert.Equal(t, "example", p.PostBody().String())
@@ -222,7 +222,7 @@ func TestUsecase_Create(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			body := domain.NewPostBody("example")
-			inputPost := domain.NewPost(nil, body)
+			inputPost := domain.NewPost(nil, body, nil)
 			mockCommander := &interfaces.CommanderMock{
 				CreateFunc: func(ctx context.Context, p *domain.Post) error {
 					return domain.ErrAlreadyExists
@@ -244,7 +244,7 @@ func TestUsecase_Create(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			body := domain.NewPostBody("example")
-			inputPost := domain.NewPost(nil, body)
+			inputPost := domain.NewPost(nil, body, nil)
 			mockCommander := &interfaces.CommanderMock{
 				CreateFunc: func(ctx context.Context, p *domain.Post) error {
 					return nil
@@ -306,7 +306,7 @@ func TestUsecase_Update(t *testing.T) {
 			ctx := context.Background()
 			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			body := domain.NewPostBody("updated-example")
-			post := domain.NewPost(postID, body)
+			post := domain.NewPost(postID, body, nil)
 			mockCommander := &interfaces.CommanderMock{
 				UpdateFunc: func(ctx context.Context, p *domain.Post) error {
 					assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", p.PostID().String())
@@ -338,7 +338,7 @@ func TestUsecase_Update(t *testing.T) {
 			ctx := context.Background()
 			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			body := domain.NewPostBody("updated-example")
-			post := domain.NewPost(postID, body)
+			post := domain.NewPost(postID, body, nil)
 			mockCommander := &interfaces.CommanderMock{
 				UpdateFunc: func(ctx context.Context, p *domain.Post) error {
 					return domain.ErrNotFound
@@ -361,7 +361,7 @@ func TestUsecase_Update(t *testing.T) {
 			ctx := context.Background()
 			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			body := domain.NewPostBody("updated-example")
-			post := domain.NewPost(postID, body)
+			post := domain.NewPost(postID, body, nil)
 			mockCommander := &interfaces.CommanderMock{
 				UpdateFunc: func(ctx context.Context, p *domain.Post) error {
 					return nil

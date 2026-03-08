@@ -5,6 +5,7 @@ package pb;
 option go_package = "github.com/becosuke/guestbook/internal/pkg/pb";
 
 import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
 import "buf/validate/validate.proto";
 
@@ -70,4 +71,5 @@ message ListPostsResponse {
 message Post {
   string post_id = 1 [(buf.validate.field).string.uuid = true];
   string body = 2 [(buf.validate.field).string = {min_len: 1, max_len: 128}];
+  bool valid = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 }

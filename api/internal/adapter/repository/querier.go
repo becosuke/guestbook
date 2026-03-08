@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -28,14 +29,15 @@ type querierImpl struct {
 
 func (impl *querierImpl) Get(ctx context.Context, postID *domain.PostID) (*domain.Post, error) {
 	var body string
-	err := impl.pool.QueryRow(ctx, `SELECT PostBody FROM Posts WHERE PostId = $1`, postID.String()).Scan(&body)
+	var deleteTime *time.Time
+	err := impl.pool.QueryRow(ctx, `SELECT PostBody, DeleteTime FROM Posts WHERE PostId = $1`, postID.String()).Scan(&body, &deleteTime)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, domain.ErrNotFound
 		}
 		return nil, err
 	}
-	return domain.NewPost(postID, domain.NewPostBody(body)), nil
+	return domain.NewPost(postID, domain.NewPostBody(body), deleteTime), nil
 }
 
 func (impl *querierImpl) Range(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, error) {
@@ -48,12 +50,12 @@ func (impl *querierImpl) Range(ctx context.Context, pageOption *domain.PageOptio
 	var err error
 	if pageOption.PageToken() != nil && string(*pageOption.PageToken()) != "" {
 		rows, err = impl.pool.Query(ctx,
-			`SELECT PostId, PostBody FROM Posts WHERE PostId < $1 ORDER BY PostId DESC LIMIT $2`,
+			`SELECT PostId, PostBody, DeleteTime FROM Posts WHERE PostId < $1 ORDER BY PostId DESC LIMIT $2`,
 			string(*pageOption.PageToken()), pageSize,
 		)
 	} else {
 		rows, err = impl.pool.Query(ctx,
-			`SELECT PostId, PostBody FROM Posts ORDER BY PostId DESC LIMIT $1`,
+			`SELECT PostId, PostBody, DeleteTime FROM Posts ORDER BY PostId DESC LIMIT $1`,
 			pageSize,
 		)
 	}
@@ -65,10 +67,11 @@ func (impl *querierImpl) Range(ctx context.Context, pageOption *domain.PageOptio
 	var posts []*domain.Post
 	for rows.Next() {
 		var postID, body string
-		if err := rows.Scan(&postID, &body); err != nil {
+		var deleteTime *time.Time
+		if err := rows.Scan(&postID, &body, &deleteTime); err != nil {
 			return nil, err
 		}
-		posts = append(posts, domain.NewPost(domain.NewPostID(postID), domain.NewPostBody(body)))
+		posts = append(posts, domain.NewPost(domain.NewPostID(postID), domain.NewPostBody(body), deleteTime))
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err

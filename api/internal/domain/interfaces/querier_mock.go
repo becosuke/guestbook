@@ -5,9 +5,8 @@ package interfaces
 
 import (
 	"context"
-	"sync"
-
 	"github.com/becosuke/guestbook/api/internal/domain"
+	"sync"
 )
 
 // Ensure, that QuerierMock does implement Querier.

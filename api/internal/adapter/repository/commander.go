@@ -45,7 +45,7 @@ func (impl *commanderImpl) Create(ctx context.Context, post *domain.Post) error 
 
 func (impl *commanderImpl) Update(ctx context.Context, post *domain.Post) error {
 	ct, err := impl.pool.Exec(ctx,
-		`UPDATE Posts SET PostBody = $1, UpdateTime = NOW() WHERE PostId = $2`,
+		`UPDATE Posts SET PostBody = $1, UpdateTime = NOW() WHERE PostId = $2 AND DeleteTime IS NULL`,
 		post.PostBody().String(), post.PostID().String(),
 	)
 	if err != nil {
@@ -58,12 +58,15 @@ func (impl *commanderImpl) Update(ctx context.Context, post *domain.Post) error 
 }
 
 func (impl *commanderImpl) Delete(ctx context.Context, postID *domain.PostID) error {
-	_, err := impl.pool.Exec(ctx,
-		`DELETE FROM Posts WHERE PostId = $1`,
+	ct, err := impl.pool.Exec(ctx,
+		`UPDATE Posts SET DeleteTime = NOW(), UpdateTime = NOW() WHERE PostId = $1 AND DeleteTime IS NULL`,
 		postID.String(),
 	)
 	if err != nil {
 		return err
+	}
+	if ct.RowsAffected() == 0 {
+		return domain.ErrNotFound
 	}
 	return nil
 }
