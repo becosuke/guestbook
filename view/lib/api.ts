@@ -48,13 +48,10 @@ export async function updatePost(postId: string, body: string): Promise<Post> {
 }
 
 export async function deletePost(postId: string): Promise<void> {
-  const res = await fetch(`${API_BASE_URL}/post/${postId}`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      postId,
-      idempotencyKey: crypto.randomUUID(),
-    }),
-  });
+  const idempotencyKey = crypto.randomUUID();
+  const res = await fetch(
+    `${API_BASE_URL}/post/${postId}?idempotency_key=${idempotencyKey}`,
+    { method: "DELETE" },
+  );
   if (!res.ok) throw new Error(`Failed to delete post: ${res.statusText}`);
 }
