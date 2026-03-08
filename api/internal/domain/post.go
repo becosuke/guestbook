@@ -8,14 +8,16 @@ type Post struct {
 	postID     *PostID
 	postBody   *PostBody
 	createTime time.Time
+	updateTime time.Time
 	deleteTime *time.Time
 }
 
-func NewPost(postID *PostID, postBody *PostBody, createTime time.Time, deleteTime *time.Time) *Post {
+func NewPost(postID *PostID, postBody *PostBody, createTime time.Time, updateTime time.Time, deleteTime *time.Time) *Post {
 	return &Post{
 		postID:     postID,
 		postBody:   postBody,
 		createTime: createTime,
+		updateTime: updateTime,
 		deleteTime: deleteTime,
 	}
 }
@@ -30,6 +32,10 @@ func (p *Post) PostBody() *PostBody {
 
 func (p *Post) CreateTime() time.Time {
 	return p.createTime
+}
+
+func (p *Post) UpdateTime() time.Time {
+	return p.updateTime
 }
 
 func (p *Post) DeleteTime() *time.Time {

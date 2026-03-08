@@ -4,6 +4,22 @@ import { createPost, deletePost, getPosts, updatePost } from "../lib/api.ts";
 
 const PAGE_SIZE = 10;
 
+function formatTime(ts: string): string {
+  const d = new Date(ts);
+  return d.toLocaleString("ja-JP", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+}
+
+function isUpdated(post: Post): boolean {
+  return !!post.updateTime && post.updateTime !== post.createTime;
+}
+
 export default function PostManager() {
   const posts = useSignal<Post[]>([]);
   const nextPageToken = useSignal("");
@@ -180,7 +196,19 @@ export default function PostManager() {
                   </div>
                 </div>
               )}
-            <div class="post-id">{post.postId}</div>
+            <div class="post-meta">
+              <span class="post-id">{post.postId}</span>
+              <span class="post-timestamps">
+                {isUpdated(post) && (
+                  <span class="post-updated">
+                    updated {formatTime(post.updateTime!)}
+                  </span>
+                )}
+                {post.createTime && (
+                  <span class="post-time">{formatTime(post.createTime)}</span>
+                )}
+              </span>
+            </div>
           </div>
         ))}
       </div>

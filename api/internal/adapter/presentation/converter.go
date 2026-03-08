@@ -3,6 +3,8 @@ package presentation
 import (
 	"time"
 
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/becosuke/guestbook/api/internal/domain"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
@@ -30,17 +32,23 @@ func (impl *guestbookServiceServer) postDomainToResource(domainPost *domain.Post
 			Valid:  false,
 		}
 	}
-	return &pb.Post{
-		PostId: impl.postIDDomainToResource(domainPost.PostID()),
-		Body:   impl.postBodyDomainToResource(domainPost.PostBody()),
-		Valid:  true,
+	res := &pb.Post{
+		PostId:     impl.postIDDomainToResource(domainPost.PostID()),
+		Body:       impl.postBodyDomainToResource(domainPost.PostBody()),
+		Valid:      true,
+		CreateTime: timestamppb.New(domainPost.CreateTime()),
 	}
+	if !domainPost.UpdateTime().IsZero() {
+		res.UpdateTime = timestamppb.New(domainPost.UpdateTime())
+	}
+	return res
 }
 
 func (impl *guestbookServiceServer) postResourceToDomain(resourcePost *pb.Post) *domain.Post {
 	return domain.NewPost(
 		impl.postIDResourceToDomain(resourcePost.GetPostId()),
 		impl.postBodyResourceToDomain(resourcePost.GetBody()),
+		time.Time{},
 		time.Time{},
 		nil,
 	)

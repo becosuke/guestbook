@@ -7,6 +7,7 @@ option go_package = "github.com/becosuke/guestbook/internal/pkg/pb";
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 import "buf/validate/validate.proto";
 
 service GuestbookService {
@@ -72,4 +73,6 @@ message Post {
   string post_id = 1 [(buf.validate.field).string.uuid = true];
   string body = 2 [(buf.validate.field).string = {min_len: 1, max_len: 128}];
   bool valid = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp create_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp update_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
 }

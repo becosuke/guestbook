@@ -120,7 +120,7 @@ func TestNewPost(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := NewPost(tt.args.postID, tt.args.postBody, time.Time{}, nil)
+			got := NewPost(tt.args.postID, tt.args.postBody, time.Time{}, time.Time{}, nil)
 			assert.NotNil(t, got)
 			assert.Equal(t, tt.wantPostID, got.PostID())
 			assert.Equal(t, tt.wantPostBody, got.PostBody())

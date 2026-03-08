@@ -30,15 +30,16 @@ type postQuerierImpl struct {
 func (impl *postQuerierImpl) GetPost(ctx context.Context, postID *domain.PostID) (*domain.Post, error) {
 	var body string
 	var createTime time.Time
+	var updateTime time.Time
 	var deleteTime *time.Time
-	err := impl.pool.QueryRow(ctx, `SELECT PostBody, CreateTime, DeleteTime FROM Posts WHERE PostId = $1`, postID.String()).Scan(&body, &createTime, &deleteTime)
+	err := impl.pool.QueryRow(ctx, `SELECT PostBody, CreateTime, UpdateTime, DeleteTime FROM Posts WHERE PostId = $1`, postID.String()).Scan(&body, &createTime, &updateTime, &deleteTime)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, domain.ErrNotFound
 		}
 		return nil, err
 	}
-	return domain.NewPost(postID, domain.NewPostBody(body), createTime, deleteTime), nil
+	return domain.NewPost(postID, domain.NewPostBody(body), createTime, updateTime, deleteTime), nil
 }
 
 func (impl *postQuerierImpl) RangePosts(ctx context.Context, pageSize int32, cursor *domain.PostCursor) ([]*domain.Post, error) {
@@ -46,12 +47,12 @@ func (impl *postQuerierImpl) RangePosts(ctx context.Context, pageSize int32, cur
 	var err error
 	if cursor != nil {
 		rows, err = impl.pool.Query(ctx,
-			`SELECT PostId, PostBody, CreateTime, DeleteTime FROM Posts WHERE (CreateTime < $1) OR (CreateTime = $1 AND PostId > $2) ORDER BY CreateTime DESC, PostId ASC LIMIT $3`,
+			`SELECT PostId, PostBody, CreateTime, UpdateTime, DeleteTime FROM Posts WHERE (CreateTime < $1) OR (CreateTime = $1 AND PostId > $2) ORDER BY CreateTime DESC, PostId ASC LIMIT $3`,
 			cursor.LastCreateTime, cursor.LastPostID, pageSize,
 		)
 	} else {
 		rows, err = impl.pool.Query(ctx,
-			`SELECT PostId, PostBody, CreateTime, DeleteTime FROM Posts ORDER BY CreateTime DESC, PostId ASC LIMIT $1`,
+			`SELECT PostId, PostBody, CreateTime, UpdateTime, DeleteTime FROM Posts ORDER BY CreateTime DESC, PostId ASC LIMIT $1`,
 			pageSize,
 		)
 	}
@@ -64,11 +65,12 @@ func (impl *postQuerierImpl) RangePosts(ctx context.Context, pageSize int32, cur
 	for rows.Next() {
 		var postID, body string
 		var createTime time.Time
+		var updateTime time.Time
 		var deleteTime *time.Time
-		if err := rows.Scan(&postID, &body, &createTime, &deleteTime); err != nil {
+		if err := rows.Scan(&postID, &body, &createTime, &updateTime, &deleteTime); err != nil {
 			return nil, err
 		}
-		posts = append(posts, domain.NewPost(domain.NewPostID(postID), domain.NewPostBody(body), createTime, deleteTime))
+		posts = append(posts, domain.NewPost(domain.NewPostID(postID), domain.NewPostBody(body), createTime, updateTime, deleteTime))
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
