@@ -45,7 +45,7 @@ func (impl *postCommanderImpl) CreatePost(ctx context.Context, post *domain.Post
 
 func (impl *postCommanderImpl) UpdatePost(ctx context.Context, post *domain.Post) error {
 	ct, err := impl.pool.Exec(ctx,
-		`UPDATE Posts SET PostBody = $1, UpdateTime = NOW() WHERE PostId = $2 AND DeleteTime = '0001-01-01 00:00:00+00' AND CreateTime = UpdateTime`,
+		`UPDATE Posts SET PreviousBody = PostBody, PostBody = $1, UpdateTime = NOW() WHERE PostId = $2 AND DeleteTime = '0001-01-01 00:00:00+00' AND CreateTime = UpdateTime`,
 		post.PostBody().String(), post.PostID().String(),
 	)
 	if err != nil {

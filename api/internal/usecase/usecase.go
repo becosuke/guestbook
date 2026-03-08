@@ -88,7 +88,7 @@ func (impl *Usecase) Range(ctx context.Context, pageOption *domain.PageOption) (
 
 func (impl *Usecase) Create(ctx context.Context, post *domain.Post) (*domain.Post, error) {
 	postID := domain.NewPostID(uuid.New().String())
-	post = domain.NewPost(postID, post.PostBody(), time.Time{}, time.Time{}, time.Time{})
+	post = domain.NewPost(postID, post.PostBody(), domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
 	err := impl.repos.CreatePost(ctx, post)
 	if err != nil {
 		return nil, err

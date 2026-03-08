@@ -75,4 +75,5 @@ message Post {
   bool valid = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
   google.protobuf.Timestamp create_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
   google.protobuf.Timestamp update_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  string previous_body = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
 }

@@ -5,20 +5,22 @@ import (
 )
 
 type Post struct {
-	postID     *PostID
-	postBody   *PostBody
-	createTime time.Time
-	updateTime time.Time
-	deleteTime time.Time
+	postID       *PostID
+	postBody     *PostBody
+	previousBody *PostBody
+	createTime   time.Time
+	updateTime   time.Time
+	deleteTime   time.Time
 }
 
-func NewPost(postID *PostID, postBody *PostBody, createTime time.Time, updateTime time.Time, deleteTime time.Time) *Post {
+func NewPost(postID *PostID, postBody *PostBody, previousBody *PostBody, createTime time.Time, updateTime time.Time, deleteTime time.Time) *Post {
 	return &Post{
-		postID:     postID,
-		postBody:   postBody,
-		createTime: createTime,
-		updateTime: updateTime,
-		deleteTime: deleteTime,
+		postID:       postID,
+		postBody:     postBody,
+		previousBody: previousBody,
+		createTime:   createTime,
+		updateTime:   updateTime,
+		deleteTime:   deleteTime,
 	}
 }
 
@@ -28,6 +30,10 @@ func (p *Post) PostID() *PostID {
 
 func (p *Post) PostBody() *PostBody {
 	return p.postBody
+}
+
+func (p *Post) PreviousBody() *PostBody {
+	return p.previousBody
 }
 
 func (p *Post) CreateTime() time.Time {

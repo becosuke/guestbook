@@ -336,6 +336,7 @@ type Post struct {
 	Valid         bool                   `protobuf:"varint,3,opt,name=valid,proto3" json:"valid,omitempty"`
 	CreateTime    *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	PreviousBody  string                 `protobuf:"bytes,6,opt,name=previous_body,json=previousBody,proto3" json:"previous_body,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -405,6 +406,13 @@ func (x *Post) GetUpdateTime() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *Post) GetPreviousBody() string {
+	if x != nil {
+		return x.PreviousBody
+	}
+	return ""
+}
+
 var File_guestbook_proto protoreflect.FileDescriptor
 
 const file_guestbook_proto_rawDesc = "" +
@@ -427,7 +435,7 @@ const file_guestbook_proto_rawDesc = "" +
 	"page_token\x18\x02 \x01(\tR\tpageToken\"[\n" +
 	"\x11ListPostsResponse\x12\x1e\n" +
 	"\x05posts\x18\x01 \x03(\v2\b.pb.PostR\x05posts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe8\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x92\x02\n" +
 	"\x04Post\x12!\n" +
 	"\apost_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x06postId\x12\x1e\n" +
 	"\x04body\x18\x02 \x01(\tB\n" +
@@ -436,7 +444,8 @@ const file_guestbook_proto_rawDesc = "" +
 	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12@\n" +
 	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime2\xc6\x03\n" +
+	"updateTime\x12(\n" +
+	"\rprevious_body\x18\x06 \x01(\tB\x03\xe0A\x03R\fpreviousBody2\xc6\x03\n" +
 	"\x10GuestbookService\x12G\n" +
 	"\aGetPost\x12\x12.pb.GetPostRequest\x1a\b.pb.Post\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/api/v1/post/{post_id}\x12F\n" +
 	"\n" +
