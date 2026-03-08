@@ -50,7 +50,7 @@ func (impl *guestbookServiceServer) postResourceToDomain(resourcePost *pb.Post) 
 		impl.postBodyResourceToDomain(resourcePost.GetBody()),
 		time.Time{},
 		time.Time{},
-		nil,
+		time.Time{},
 	)
 }
 

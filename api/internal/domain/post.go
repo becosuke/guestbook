@@ -9,10 +9,10 @@ type Post struct {
 	postBody   *PostBody
 	createTime time.Time
 	updateTime time.Time
-	deleteTime *time.Time
+	deleteTime time.Time
 }
 
-func NewPost(postID *PostID, postBody *PostBody, createTime time.Time, updateTime time.Time, deleteTime *time.Time) *Post {
+func NewPost(postID *PostID, postBody *PostBody, createTime time.Time, updateTime time.Time, deleteTime time.Time) *Post {
 	return &Post{
 		postID:     postID,
 		postBody:   postBody,
@@ -38,10 +38,10 @@ func (p *Post) UpdateTime() time.Time {
 	return p.updateTime
 }
 
-func (p *Post) DeleteTime() *time.Time {
+func (p *Post) DeleteTime() time.Time {
 	return p.deleteTime
 }
 
 func (p *Post) Valid() bool {
-	return p.deleteTime == nil
+	return p.deleteTime.IsZero()
 }

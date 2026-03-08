@@ -31,7 +31,7 @@ func (impl *postQuerierImpl) GetPost(ctx context.Context, postID *domain.PostID)
 	var body string
 	var createTime time.Time
 	var updateTime time.Time
-	var deleteTime *time.Time
+	var deleteTime time.Time
 	err := impl.pool.QueryRow(ctx, `SELECT PostBody, CreateTime, UpdateTime, DeleteTime FROM Posts WHERE PostId = $1`, postID.String()).Scan(&body, &createTime, &updateTime, &deleteTime)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -66,7 +66,7 @@ func (impl *postQuerierImpl) RangePosts(ctx context.Context, pageSize int32, cur
 		var postID, body string
 		var createTime time.Time
 		var updateTime time.Time
-		var deleteTime *time.Time
+		var deleteTime time.Time
 		if err := rows.Scan(&postID, &body, &createTime, &updateTime, &deleteTime); err != nil {
 			return nil, err
 		}
