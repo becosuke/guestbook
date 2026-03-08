@@ -26,7 +26,7 @@ type paginatorImpl struct {
 	pool   *pgxpool.Pool
 }
 
-func (impl *paginatorImpl) Get(ctx context.Context, paginationID *domain.PaginationID) (*domain.Pagination, error) {
+func (impl *paginatorImpl) GetPagination(ctx context.Context, paginationID *domain.PaginationID) (*domain.Pagination, error) {
 	var cursor []byte
 	err := impl.pool.QueryRow(ctx, `SELECT Cursor FROM Paginations WHERE PaginationId = $1`, paginationID.String()).Scan(&cursor)
 	if err != nil {
@@ -38,7 +38,7 @@ func (impl *paginatorImpl) Get(ctx context.Context, paginationID *domain.Paginat
 	return domain.NewPagination(paginationID, cursor), nil
 }
 
-func (impl *paginatorImpl) Save(ctx context.Context, pagination *domain.Pagination) error {
+func (impl *paginatorImpl) SavePagination(ctx context.Context, pagination *domain.Pagination) error {
 	_, err := impl.pool.Exec(ctx,
 		`INSERT INTO Paginations (PaginationId, Cursor) VALUES ($1, $2)`,
 		pagination.PaginationID().String(), pagination.Cursor(),

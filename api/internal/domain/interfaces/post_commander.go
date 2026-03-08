@@ -8,7 +8,7 @@ import (
 )
 
 type PostCommander interface {
-	Create(context.Context, *domain.Post) error
-	Update(context.Context, *domain.Post) error
-	Delete(context.Context, *domain.PostID) error
+	CreatePost(context.Context, *domain.Post) error
+	UpdatePost(context.Context, *domain.Post) error
+	DeletePost(context.Context, *domain.PostID) error
 }

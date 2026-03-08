@@ -19,11 +19,11 @@ var _ PostQuerier = &PostQuerierMock{}
 //
 //		// make and configure a mocked PostQuerier
 //		mockedPostQuerier := &PostQuerierMock{
-//			GetFunc: func(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error) {
-//				panic("mock out the Get method")
+//			GetPostFunc: func(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error) {
+//				panic("mock out the GetPost method")
 //			},
-//			RangeFunc: func(ctx context.Context, pageSize int32, cursor *domain.PostCursor) ([]*domain.Post, error) {
-//				panic("mock out the Range method")
+//			RangePostsFunc: func(ctx context.Context, pageSize int32, cursor *domain.PostCursor) ([]*domain.Post, error) {
+//				panic("mock out the RangePosts method")
 //			},
 //		}
 //
@@ -32,23 +32,23 @@ var _ PostQuerier = &PostQuerierMock{}
 //
 //	}
 type PostQuerierMock struct {
-	// GetFunc mocks the Get method.
-	GetFunc func(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error)
+	// GetPostFunc mocks the GetPost method.
+	GetPostFunc func(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error)
 
-	// RangeFunc mocks the Range method.
-	RangeFunc func(ctx context.Context, pageSize int32, cursor *domain.PostCursor) ([]*domain.Post, error)
+	// RangePostsFunc mocks the RangePosts method.
+	RangePostsFunc func(ctx context.Context, pageSize int32, cursor *domain.PostCursor) ([]*domain.Post, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
-		// Get holds details about calls to the Get method.
-		Get []struct {
+		// GetPost holds details about calls to the GetPost method.
+		GetPost []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// PostID is the postID argument value.
 			PostID *domain.PostID
 		}
-		// Range holds details about calls to the Range method.
-		Range []struct {
+		// RangePosts holds details about calls to the RangePosts method.
+		RangePosts []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// PageSize is the pageSize argument value.
@@ -57,14 +57,14 @@ type PostQuerierMock struct {
 			Cursor *domain.PostCursor
 		}
 	}
-	lockGet   sync.RWMutex
-	lockRange sync.RWMutex
+	lockGetPost    sync.RWMutex
+	lockRangePosts sync.RWMutex
 }
 
-// Get calls GetFunc.
-func (mock *PostQuerierMock) Get(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error) {
-	if mock.GetFunc == nil {
-		panic("PostQuerierMock.GetFunc: method is nil but PostQuerier.Get was just called")
+// GetPost calls GetPostFunc.
+func (mock *PostQuerierMock) GetPost(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error) {
+	if mock.GetPostFunc == nil {
+		panic("PostQuerierMock.GetPostFunc: method is nil but PostQuerier.GetPost was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
@@ -73,17 +73,17 @@ func (mock *PostQuerierMock) Get(contextMoqParam context.Context, postID *domain
 		ContextMoqParam: contextMoqParam,
 		PostID:          postID,
 	}
-	mock.lockGet.Lock()
-	mock.calls.Get = append(mock.calls.Get, callInfo)
-	mock.lockGet.Unlock()
-	return mock.GetFunc(contextMoqParam, postID)
+	mock.lockGetPost.Lock()
+	mock.calls.GetPost = append(mock.calls.GetPost, callInfo)
+	mock.lockGetPost.Unlock()
+	return mock.GetPostFunc(contextMoqParam, postID)
 }
 
-// GetCalls gets all the calls that were made to Get.
+// GetPostCalls gets all the calls that were made to GetPost.
 // Check the length with:
 //
-//	len(mockedPostQuerier.GetCalls())
-func (mock *PostQuerierMock) GetCalls() []struct {
+//	len(mockedPostQuerier.GetPostCalls())
+func (mock *PostQuerierMock) GetPostCalls() []struct {
 	ContextMoqParam context.Context
 	PostID          *domain.PostID
 } {
@@ -91,16 +91,16 @@ func (mock *PostQuerierMock) GetCalls() []struct {
 		ContextMoqParam context.Context
 		PostID          *domain.PostID
 	}
-	mock.lockGet.RLock()
-	calls = mock.calls.Get
-	mock.lockGet.RUnlock()
+	mock.lockGetPost.RLock()
+	calls = mock.calls.GetPost
+	mock.lockGetPost.RUnlock()
 	return calls
 }
 
-// Range calls RangeFunc.
-func (mock *PostQuerierMock) Range(ctx context.Context, pageSize int32, cursor *domain.PostCursor) ([]*domain.Post, error) {
-	if mock.RangeFunc == nil {
-		panic("PostQuerierMock.RangeFunc: method is nil but PostQuerier.Range was just called")
+// RangePosts calls RangePostsFunc.
+func (mock *PostQuerierMock) RangePosts(ctx context.Context, pageSize int32, cursor *domain.PostCursor) ([]*domain.Post, error) {
+	if mock.RangePostsFunc == nil {
+		panic("PostQuerierMock.RangePostsFunc: method is nil but PostQuerier.RangePosts was just called")
 	}
 	callInfo := struct {
 		Ctx      context.Context
@@ -111,17 +111,17 @@ func (mock *PostQuerierMock) Range(ctx context.Context, pageSize int32, cursor *
 		PageSize: pageSize,
 		Cursor:   cursor,
 	}
-	mock.lockRange.Lock()
-	mock.calls.Range = append(mock.calls.Range, callInfo)
-	mock.lockRange.Unlock()
-	return mock.RangeFunc(ctx, pageSize, cursor)
+	mock.lockRangePosts.Lock()
+	mock.calls.RangePosts = append(mock.calls.RangePosts, callInfo)
+	mock.lockRangePosts.Unlock()
+	return mock.RangePostsFunc(ctx, pageSize, cursor)
 }
 
-// RangeCalls gets all the calls that were made to Range.
+// RangePostsCalls gets all the calls that were made to RangePosts.
 // Check the length with:
 //
-//	len(mockedPostQuerier.RangeCalls())
-func (mock *PostQuerierMock) RangeCalls() []struct {
+//	len(mockedPostQuerier.RangePostsCalls())
+func (mock *PostQuerierMock) RangePostsCalls() []struct {
 	Ctx      context.Context
 	PageSize int32
 	Cursor   *domain.PostCursor
@@ -131,8 +131,8 @@ func (mock *PostQuerierMock) RangeCalls() []struct {
 		PageSize int32
 		Cursor   *domain.PostCursor
 	}
-	mock.lockRange.RLock()
-	calls = mock.calls.Range
-	mock.lockRange.RUnlock()
+	mock.lockRangePosts.RLock()
+	calls = mock.calls.RangePosts
+	mock.lockRangePosts.RUnlock()
 	return calls
 }

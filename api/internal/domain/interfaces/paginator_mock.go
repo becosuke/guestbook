@@ -19,11 +19,11 @@ var _ Paginator = &PaginatorMock{}
 //
 //		// make and configure a mocked Paginator
 //		mockedPaginator := &PaginatorMock{
-//			GetFunc: func(contextMoqParam context.Context, paginationID *domain.PaginationID) (*domain.Pagination, error) {
-//				panic("mock out the Get method")
+//			GetPaginationFunc: func(contextMoqParam context.Context, paginationID *domain.PaginationID) (*domain.Pagination, error) {
+//				panic("mock out the GetPagination method")
 //			},
-//			SaveFunc: func(contextMoqParam context.Context, pagination *domain.Pagination) error {
-//				panic("mock out the Save method")
+//			SavePaginationFunc: func(contextMoqParam context.Context, pagination *domain.Pagination) error {
+//				panic("mock out the SavePagination method")
 //			},
 //		}
 //
@@ -32,37 +32,37 @@ var _ Paginator = &PaginatorMock{}
 //
 //	}
 type PaginatorMock struct {
-	// GetFunc mocks the Get method.
-	GetFunc func(contextMoqParam context.Context, paginationID *domain.PaginationID) (*domain.Pagination, error)
+	// GetPaginationFunc mocks the GetPagination method.
+	GetPaginationFunc func(contextMoqParam context.Context, paginationID *domain.PaginationID) (*domain.Pagination, error)
 
-	// SaveFunc mocks the Save method.
-	SaveFunc func(contextMoqParam context.Context, pagination *domain.Pagination) error
+	// SavePaginationFunc mocks the SavePagination method.
+	SavePaginationFunc func(contextMoqParam context.Context, pagination *domain.Pagination) error
 
 	// calls tracks calls to the methods.
 	calls struct {
-		// Get holds details about calls to the Get method.
-		Get []struct {
+		// GetPagination holds details about calls to the GetPagination method.
+		GetPagination []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// PaginationID is the paginationID argument value.
 			PaginationID *domain.PaginationID
 		}
-		// Save holds details about calls to the Save method.
-		Save []struct {
+		// SavePagination holds details about calls to the SavePagination method.
+		SavePagination []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// Pagination is the pagination argument value.
 			Pagination *domain.Pagination
 		}
 	}
-	lockGet  sync.RWMutex
-	lockSave sync.RWMutex
+	lockGetPagination  sync.RWMutex
+	lockSavePagination sync.RWMutex
 }
 
-// Get calls GetFunc.
-func (mock *PaginatorMock) Get(contextMoqParam context.Context, paginationID *domain.PaginationID) (*domain.Pagination, error) {
-	if mock.GetFunc == nil {
-		panic("PaginatorMock.GetFunc: method is nil but Paginator.Get was just called")
+// GetPagination calls GetPaginationFunc.
+func (mock *PaginatorMock) GetPagination(contextMoqParam context.Context, paginationID *domain.PaginationID) (*domain.Pagination, error) {
+	if mock.GetPaginationFunc == nil {
+		panic("PaginatorMock.GetPaginationFunc: method is nil but Paginator.GetPagination was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
@@ -71,17 +71,17 @@ func (mock *PaginatorMock) Get(contextMoqParam context.Context, paginationID *do
 		ContextMoqParam: contextMoqParam,
 		PaginationID:    paginationID,
 	}
-	mock.lockGet.Lock()
-	mock.calls.Get = append(mock.calls.Get, callInfo)
-	mock.lockGet.Unlock()
-	return mock.GetFunc(contextMoqParam, paginationID)
+	mock.lockGetPagination.Lock()
+	mock.calls.GetPagination = append(mock.calls.GetPagination, callInfo)
+	mock.lockGetPagination.Unlock()
+	return mock.GetPaginationFunc(contextMoqParam, paginationID)
 }
 
-// GetCalls gets all the calls that were made to Get.
+// GetPaginationCalls gets all the calls that were made to GetPagination.
 // Check the length with:
 //
-//	len(mockedPaginator.GetCalls())
-func (mock *PaginatorMock) GetCalls() []struct {
+//	len(mockedPaginator.GetPaginationCalls())
+func (mock *PaginatorMock) GetPaginationCalls() []struct {
 	ContextMoqParam context.Context
 	PaginationID    *domain.PaginationID
 } {
@@ -89,16 +89,16 @@ func (mock *PaginatorMock) GetCalls() []struct {
 		ContextMoqParam context.Context
 		PaginationID    *domain.PaginationID
 	}
-	mock.lockGet.RLock()
-	calls = mock.calls.Get
-	mock.lockGet.RUnlock()
+	mock.lockGetPagination.RLock()
+	calls = mock.calls.GetPagination
+	mock.lockGetPagination.RUnlock()
 	return calls
 }
 
-// Save calls SaveFunc.
-func (mock *PaginatorMock) Save(contextMoqParam context.Context, pagination *domain.Pagination) error {
-	if mock.SaveFunc == nil {
-		panic("PaginatorMock.SaveFunc: method is nil but Paginator.Save was just called")
+// SavePagination calls SavePaginationFunc.
+func (mock *PaginatorMock) SavePagination(contextMoqParam context.Context, pagination *domain.Pagination) error {
+	if mock.SavePaginationFunc == nil {
+		panic("PaginatorMock.SavePaginationFunc: method is nil but Paginator.SavePagination was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
@@ -107,17 +107,17 @@ func (mock *PaginatorMock) Save(contextMoqParam context.Context, pagination *dom
 		ContextMoqParam: contextMoqParam,
 		Pagination:      pagination,
 	}
-	mock.lockSave.Lock()
-	mock.calls.Save = append(mock.calls.Save, callInfo)
-	mock.lockSave.Unlock()
-	return mock.SaveFunc(contextMoqParam, pagination)
+	mock.lockSavePagination.Lock()
+	mock.calls.SavePagination = append(mock.calls.SavePagination, callInfo)
+	mock.lockSavePagination.Unlock()
+	return mock.SavePaginationFunc(contextMoqParam, pagination)
 }
 
-// SaveCalls gets all the calls that were made to Save.
+// SavePaginationCalls gets all the calls that were made to SavePagination.
 // Check the length with:
 //
-//	len(mockedPaginator.SaveCalls())
-func (mock *PaginatorMock) SaveCalls() []struct {
+//	len(mockedPaginator.SavePaginationCalls())
+func (mock *PaginatorMock) SavePaginationCalls() []struct {
 	ContextMoqParam context.Context
 	Pagination      *domain.Pagination
 } {
@@ -125,8 +125,8 @@ func (mock *PaginatorMock) SaveCalls() []struct {
 		ContextMoqParam context.Context
 		Pagination      *domain.Pagination
 	}
-	mock.lockSave.RLock()
-	calls = mock.calls.Save
-	mock.lockSave.RUnlock()
+	mock.lockSavePagination.RLock()
+	calls = mock.calls.SavePagination
+	mock.lockSavePagination.RUnlock()
 	return calls
 }
