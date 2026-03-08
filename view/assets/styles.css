@@ -37,6 +37,13 @@ html {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
+  align-items: flex-start;
+}
+
+.submit-hint {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
 }
 
 /* Text input */
@@ -52,6 +59,11 @@ html {
 .text-input:focus {
   border-color: #2563eb;
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+textarea.text-input {
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.5;
 }
 
 /* Buttons */
@@ -205,6 +217,7 @@ html {
 .edit-form {
   display: flex;
   gap: 0.5rem;
+  align-items: flex-start;
 }
 
 /* Messages */
