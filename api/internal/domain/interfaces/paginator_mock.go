@@ -19,7 +19,7 @@ var _ Paginator = &PaginatorMock{}
 //
 //		// make and configure a mocked Paginator
 //		mockedPaginator := &PaginatorMock{
-//			GetPaginationFunc: func(contextMoqParam context.Context, paginationID *domain.PaginationID) (*domain.Pagination, error) {
+//			GetPaginationFunc: func(contextMoqParam context.Context, paginationID domain.PaginationID) (*domain.Pagination, error) {
 //				panic("mock out the GetPagination method")
 //			},
 //			SavePaginationFunc: func(contextMoqParam context.Context, pagination *domain.Pagination) error {
@@ -33,7 +33,7 @@ var _ Paginator = &PaginatorMock{}
 //	}
 type PaginatorMock struct {
 	// GetPaginationFunc mocks the GetPagination method.
-	GetPaginationFunc func(contextMoqParam context.Context, paginationID *domain.PaginationID) (*domain.Pagination, error)
+	GetPaginationFunc func(contextMoqParam context.Context, paginationID domain.PaginationID) (*domain.Pagination, error)
 
 	// SavePaginationFunc mocks the SavePagination method.
 	SavePaginationFunc func(contextMoqParam context.Context, pagination *domain.Pagination) error
@@ -45,7 +45,7 @@ type PaginatorMock struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// PaginationID is the paginationID argument value.
-			PaginationID *domain.PaginationID
+			PaginationID domain.PaginationID
 		}
 		// SavePagination holds details about calls to the SavePagination method.
 		SavePagination []struct {
@@ -60,13 +60,13 @@ type PaginatorMock struct {
 }
 
 // GetPagination calls GetPaginationFunc.
-func (mock *PaginatorMock) GetPagination(contextMoqParam context.Context, paginationID *domain.PaginationID) (*domain.Pagination, error) {
+func (mock *PaginatorMock) GetPagination(contextMoqParam context.Context, paginationID domain.PaginationID) (*domain.Pagination, error) {
 	if mock.GetPaginationFunc == nil {
 		panic("PaginatorMock.GetPaginationFunc: method is nil but Paginator.GetPagination was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
-		PaginationID    *domain.PaginationID
+		PaginationID    domain.PaginationID
 	}{
 		ContextMoqParam: contextMoqParam,
 		PaginationID:    paginationID,
@@ -83,11 +83,11 @@ func (mock *PaginatorMock) GetPagination(contextMoqParam context.Context, pagina
 //	len(mockedPaginator.GetPaginationCalls())
 func (mock *PaginatorMock) GetPaginationCalls() []struct {
 	ContextMoqParam context.Context
-	PaginationID    *domain.PaginationID
+	PaginationID    domain.PaginationID
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		PaginationID    *domain.PaginationID
+		PaginationID    domain.PaginationID
 	}
 	mock.lockGetPagination.RLock()
 	calls = mock.calls.GetPagination

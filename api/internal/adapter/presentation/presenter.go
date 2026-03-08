@@ -95,7 +95,7 @@ func (impl *guestbookServiceServer) ListPosts(ctx context.Context, req *pb.ListP
 	resp := &pb.ListPostsResponse{
 		Posts: pbPosts,
 	}
-	if nextPaginationID != nil {
+	if !nextPaginationID.IsZero() {
 		resp.NextPageToken = nextPaginationID.String()
 	}
 	return resp, nil
