@@ -26,7 +26,7 @@ export async function createPost(body: string): Promise<Post> {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      post: { postId: "00000000-0000-0000-0000-000000000000", body },
+      post: { body },
       idempotencyKey: crypto.randomUUID(),
     }),
   });
