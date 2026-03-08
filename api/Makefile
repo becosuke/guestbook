@@ -43,12 +43,12 @@ run/rest:
 	$(PROJECT_REPOSITORY)/$(COMMAND_DIR)/rest
 
 .PHONY: test
-test: test/unit test/functional
+test: test/unit test/e2e
 
 test/unit:
 	$(GO_BINARY) test $(args) -race -cover $(CODE_DIRS)
 
-test/functional:
+test/e2e:
 	$(GO_BINARY) test $(args) -race -cover $(TEST_DIRS)
 
 test/integration:
