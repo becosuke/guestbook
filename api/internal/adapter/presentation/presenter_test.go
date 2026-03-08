@@ -39,7 +39,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 			body := domain.NewPostBody("example")
 			post := domain.NewPost(postID, body, domain.NewPostBody(""), time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC), time.Time{}, time.Time{})
 			mockUsecase := &UsecaseMock{
-				GetFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
+				GetFunc: func(ctx context.Context, id domain.PostID) (*domain.Post, error) {
 					assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", id.String())
 					return post, nil
 				},
@@ -69,7 +69,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 			ctx := context.Background()
 			config := &domain.Config{}
 			mockUsecase := &UsecaseMock{
-				GetFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
+				GetFunc: func(ctx context.Context, id domain.PostID) (*domain.Post, error) {
 					return nil, domain.ErrNotFound
 				},
 			}
@@ -272,7 +272,7 @@ func Test_guestbookServiceServerImpl_DeletePost(t *testing.T) {
 			ctx := context.Background()
 			config := &domain.Config{}
 			mockUsecase := &UsecaseMock{
-				DeleteFunc: func(ctx context.Context, id *domain.PostID) error {
+				DeleteFunc: func(ctx context.Context, id domain.PostID) error {
 					return nil
 				},
 			}

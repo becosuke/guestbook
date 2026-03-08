@@ -9,19 +9,19 @@ import (
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
 
-func (impl *guestbookServiceServer) postIDDomainToResource(domainPostID *domain.PostID) string {
+func (impl *guestbookServiceServer) postIDDomainToResource(domainPostID domain.PostID) string {
 	return domainPostID.String()
 }
 
-func (impl *guestbookServiceServer) postIDResourceToDomain(resourcePostId string) *domain.PostID {
+func (impl *guestbookServiceServer) postIDResourceToDomain(resourcePostId string) domain.PostID {
 	return domain.NewPostID(resourcePostId)
 }
 
-func (impl *guestbookServiceServer) postBodyDomainToResource(domainPostBody *domain.PostBody) string {
+func (impl *guestbookServiceServer) postBodyDomainToResource(domainPostBody domain.PostBody) string {
 	return domainPostBody.String()
 }
 
-func (impl *guestbookServiceServer) postBodyResourceToDomain(resourceBody string) *domain.PostBody {
+func (impl *guestbookServiceServer) postBodyResourceToDomain(resourceBody string) domain.PostBody {
 	return domain.NewPostBody(resourceBody)
 }
 
@@ -41,7 +41,7 @@ func (impl *guestbookServiceServer) postDomainToResource(domainPost *domain.Post
 	if !domainPost.UpdateTime().IsZero() {
 		res.UpdateTime = timestamppb.New(domainPost.UpdateTime())
 	}
-	if domainPost.PreviousBody() != nil && domainPost.PreviousBody().String() != "" {
+	if domainPost.PreviousBody().String() != "" {
 		res.PreviousBody = impl.postBodyDomainToResource(domainPost.PreviousBody())
 	}
 	return res

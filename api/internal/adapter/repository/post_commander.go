@@ -68,7 +68,7 @@ func (impl *postCommanderImpl) UpdatePost(ctx context.Context, post *domain.Post
 	return nil
 }
 
-func (impl *postCommanderImpl) DeletePost(ctx context.Context, postID *domain.PostID) error {
+func (impl *postCommanderImpl) DeletePost(ctx context.Context, postID domain.PostID) error {
 	ct, err := impl.pool.Exec(ctx,
 		`UPDATE Posts SET DeleteTime = NOW(), UpdateTime = NOW() WHERE PostId = $1 AND DeleteTime = '0001-01-01 00:00:00+00'`,
 		postID.String(),

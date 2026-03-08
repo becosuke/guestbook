@@ -4,14 +4,10 @@ import "strings"
 
 type PostBody string
 
-func NewPostBody(postBody string) *PostBody {
-	b := PostBody(strings.TrimSpace(postBody))
-	return &b
+func NewPostBody(postBody string) PostBody {
+	return PostBody(strings.TrimSpace(postBody))
 }
 
-func (b *PostBody) String() string {
-	if b == nil {
-		return ""
-	}
-	return string(*b)
+func (b PostBody) String() string {
+	return string(b)
 }

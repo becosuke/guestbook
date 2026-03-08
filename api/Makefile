@@ -93,6 +93,7 @@ build/rest/container:
 gen: gen/go
 
 gen/go:
+	find ./internal -name '*_mock.go' -delete
 	$(GO_BINARY) generate ./internal/...
 
 tools-install: tools-tidy
