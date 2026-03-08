@@ -26,3 +26,4 @@ packages:
 - name: golang-migrate/migrate@v4.18.3
 - name: quasilyte/go-consistent@v0.6.2
   registry: local
+- name: denoland/deno@v2.7.4
