@@ -2,11 +2,15 @@ GO_VERSION=1.25.7
 GO_BINARY=go
 
 .PHONY: build
-build: build-api
+build: build-api build-view
 
 .PHONY: build-api
 build-api:
 	@$(MAKE) --no-print-directory -C api build
+
+.PHONY: build-view
+build-view:
+	cd view && docker build -f build/Dockerfile --no-cache -t guestbook-view:latest .
 
 .PHONY: buf-generate
 buf-generate: buf-dep-update
