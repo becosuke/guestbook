@@ -4,13 +4,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestPostID_String(t *testing.T) {
 	type testCase struct {
 		name   string
-		postID *PostID
+		postID PostID
 		want   string
 	}
 	tests := []testCase{
@@ -23,16 +24,9 @@ func TestPostID_String(t *testing.T) {
 		}(),
 		func() testCase {
 			return testCase{
-				name:   "empty",
-				postID: NewPostID(""),
-				want:   "",
-			}
-		}(),
-		func() testCase {
-			return testCase{
-				name:   "nil",
-				postID: nil,
-				want:   "",
+				name:   "zero value",
+				postID: PostID{},
+				want:   uuid.Nil.String(),
 			}
 		}(),
 	}
@@ -47,7 +41,7 @@ func TestPostID_String(t *testing.T) {
 func TestPostBody_String(t *testing.T) {
 	type testCase struct {
 		name     string
-		postBody *PostBody
+		postBody PostBody
 		want     string
 	}
 	tests := []testCase{
@@ -65,13 +59,6 @@ func TestPostBody_String(t *testing.T) {
 				want:     "",
 			}
 		}(),
-		func() testCase {
-			return testCase{
-				name:     "nil",
-				postBody: nil,
-				want:     "",
-			}
-		}(),
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -83,14 +70,14 @@ func TestPostBody_String(t *testing.T) {
 
 func TestNewPost(t *testing.T) {
 	type args struct {
-		postID   *PostID
-		postBody *PostBody
+		postID   PostID
+		postBody PostBody
 	}
 	type testCase struct {
 		name         string
 		args         args
-		wantPostID   *PostID
-		wantPostBody *PostBody
+		wantPostID   PostID
+		wantPostBody PostBody
 	}
 	tests := []testCase{
 		func() testCase {
@@ -108,13 +95,13 @@ func TestNewPost(t *testing.T) {
 		}(),
 		func() testCase {
 			return testCase{
-				name: "nil fields",
+				name: "zero value fields",
 				args: args{
-					postID:   nil,
-					postBody: nil,
+					postID:   PostID{},
+					postBody: PostBody(""),
 				},
-				wantPostID:   nil,
-				wantPostBody: nil,
+				wantPostID:   PostID{},
+				wantPostBody: PostBody(""),
 			}
 		}(),
 	}

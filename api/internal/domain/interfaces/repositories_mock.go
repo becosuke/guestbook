@@ -22,13 +22,13 @@ var _ Repositories = &RepositoriesMock{}
 //			CreatePostFunc: func(contextMoqParam context.Context, post *domain.Post) error {
 //				panic("mock out the CreatePost method")
 //			},
-//			DeletePostFunc: func(contextMoqParam context.Context, postID *domain.PostID) error {
+//			DeletePostFunc: func(contextMoqParam context.Context, postID domain.PostID) error {
 //				panic("mock out the DeletePost method")
 //			},
 //			GetPaginationFunc: func(contextMoqParam context.Context, paginationID *domain.PaginationID) (*domain.Pagination, error) {
 //				panic("mock out the GetPagination method")
 //			},
-//			GetPostFunc: func(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error) {
+//			GetPostFunc: func(contextMoqParam context.Context, postID domain.PostID) (*domain.Post, error) {
 //				panic("mock out the GetPost method")
 //			},
 //			RangePostsFunc: func(ctx context.Context, pageSize int32, cursor *domain.PostCursor) ([]*domain.Post, error) {
@@ -51,13 +51,13 @@ type RepositoriesMock struct {
 	CreatePostFunc func(contextMoqParam context.Context, post *domain.Post) error
 
 	// DeletePostFunc mocks the DeletePost method.
-	DeletePostFunc func(contextMoqParam context.Context, postID *domain.PostID) error
+	DeletePostFunc func(contextMoqParam context.Context, postID domain.PostID) error
 
 	// GetPaginationFunc mocks the GetPagination method.
 	GetPaginationFunc func(contextMoqParam context.Context, paginationID *domain.PaginationID) (*domain.Pagination, error)
 
 	// GetPostFunc mocks the GetPost method.
-	GetPostFunc func(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error)
+	GetPostFunc func(contextMoqParam context.Context, postID domain.PostID) (*domain.Post, error)
 
 	// RangePostsFunc mocks the RangePosts method.
 	RangePostsFunc func(ctx context.Context, pageSize int32, cursor *domain.PostCursor) ([]*domain.Post, error)
@@ -82,7 +82,7 @@ type RepositoriesMock struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// PostID is the postID argument value.
-			PostID *domain.PostID
+			PostID domain.PostID
 		}
 		// GetPagination holds details about calls to the GetPagination method.
 		GetPagination []struct {
@@ -96,7 +96,7 @@ type RepositoriesMock struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// PostID is the postID argument value.
-			PostID *domain.PostID
+			PostID domain.PostID
 		}
 		// RangePosts holds details about calls to the RangePosts method.
 		RangePosts []struct {
@@ -168,13 +168,13 @@ func (mock *RepositoriesMock) CreatePostCalls() []struct {
 }
 
 // DeletePost calls DeletePostFunc.
-func (mock *RepositoriesMock) DeletePost(contextMoqParam context.Context, postID *domain.PostID) error {
+func (mock *RepositoriesMock) DeletePost(contextMoqParam context.Context, postID domain.PostID) error {
 	if mock.DeletePostFunc == nil {
 		panic("RepositoriesMock.DeletePostFunc: method is nil but Repositories.DeletePost was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
-		PostID          *domain.PostID
+		PostID          domain.PostID
 	}{
 		ContextMoqParam: contextMoqParam,
 		PostID:          postID,
@@ -191,11 +191,11 @@ func (mock *RepositoriesMock) DeletePost(contextMoqParam context.Context, postID
 //	len(mockedRepositories.DeletePostCalls())
 func (mock *RepositoriesMock) DeletePostCalls() []struct {
 	ContextMoqParam context.Context
-	PostID          *domain.PostID
+	PostID          domain.PostID
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		PostID          *domain.PostID
+		PostID          domain.PostID
 	}
 	mock.lockDeletePost.RLock()
 	calls = mock.calls.DeletePost
@@ -240,13 +240,13 @@ func (mock *RepositoriesMock) GetPaginationCalls() []struct {
 }
 
 // GetPost calls GetPostFunc.
-func (mock *RepositoriesMock) GetPost(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error) {
+func (mock *RepositoriesMock) GetPost(contextMoqParam context.Context, postID domain.PostID) (*domain.Post, error) {
 	if mock.GetPostFunc == nil {
 		panic("RepositoriesMock.GetPostFunc: method is nil but Repositories.GetPost was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
-		PostID          *domain.PostID
+		PostID          domain.PostID
 	}{
 		ContextMoqParam: contextMoqParam,
 		PostID:          postID,
@@ -263,11 +263,11 @@ func (mock *RepositoriesMock) GetPost(contextMoqParam context.Context, postID *d
 //	len(mockedRepositories.GetPostCalls())
 func (mock *RepositoriesMock) GetPostCalls() []struct {
 	ContextMoqParam context.Context
-	PostID          *domain.PostID
+	PostID          domain.PostID
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		PostID          *domain.PostID
+		PostID          domain.PostID
 	}
 	mock.lockGetPost.RLock()
 	calls = mock.calls.GetPost

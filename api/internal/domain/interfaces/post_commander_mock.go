@@ -22,7 +22,7 @@ var _ PostCommander = &PostCommanderMock{}
 //			CreatePostFunc: func(contextMoqParam context.Context, post *domain.Post) error {
 //				panic("mock out the CreatePost method")
 //			},
-//			DeletePostFunc: func(contextMoqParam context.Context, postID *domain.PostID) error {
+//			DeletePostFunc: func(contextMoqParam context.Context, postID domain.PostID) error {
 //				panic("mock out the DeletePost method")
 //			},
 //			UpdatePostFunc: func(contextMoqParam context.Context, post *domain.Post) error {
@@ -39,7 +39,7 @@ type PostCommanderMock struct {
 	CreatePostFunc func(contextMoqParam context.Context, post *domain.Post) error
 
 	// DeletePostFunc mocks the DeletePost method.
-	DeletePostFunc func(contextMoqParam context.Context, postID *domain.PostID) error
+	DeletePostFunc func(contextMoqParam context.Context, postID domain.PostID) error
 
 	// UpdatePostFunc mocks the UpdatePost method.
 	UpdatePostFunc func(contextMoqParam context.Context, post *domain.Post) error
@@ -58,7 +58,7 @@ type PostCommanderMock struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// PostID is the postID argument value.
-			PostID *domain.PostID
+			PostID domain.PostID
 		}
 		// UpdatePost holds details about calls to the UpdatePost method.
 		UpdatePost []struct {
@@ -110,13 +110,13 @@ func (mock *PostCommanderMock) CreatePostCalls() []struct {
 }
 
 // DeletePost calls DeletePostFunc.
-func (mock *PostCommanderMock) DeletePost(contextMoqParam context.Context, postID *domain.PostID) error {
+func (mock *PostCommanderMock) DeletePost(contextMoqParam context.Context, postID domain.PostID) error {
 	if mock.DeletePostFunc == nil {
 		panic("PostCommanderMock.DeletePostFunc: method is nil but PostCommander.DeletePost was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
-		PostID          *domain.PostID
+		PostID          domain.PostID
 	}{
 		ContextMoqParam: contextMoqParam,
 		PostID:          postID,
@@ -133,11 +133,11 @@ func (mock *PostCommanderMock) DeletePost(contextMoqParam context.Context, postI
 //	len(mockedPostCommander.DeletePostCalls())
 func (mock *PostCommanderMock) DeletePostCalls() []struct {
 	ContextMoqParam context.Context
-	PostID          *domain.PostID
+	PostID          domain.PostID
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		PostID          *domain.PostID
+		PostID          domain.PostID
 	}
 	mock.lockDeletePost.RLock()
 	calls = mock.calls.DeletePost

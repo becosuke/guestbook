@@ -19,7 +19,7 @@ var _ PostQuerier = &PostQuerierMock{}
 //
 //		// make and configure a mocked PostQuerier
 //		mockedPostQuerier := &PostQuerierMock{
-//			GetPostFunc: func(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error) {
+//			GetPostFunc: func(contextMoqParam context.Context, postID domain.PostID) (*domain.Post, error) {
 //				panic("mock out the GetPost method")
 //			},
 //			RangePostsFunc: func(ctx context.Context, pageSize int32, cursor *domain.PostCursor) ([]*domain.Post, error) {
@@ -33,7 +33,7 @@ var _ PostQuerier = &PostQuerierMock{}
 //	}
 type PostQuerierMock struct {
 	// GetPostFunc mocks the GetPost method.
-	GetPostFunc func(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error)
+	GetPostFunc func(contextMoqParam context.Context, postID domain.PostID) (*domain.Post, error)
 
 	// RangePostsFunc mocks the RangePosts method.
 	RangePostsFunc func(ctx context.Context, pageSize int32, cursor *domain.PostCursor) ([]*domain.Post, error)
@@ -45,7 +45,7 @@ type PostQuerierMock struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// PostID is the postID argument value.
-			PostID *domain.PostID
+			PostID domain.PostID
 		}
 		// RangePosts holds details about calls to the RangePosts method.
 		RangePosts []struct {
@@ -62,13 +62,13 @@ type PostQuerierMock struct {
 }
 
 // GetPost calls GetPostFunc.
-func (mock *PostQuerierMock) GetPost(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error) {
+func (mock *PostQuerierMock) GetPost(contextMoqParam context.Context, postID domain.PostID) (*domain.Post, error) {
 	if mock.GetPostFunc == nil {
 		panic("PostQuerierMock.GetPostFunc: method is nil but PostQuerier.GetPost was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
-		PostID          *domain.PostID
+		PostID          domain.PostID
 	}{
 		ContextMoqParam: contextMoqParam,
 		PostID:          postID,
@@ -85,11 +85,11 @@ func (mock *PostQuerierMock) GetPost(contextMoqParam context.Context, postID *do
 //	len(mockedPostQuerier.GetPostCalls())
 func (mock *PostQuerierMock) GetPostCalls() []struct {
 	ContextMoqParam context.Context
-	PostID          *domain.PostID
+	PostID          domain.PostID
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		PostID          *domain.PostID
+		PostID          domain.PostID
 	}
 	mock.lockGetPost.RLock()
 	calls = mock.calls.GetPost

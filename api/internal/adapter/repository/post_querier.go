@@ -27,7 +27,7 @@ type postQuerierImpl struct {
 	pool   *pgxpool.Pool
 }
 
-func (impl *postQuerierImpl) GetPost(ctx context.Context, postID *domain.PostID) (*domain.Post, error) {
+func (impl *postQuerierImpl) GetPost(ctx context.Context, postID domain.PostID) (*domain.Post, error) {
 	var body string
 	var previousBody string
 	var createTime time.Time

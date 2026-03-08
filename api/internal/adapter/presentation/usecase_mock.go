@@ -22,10 +22,10 @@ var _ Usecase = &UsecaseMock{}
 //			CreateFunc: func(contextMoqParam context.Context, post *domain.Post) (*domain.Post, error) {
 //				panic("mock out the Create method")
 //			},
-//			DeleteFunc: func(contextMoqParam context.Context, postID *domain.PostID) error {
+//			DeleteFunc: func(contextMoqParam context.Context, postID domain.PostID) error {
 //				panic("mock out the Delete method")
 //			},
-//			GetFunc: func(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error) {
+//			GetFunc: func(contextMoqParam context.Context, postID domain.PostID) (*domain.Post, error) {
 //				panic("mock out the Get method")
 //			},
 //			RangeFunc: func(contextMoqParam context.Context, pageOption *domain.PageOption) ([]*domain.Post, *domain.PaginationID, error) {
@@ -45,10 +45,10 @@ type UsecaseMock struct {
 	CreateFunc func(contextMoqParam context.Context, post *domain.Post) (*domain.Post, error)
 
 	// DeleteFunc mocks the Delete method.
-	DeleteFunc func(contextMoqParam context.Context, postID *domain.PostID) error
+	DeleteFunc func(contextMoqParam context.Context, postID domain.PostID) error
 
 	// GetFunc mocks the Get method.
-	GetFunc func(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error)
+	GetFunc func(contextMoqParam context.Context, postID domain.PostID) (*domain.Post, error)
 
 	// RangeFunc mocks the Range method.
 	RangeFunc func(contextMoqParam context.Context, pageOption *domain.PageOption) ([]*domain.Post, *domain.PaginationID, error)
@@ -70,14 +70,14 @@ type UsecaseMock struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// PostID is the postID argument value.
-			PostID *domain.PostID
+			PostID domain.PostID
 		}
 		// Get holds details about calls to the Get method.
 		Get []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// PostID is the postID argument value.
-			PostID *domain.PostID
+			PostID domain.PostID
 		}
 		// Range holds details about calls to the Range method.
 		Range []struct {
@@ -138,13 +138,13 @@ func (mock *UsecaseMock) CreateCalls() []struct {
 }
 
 // Delete calls DeleteFunc.
-func (mock *UsecaseMock) Delete(contextMoqParam context.Context, postID *domain.PostID) error {
+func (mock *UsecaseMock) Delete(contextMoqParam context.Context, postID domain.PostID) error {
 	if mock.DeleteFunc == nil {
 		panic("UsecaseMock.DeleteFunc: method is nil but Usecase.Delete was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
-		PostID          *domain.PostID
+		PostID          domain.PostID
 	}{
 		ContextMoqParam: contextMoqParam,
 		PostID:          postID,
@@ -161,11 +161,11 @@ func (mock *UsecaseMock) Delete(contextMoqParam context.Context, postID *domain.
 //	len(mockedUsecase.DeleteCalls())
 func (mock *UsecaseMock) DeleteCalls() []struct {
 	ContextMoqParam context.Context
-	PostID          *domain.PostID
+	PostID          domain.PostID
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		PostID          *domain.PostID
+		PostID          domain.PostID
 	}
 	mock.lockDelete.RLock()
 	calls = mock.calls.Delete
@@ -174,13 +174,13 @@ func (mock *UsecaseMock) DeleteCalls() []struct {
 }
 
 // Get calls GetFunc.
-func (mock *UsecaseMock) Get(contextMoqParam context.Context, postID *domain.PostID) (*domain.Post, error) {
+func (mock *UsecaseMock) Get(contextMoqParam context.Context, postID domain.PostID) (*domain.Post, error) {
 	if mock.GetFunc == nil {
 		panic("UsecaseMock.GetFunc: method is nil but Usecase.Get was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
-		PostID          *domain.PostID
+		PostID          domain.PostID
 	}{
 		ContextMoqParam: contextMoqParam,
 		PostID:          postID,
@@ -197,11 +197,11 @@ func (mock *UsecaseMock) Get(contextMoqParam context.Context, postID *domain.Pos
 //	len(mockedUsecase.GetCalls())
 func (mock *UsecaseMock) GetCalls() []struct {
 	ContextMoqParam context.Context
-	PostID          *domain.PostID
+	PostID          domain.PostID
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		PostID          *domain.PostID
+		PostID          domain.PostID
 	}
 	mock.lockGet.RLock()
 	calls = mock.calls.Get

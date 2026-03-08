@@ -16,7 +16,7 @@ import (
 func TestUsecase_Get(t *testing.T) {
 	type args struct {
 		ctx    context.Context
-		postID *domain.PostID
+		postID domain.PostID
 	}
 	type testCase struct {
 		name    string
@@ -34,7 +34,7 @@ func TestUsecase_Get(t *testing.T) {
 			return testCase{
 				name: "normal",
 				repos: &interfaces.RepositoriesMock{
-					GetPostFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
+					GetPostFunc: func(ctx context.Context, id domain.PostID) (*domain.Post, error) {
 						assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", id.String())
 						return post, nil
 					},
@@ -53,7 +53,7 @@ func TestUsecase_Get(t *testing.T) {
 			return testCase{
 				name: "not found",
 				repos: &interfaces.RepositoriesMock{
-					GetPostFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
+					GetPostFunc: func(ctx context.Context, id domain.PostID) (*domain.Post, error) {
 						return nil, domain.ErrNotFound
 					},
 				},
@@ -208,7 +208,7 @@ func TestUsecase_Create(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			body := domain.NewPostBody("example")
-			inputPost := domain.NewPost(nil, body, domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
+			inputPost := domain.NewPost(domain.PostID{}, body, domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
 			returnedPost := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), body, domain.NewPostBody(""), time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC), time.Time{}, time.Time{})
 			return testCase{
 				name: "normal",
@@ -218,7 +218,7 @@ func TestUsecase_Create(t *testing.T) {
 						assert.NotEmpty(t, p.PostID().String())
 						return nil
 					},
-					GetPostFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
+					GetPostFunc: func(ctx context.Context, id domain.PostID) (*domain.Post, error) {
 						return returnedPost, nil
 					},
 				},
@@ -233,7 +233,7 @@ func TestUsecase_Create(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			body := domain.NewPostBody("example")
-			inputPost := domain.NewPost(nil, body, domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
+			inputPost := domain.NewPost(domain.PostID{}, body, domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
 			return testCase{
 				name: "create error",
 				repos: &interfaces.RepositoriesMock{
@@ -252,14 +252,14 @@ func TestUsecase_Create(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			body := domain.NewPostBody("example")
-			inputPost := domain.NewPost(nil, body, domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
+			inputPost := domain.NewPost(domain.PostID{}, body, domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
 			return testCase{
 				name: "get error",
 				repos: &interfaces.RepositoriesMock{
 					CreatePostFunc: func(ctx context.Context, p *domain.Post) error {
 						return nil
 					},
-					GetPostFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
+					GetPostFunc: func(ctx context.Context, id domain.PostID) (*domain.Post, error) {
 						return nil, domain.ErrNotFound
 					},
 				},
@@ -313,7 +313,7 @@ func TestUsecase_Update(t *testing.T) {
 						assert.Equal(t, "updated-example", p.PostBody().String())
 						return nil
 					},
-					GetPostFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
+					GetPostFunc: func(ctx context.Context, id domain.PostID) (*domain.Post, error) {
 						assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", id.String())
 						return post, nil
 					},
@@ -357,7 +357,7 @@ func TestUsecase_Update(t *testing.T) {
 					UpdatePostFunc: func(ctx context.Context, p *domain.Post) error {
 						return nil
 					},
-					GetPostFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
+					GetPostFunc: func(ctx context.Context, id domain.PostID) (*domain.Post, error) {
 						return nil, domain.ErrNotFound
 					},
 				},
@@ -388,7 +388,7 @@ func TestUsecase_Update(t *testing.T) {
 func TestUsecase_Delete(t *testing.T) {
 	type args struct {
 		ctx    context.Context
-		postID *domain.PostID
+		postID domain.PostID
 	}
 	type testCase struct {
 		name    string
@@ -403,7 +403,7 @@ func TestUsecase_Delete(t *testing.T) {
 			return testCase{
 				name: "normal",
 				repos: &interfaces.RepositoriesMock{
-					DeletePostFunc: func(ctx context.Context, id *domain.PostID) error {
+					DeletePostFunc: func(ctx context.Context, id domain.PostID) error {
 						assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", id.String())
 						return nil
 					},
@@ -421,7 +421,7 @@ func TestUsecase_Delete(t *testing.T) {
 			return testCase{
 				name: "error",
 				repos: &interfaces.RepositoriesMock{
-					DeletePostFunc: func(ctx context.Context, id *domain.PostID) error {
+					DeletePostFunc: func(ctx context.Context, id domain.PostID) error {
 						return domain.ErrNotFound
 					},
 				},

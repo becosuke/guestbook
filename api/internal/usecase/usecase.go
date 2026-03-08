@@ -25,7 +25,7 @@ type Usecase struct {
 	repos  interfaces.Repositories
 }
 
-func (impl *Usecase) Get(ctx context.Context, postID *domain.PostID) (*domain.Post, error) {
+func (impl *Usecase) Get(ctx context.Context, postID domain.PostID) (*domain.Post, error) {
 	result, err := impl.get(ctx, postID)
 	if err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func (impl *Usecase) Get(ctx context.Context, postID *domain.PostID) (*domain.Po
 	return result, nil
 }
 
-func (impl *Usecase) get(ctx context.Context, postID *domain.PostID) (*domain.Post, error) {
+func (impl *Usecase) get(ctx context.Context, postID domain.PostID) (*domain.Post, error) {
 	result, err := impl.repos.GetPost(ctx, postID)
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func (impl *Usecase) Range(ctx context.Context, pageOption *domain.PageOption) (
 }
 
 func (impl *Usecase) Create(ctx context.Context, post *domain.Post) (*domain.Post, error) {
-	postID := domain.NewPostID(uuid.New().String())
+	postID := domain.PostID(uuid.New())
 	post = domain.NewPost(postID, post.PostBody(), domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
 	err := impl.repos.CreatePost(ctx, post)
 	if err != nil {
@@ -104,7 +104,7 @@ func (impl *Usecase) Update(ctx context.Context, post *domain.Post) (*domain.Pos
 	return impl.get(ctx, post.PostID())
 }
 
-func (impl *Usecase) Delete(ctx context.Context, postID *domain.PostID) error {
+func (impl *Usecase) Delete(ctx context.Context, postID domain.PostID) error {
 	err := impl.repos.DeletePost(ctx, postID)
 	if err != nil {
 		return err

@@ -1,15 +1,16 @@
 package domain
 
-type PostID string
+import "github.com/google/uuid"
 
-func NewPostID(postID string) *PostID {
-	p := PostID(postID)
-	return &p
+type PostID uuid.UUID
+
+func NewPostID(postID string) PostID {
+	if postID == "" {
+		return PostID(uuid.Nil)
+	}
+	return PostID(uuid.MustParse(postID))
 }
 
-func (p *PostID) String() string {
-	if p == nil {
-		return ""
-	}
-	return string(*p)
+func (p PostID) String() string {
+	return uuid.UUID(p).String()
 }
