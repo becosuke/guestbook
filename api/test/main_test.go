@@ -7,6 +7,7 @@ import (
 	"os"
 	"testing"
 
+	"buf.build/go/protovalidate"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
@@ -16,6 +17,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/test/bufconn"
 
+	"github.com/becosuke/guestbook/api/internal/adapter/infrastructure/interceptor"
 	"github.com/becosuke/guestbook/api/internal/adapter/presentation"
 	"github.com/becosuke/guestbook/api/internal/adapter/repository"
 	"github.com/becosuke/guestbook/api/internal/domain"
@@ -58,14 +60,21 @@ func TestMain(m *testing.M) {
 	uc := usecase.NewUsecase(cfg, zapLogger, repos)
 	ctrl := presentation.NewGuestbookServiceServer(cfg, zapLogger, uc)
 
+	validator, err := protovalidate.New()
+	if err != nil {
+		log.Fatalf("failed to create protovalidate validator: %v", err)
+	}
+
 	lis := bufconn.Listen(bufSize)
 	server := grpc.NewServer(
 		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
 			grpc_zap.StreamServerInterceptor(zapLogger),
+			interceptor.ProtovalidateStreamServerInterceptor(validator),
 			grpc_recovery.StreamServerInterceptor(),
 		)),
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
 			grpc_zap.UnaryServerInterceptor(zapLogger),
+			interceptor.ProtovalidateUnaryServerInterceptor(validator),
 			grpc_recovery.UnaryServerInterceptor(),
 		)),
 	)

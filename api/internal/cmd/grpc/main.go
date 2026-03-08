@@ -8,17 +8,18 @@ import (
 	"os/signal"
 	"syscall"
 
+	"buf.build/go/protovalidate"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
-	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
 	infraconfig "github.com/becosuke/guestbook/api/internal/adapter/infrastructure/config"
+	"github.com/becosuke/guestbook/api/internal/adapter/infrastructure/interceptor"
 	"github.com/becosuke/guestbook/api/internal/adapter/presentation"
 	"github.com/becosuke/guestbook/api/internal/adapter/repository"
 	"github.com/becosuke/guestbook/api/internal/domain"
@@ -50,17 +51,21 @@ func InitializeApp(ctx context.Context) *App {
 	authFunc := func(ctx context.Context) (context.Context, error) {
 		return ctx, nil
 	}
+	validator, err := protovalidate.New()
+	if err != nil {
+		zapLogger.Fatal("failed to create protovalidate validator", zap.Error(err))
+	}
 	server := grpc.NewServer(
 		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
 			grpc_zap.StreamServerInterceptor(zapLogger),
 			grpc_auth.StreamServerInterceptor(authFunc),
-			grpc_validator.StreamServerInterceptor(),
+			interceptor.ProtovalidateStreamServerInterceptor(validator),
 			grpc_recovery.StreamServerInterceptor(),
 		)),
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
 			grpc_zap.UnaryServerInterceptor(zapLogger),
 			grpc_auth.UnaryServerInterceptor(authFunc),
-			grpc_validator.UnaryServerInterceptor(),
+			interceptor.ProtovalidateUnaryServerInterceptor(validator),
 			grpc_recovery.UnaryServerInterceptor(),
 		)),
 	)
