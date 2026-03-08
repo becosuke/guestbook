@@ -1,6 +1,8 @@
-import type { ListPostsResponse, Post } from "./types.ts";
+import type { ListPostsResponse, Post } from "./pb/guestbook_pb.ts";
 
 const API_BASE_URL = "/api/v1";
+
+export type { ListPostsResponse, Post };
 
 export async function getPosts(
   pageSize: number,
@@ -24,8 +26,8 @@ export async function createPost(body: string): Promise<Post> {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      post: { post_id: crypto.randomUUID(), body },
-      idempotency_key: crypto.randomUUID(),
+      post: { postId: crypto.randomUUID(), body },
+      idempotencyKey: crypto.randomUUID(),
     }),
   });
   if (!res.ok) throw new Error(`Failed to create post: ${res.statusText}`);
@@ -37,8 +39,8 @@ export async function updatePost(postId: string, body: string): Promise<Post> {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      post: { post_id: postId, body },
-      idempotency_key: crypto.randomUUID(),
+      post: { postId, body },
+      idempotencyKey: crypto.randomUUID(),
     }),
   });
   if (!res.ok) throw new Error(`Failed to update post: ${res.statusText}`);
@@ -50,8 +52,8 @@ export async function deletePost(postId: string): Promise<void> {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      post_id: postId,
-      idempotency_key: crypto.randomUUID(),
+      postId,
+      idempotencyKey: crypto.randomUUID(),
     }),
   });
   if (!res.ok) throw new Error(`Failed to delete post: ${res.statusText}`);

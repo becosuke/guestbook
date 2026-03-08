@@ -9,3 +9,9 @@ plugins:
   - local: protoc-gen-grpc-gateway
     out: api/internal/pkg/pb
     opt: paths=source_relative
+  - remote: buf.build/bufbuild/es
+    out: view/lib/pb
+    opt:
+      - target=ts
+      - import_extension=.ts
+    include_imports: true
