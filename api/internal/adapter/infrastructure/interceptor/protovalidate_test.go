@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"buf.build/go/protovalidate"
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
@@ -43,10 +42,10 @@ func TestProtovalidateUnaryServerInterceptor_ValidRequest(t *testing.T) {
 	assert.Equal(t, "ok", resp)
 	assert.True(t, handlerCalled)
 
-	// CreatePostRequest with nil UUID should also be valid
+	// CreatePostRequest with empty post_id should be valid (server ignores post_id)
 	handlerCalled = false
 	createReq := &pb.CreatePostRequest{
-		Post:           &pb.Post{PostId: uuid.Nil.String(), Body: "hello"},
+		Post:           &pb.Post{Body: "hello"},
 		IdempotencyKey: testUUID,
 	}
 	resp, err = interceptor(context.Background(), createReq, &grpc.UnaryServerInfo{}, handler)
@@ -81,18 +80,18 @@ func TestProtovalidateUnaryServerInterceptor_InvalidRequest(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "non-nil UUID post_id in CreatePostRequest",
+			name: "empty body in CreatePostRequest",
 			req: &pb.CreatePostRequest{
-				Post:           &pb.Post{PostId: testUUID, Body: "hello"},
-				IdempotencyKey: testUUID,
+				Post:           &pb.Post{Body: ""},
+				IdempotencyKey: "550e8400-e29b-41d4-a716-446655440000",
 			},
 			wantErr: true,
 		},
 		{
-			name: "empty body in CreatePostRequest",
-			req: &pb.CreatePostRequest{
-				Post:           &pb.Post{PostId: uuid.Nil.String(), Body: ""},
-				IdempotencyKey: "550e8400-e29b-41d4-a716-446655440000",
+			name: "empty post_id in UpdatePostRequest",
+			req: &pb.UpdatePostRequest{
+				Post:           &pb.Post{PostId: "", Body: "hello"},
+				IdempotencyKey: testUUID,
 			},
 			wantErr: true,
 		},
@@ -188,7 +187,7 @@ func TestProtovalidateUnaryServerInterceptor_BodyLength(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			req := &pb.CreatePostRequest{
-				Post:           &pb.Post{PostId: uuid.Nil.String(), Body: tt.body},
+				Post:           &pb.Post{Body: tt.body},
 				IdempotencyKey: testUUID,
 			}
 			resp, err := interceptor(context.Background(), req, &grpc.UnaryServerInfo{}, handler)

@@ -45,16 +45,16 @@ message GetPostRequest {
 }
 
 message CreatePostRequest {
-  option (buf.validate.message).cel = {
-    id: "create_post_request.post.post_id_must_be_nil_uuid",
-    message: "post.post_id must be nil UUID (00000000-0000-0000-0000-000000000000)",
-    expression: "this.post.post_id == '00000000-0000-0000-0000-000000000000'"
-  };
   Post post = 1 [(buf.validate.field).required = true];
   string idempotency_key = 2 [(buf.validate.field).string.uuid = true];
 }
 
 message UpdatePostRequest {
+  option (buf.validate.message).cel = {
+    id: "update_post_request.post.post_id_required",
+    message: "post.post_id is required",
+    expression: "this.post.post_id != ''"
+  };
   Post post = 1 [(buf.validate.field).required = true];
   string idempotency_key = 2 [(buf.validate.field).string.uuid = true];
 }
@@ -75,7 +75,7 @@ message ListPostsResponse {
 }
 
 message Post {
-  string post_id = 1 [(buf.validate.field).string.uuid = true];
+  string post_id = 1 [(buf.validate.field) = {ignore: IGNORE_IF_ZERO_VALUE, string: {uuid: true}}];
   string body = 2 [(buf.validate.field).string = {min_len: 1, max_len: 128}];
   bool valid = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
   google.protobuf.Timestamp create_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];

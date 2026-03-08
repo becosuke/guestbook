@@ -21,7 +21,7 @@ func TestCreatePost(t *testing.T) {
 
 	body := "Hello, Guestbook!"
 	resp, err := testClient.CreatePost(ctx, &pb.CreatePostRequest{
-		Post:           &pb.Post{PostId: uuid.Nil.String(), Body: body},
+		Post:           &pb.Post{Body: body},
 		IdempotencyKey: newUUID(),
 	})
 	require.NoError(t, err)
@@ -39,7 +39,7 @@ func TestGetPost(t *testing.T) {
 
 	t.Run("existing post", func(t *testing.T) {
 		created, err := testClient.CreatePost(ctx, &pb.CreatePostRequest{
-			Post:           &pb.Post{PostId: uuid.Nil.String(), Body: "get me"},
+			Post:           &pb.Post{Body: "get me"},
 			IdempotencyKey: newUUID(),
 		})
 		require.NoError(t, err)
@@ -69,7 +69,7 @@ func TestUpdatePost(t *testing.T) {
 	ctx := context.Background()
 
 	created, err := testClient.CreatePost(ctx, &pb.CreatePostRequest{
-		Post:           &pb.Post{PostId: uuid.Nil.String(), Body: "original body"},
+		Post:           &pb.Post{Body: "original body"},
 		IdempotencyKey: newUUID(),
 	})
 	require.NoError(t, err)
@@ -102,7 +102,7 @@ func TestDeletePost(t *testing.T) {
 	ctx := context.Background()
 
 	created, err := testClient.CreatePost(ctx, &pb.CreatePostRequest{
-		Post:           &pb.Post{PostId: uuid.Nil.String(), Body: "to be deleted"},
+		Post:           &pb.Post{Body: "to be deleted"},
 		IdempotencyKey: newUUID(),
 	})
 	require.NoError(t, err)
@@ -148,7 +148,7 @@ func TestListPosts(t *testing.T) {
 	t.Run("list with pagination", func(t *testing.T) {
 		for i := 0; i < 5; i++ {
 			_, err := testClient.CreatePost(ctx, &pb.CreatePostRequest{
-				Post:           &pb.Post{PostId: uuid.Nil.String(), Body: "post for list"},
+				Post:           &pb.Post{Body: "post for list"},
 				IdempotencyKey: newUUID(),
 			})
 			require.NoError(t, err)
@@ -193,7 +193,7 @@ func TestCRUDLifecycle(t *testing.T) {
 	ctx := context.Background()
 
 	created, err := testClient.CreatePost(ctx, &pb.CreatePostRequest{
-		Post:           &pb.Post{PostId: uuid.Nil.String(), Body: "lifecycle test"},
+		Post:           &pb.Post{Body: "lifecycle test"},
 		IdempotencyKey: newUUID(),
 	})
 	require.NoError(t, err)
@@ -315,20 +315,11 @@ func TestCreatePost_Validation(t *testing.T) {
 		truncateTables(t)
 		maxBody := strings.Repeat("a", 128)
 		resp, err := testClient.CreatePost(ctx, &pb.CreatePostRequest{
-			Post:           &pb.Post{PostId: uuid.Nil.String(), Body: maxBody},
+			Post:           &pb.Post{Body: maxBody},
 			IdempotencyKey: newUUID(),
 		})
 		require.NoError(t, err)
 		assert.Equal(t, maxBody, resp.GetBody())
-	})
-
-	t.Run("non-nil UUID post_id", func(t *testing.T) {
-		_, err := testClient.CreatePost(ctx, &pb.CreatePostRequest{
-			Post:           &pb.Post{PostId: newUUID(), Body: "hello"},
-			IdempotencyKey: newUUID(),
-		})
-		br := requireInvalidArgument(t, err)
-		assert.NotEmpty(t, br.GetFieldViolations())
 	})
 
 	t.Run("invalid idempotency_key", func(t *testing.T) {

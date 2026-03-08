@@ -419,14 +419,14 @@ const file_guestbook_proto_rawDesc = "" +
 	"\n" +
 	"\x0fguestbook.proto\x12\x02pb\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bbuf/validate/validate.proto\"3\n" +
 	"\x0eGetPostRequest\x12!\n" +
-	"\apost_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x06postId\"\xac\x02\n" +
+	"\apost_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x06postId\"l\n" +
 	"\x11CreatePostRequest\x12$\n" +
 	"\x04post\x18\x01 \x01(\v2\b.pb.PostB\x06\xbaH\x03\xc8\x01\x01R\x04post\x121\n" +
-	"\x0fidempotency_key\x18\x02 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x0eidempotencyKey:\xbd\x01\xbaH\xb9\x01\x1a\xb6\x01\n" +
-	"1create_post_request.post.post_id_must_be_nil_uuid\x12Dpost.post_id must be nil UUID (00000000-0000-0000-0000-000000000000)\x1a;this.post.post_id == '00000000-0000-0000-0000-000000000000'\"l\n" +
+	"\x0fidempotency_key\x18\x02 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x0eidempotencyKey\"\xd1\x01\n" +
 	"\x11UpdatePostRequest\x12$\n" +
 	"\x04post\x18\x01 \x01(\v2\b.pb.PostB\x06\xbaH\x03\xc8\x01\x01R\x04post\x121\n" +
-	"\x0fidempotency_key\x18\x02 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x0eidempotencyKey\"i\n" +
+	"\x0fidempotency_key\x18\x02 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x0eidempotencyKey:c\xbaH`\x1a^\n" +
+	")update_post_request.post.post_id_required\x12\x18post.post_id is required\x1a\x17this.post.post_id != ''\"i\n" +
 	"\x11DeletePostRequest\x12!\n" +
 	"\apost_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x06postId\x121\n" +
 	"\x0fidempotency_key\x18\x02 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x0eidempotencyKey\"W\n" +
@@ -436,9 +436,9 @@ const file_guestbook_proto_rawDesc = "" +
 	"page_token\x18\x02 \x01(\tR\tpageToken\"[\n" +
 	"\x11ListPostsResponse\x12\x1e\n" +
 	"\x05posts\x18\x01 \x03(\v2\b.pb.PostR\x05posts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x92\x02\n" +
-	"\x04Post\x12!\n" +
-	"\apost_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x06postId\x12\x1e\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x95\x02\n" +
+	"\x04Post\x12$\n" +
+	"\apost_id\x18\x01 \x01(\tB\v\xbaH\b\xd8\x01\x01r\x03\xb0\x01\x01R\x06postId\x12\x1e\n" +
 	"\x04body\x18\x02 \x01(\tB\n" +
 	"\xbaH\ar\x05\x10\x01\x18\x80\x01R\x04body\x12\x19\n" +
 	"\x05valid\x18\x03 \x01(\bB\x03\xe0A\x03R\x05valid\x12@\n" +
