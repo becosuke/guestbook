@@ -73,7 +73,7 @@ build/grpc: build/grpc/binary build/grpc/container
 build/grpc/binary:
 	CGO_ENABLED=0 GOOS=linux $(GO_BINARY) build -a -installsuffix cgo \
 	-ldflags "-w -X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-grpc" \
-	-o $(BUILD_DIR)/$(PROJECT_NAME)-grpc $(COMMAND_DIR)/grpc/
+	-o $(BUILD_DIR)/$(PROJECT_NAME)-grpc ./$(COMMAND_DIR)/grpc/
 
 build/grpc/container:
 	cd $(BUILD_DIR) && \
@@ -84,7 +84,7 @@ build/rest: build/rest/binary build/rest/container
 build/rest/binary:
 	CGO_ENABLED=0 GOOS=linux $(GO_BINARY) build -a -installsuffix cgo \
 	-ldflags "-w -X main.version=$(VERSION) -X main.serviceName=$(PROJECT_NAME)-rest" \
-	-o $(BUILD_DIR)/$(PROJECT_NAME)-rest $(COMMAND_DIR)/rest/
+	-o $(BUILD_DIR)/$(PROJECT_NAME)-rest ./$(COMMAND_DIR)/rest/
 
 build/rest/container:
 	cd $(BUILD_DIR) && \
