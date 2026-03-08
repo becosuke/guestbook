@@ -115,26 +115,32 @@ export default function PostManager() {
 
   return (
     <div class="post-manager">
-      <div class="create-form">
-        <input
-          type="text"
-          class="text-input"
-          placeholder="Write a new post..."
-          value={newBody.value}
-          onInput={(e) =>
-            newBody.value = (e.target as HTMLInputElement).value}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleCreate();
-          }}
-          maxLength={128}
-        />
-        <button
-          class="btn btn-primary"
-          onClick={handleCreate}
-          disabled={loading.value || !newBody.value.trim()}
-        >
-          Post
-        </button>
+      <div>
+        <div class="create-form">
+          <textarea
+            class="text-input"
+            placeholder="Write a new post..."
+            value={newBody.value}
+            onInput={(e) =>
+              newBody.value = (e.target as HTMLTextAreaElement).value}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && e.ctrlKey) {
+                e.preventDefault();
+                handleCreate();
+              }
+            }}
+            maxLength={128}
+            rows={3}
+          />
+          <button
+            class="btn btn-primary"
+            onClick={handleCreate}
+            disabled={loading.value || !newBody.value.trim()}
+          >
+            Post
+          </button>
+        </div>
+        <p class="submit-hint">Ctrl+Enter to post</p>
       </div>
 
       {error.value && <div class="error-message">{error.value}</div>}
@@ -151,18 +157,21 @@ export default function PostManager() {
               : editingId.value === post.postId
               ? (
                 <div class="edit-form">
-                  <input
-                    type="text"
+                  <textarea
                     class="text-input"
                     value={editingBody.value}
                     onInput={(e) =>
                       editingBody.value =
-                        (e.target as HTMLInputElement).value}
+                        (e.target as HTMLTextAreaElement).value}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") handleUpdate(post.postId);
+                      if (e.key === "Enter" && e.ctrlKey) {
+                        e.preventDefault();
+                        handleUpdate(post.postId);
+                      }
                       if (e.key === "Escape") cancelEdit();
                     }}
                     maxLength={128}
+                    rows={3}
                   />
                   <button
                     class="btn btn-primary"
