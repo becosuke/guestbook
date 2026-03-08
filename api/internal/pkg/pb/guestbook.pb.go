@@ -12,6 +12,7 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -333,6 +334,8 @@ type Post struct {
 	PostId        string                 `protobuf:"bytes,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
 	Body          string                 `protobuf:"bytes,2,opt,name=body,proto3" json:"body,omitempty"`
 	Valid         bool                   `protobuf:"varint,3,opt,name=valid,proto3" json:"valid,omitempty"`
+	CreateTime    *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -388,11 +391,25 @@ func (x *Post) GetValid() bool {
 	return false
 }
 
+func (x *Post) GetCreateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreateTime
+	}
+	return nil
+}
+
+func (x *Post) GetUpdateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdateTime
+	}
+	return nil
+}
+
 var File_guestbook_proto protoreflect.FileDescriptor
 
 const file_guestbook_proto_rawDesc = "" +
 	"\n" +
-	"\x0fguestbook.proto\x12\x02pb\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1bbuf/validate/validate.proto\"3\n" +
+	"\x0fguestbook.proto\x12\x02pb\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bbuf/validate/validate.proto\"3\n" +
 	"\x0eGetPostRequest\x12!\n" +
 	"\apost_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x06postId\"l\n" +
 	"\x11CreatePostRequest\x12$\n" +
@@ -410,12 +427,16 @@ const file_guestbook_proto_rawDesc = "" +
 	"page_token\x18\x02 \x01(\tR\tpageToken\"[\n" +
 	"\x11ListPostsResponse\x12\x1e\n" +
 	"\x05posts\x18\x01 \x03(\v2\b.pb.PostR\x05posts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"d\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xe8\x01\n" +
 	"\x04Post\x12!\n" +
 	"\apost_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x06postId\x12\x1e\n" +
 	"\x04body\x18\x02 \x01(\tB\n" +
 	"\xbaH\ar\x05\x10\x01\x18\x80\x01R\x04body\x12\x19\n" +
-	"\x05valid\x18\x03 \x01(\bB\x03\xe0A\x03R\x05valid2\xc6\x03\n" +
+	"\x05valid\x18\x03 \x01(\bB\x03\xe0A\x03R\x05valid\x12@\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"createTime\x12@\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"updateTime2\xc6\x03\n" +
 	"\x10GuestbookService\x12G\n" +
 	"\aGetPost\x12\x12.pb.GetPostRequest\x1a\b.pb.Post\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/api/v1/post/{post_id}\x12F\n" +
 	"\n" +
@@ -440,34 +461,37 @@ func file_guestbook_proto_rawDescGZIP() []byte {
 
 var file_guestbook_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_guestbook_proto_goTypes = []any{
-	(*GetPostRequest)(nil),    // 0: pb.GetPostRequest
-	(*CreatePostRequest)(nil), // 1: pb.CreatePostRequest
-	(*UpdatePostRequest)(nil), // 2: pb.UpdatePostRequest
-	(*DeletePostRequest)(nil), // 3: pb.DeletePostRequest
-	(*ListPostsRequest)(nil),  // 4: pb.ListPostsRequest
-	(*ListPostsResponse)(nil), // 5: pb.ListPostsResponse
-	(*Post)(nil),              // 6: pb.Post
-	(*emptypb.Empty)(nil),     // 7: google.protobuf.Empty
+	(*GetPostRequest)(nil),        // 0: pb.GetPostRequest
+	(*CreatePostRequest)(nil),     // 1: pb.CreatePostRequest
+	(*UpdatePostRequest)(nil),     // 2: pb.UpdatePostRequest
+	(*DeletePostRequest)(nil),     // 3: pb.DeletePostRequest
+	(*ListPostsRequest)(nil),      // 4: pb.ListPostsRequest
+	(*ListPostsResponse)(nil),     // 5: pb.ListPostsResponse
+	(*Post)(nil),                  // 6: pb.Post
+	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),         // 8: google.protobuf.Empty
 }
 var file_guestbook_proto_depIdxs = []int32{
-	6, // 0: pb.CreatePostRequest.post:type_name -> pb.Post
-	6, // 1: pb.UpdatePostRequest.post:type_name -> pb.Post
-	6, // 2: pb.ListPostsResponse.posts:type_name -> pb.Post
-	0, // 3: pb.GuestbookService.GetPost:input_type -> pb.GetPostRequest
-	1, // 4: pb.GuestbookService.CreatePost:input_type -> pb.CreatePostRequest
-	2, // 5: pb.GuestbookService.UpdatePost:input_type -> pb.UpdatePostRequest
-	3, // 6: pb.GuestbookService.DeletePost:input_type -> pb.DeletePostRequest
-	4, // 7: pb.GuestbookService.ListPosts:input_type -> pb.ListPostsRequest
-	6, // 8: pb.GuestbookService.GetPost:output_type -> pb.Post
-	6, // 9: pb.GuestbookService.CreatePost:output_type -> pb.Post
-	6, // 10: pb.GuestbookService.UpdatePost:output_type -> pb.Post
-	7, // 11: pb.GuestbookService.DeletePost:output_type -> google.protobuf.Empty
-	5, // 12: pb.GuestbookService.ListPosts:output_type -> pb.ListPostsResponse
-	8, // [8:13] is the sub-list for method output_type
-	3, // [3:8] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	6,  // 0: pb.CreatePostRequest.post:type_name -> pb.Post
+	6,  // 1: pb.UpdatePostRequest.post:type_name -> pb.Post
+	6,  // 2: pb.ListPostsResponse.posts:type_name -> pb.Post
+	7,  // 3: pb.Post.create_time:type_name -> google.protobuf.Timestamp
+	7,  // 4: pb.Post.update_time:type_name -> google.protobuf.Timestamp
+	0,  // 5: pb.GuestbookService.GetPost:input_type -> pb.GetPostRequest
+	1,  // 6: pb.GuestbookService.CreatePost:input_type -> pb.CreatePostRequest
+	2,  // 7: pb.GuestbookService.UpdatePost:input_type -> pb.UpdatePostRequest
+	3,  // 8: pb.GuestbookService.DeletePost:input_type -> pb.DeletePostRequest
+	4,  // 9: pb.GuestbookService.ListPosts:input_type -> pb.ListPostsRequest
+	6,  // 10: pb.GuestbookService.GetPost:output_type -> pb.Post
+	6,  // 11: pb.GuestbookService.CreatePost:output_type -> pb.Post
+	6,  // 12: pb.GuestbookService.UpdatePost:output_type -> pb.Post
+	8,  // 13: pb.GuestbookService.DeletePost:output_type -> google.protobuf.Empty
+	5,  // 14: pb.GuestbookService.ListPosts:output_type -> pb.ListPostsResponse
+	10, // [10:15] is the sub-list for method output_type
+	5,  // [5:10] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_guestbook_proto_init() }
