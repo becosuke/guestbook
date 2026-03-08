@@ -7,15 +7,14 @@
 package pb
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
 )
 
 const (
@@ -333,6 +332,7 @@ type Post struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	PostId        string                 `protobuf:"bytes,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
 	Body          string                 `protobuf:"bytes,2,opt,name=body,proto3" json:"body,omitempty"`
+	Valid         bool                   `protobuf:"varint,3,opt,name=valid,proto3" json:"valid,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -381,11 +381,18 @@ func (x *Post) GetBody() string {
 	return ""
 }
 
+func (x *Post) GetValid() bool {
+	if x != nil {
+		return x.Valid
+	}
+	return false
+}
+
 var File_guestbook_proto protoreflect.FileDescriptor
 
 const file_guestbook_proto_rawDesc = "" +
 	"\n" +
-	"\x0fguestbook.proto\x12\x02pb\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1bbuf/validate/validate.proto\"3\n" +
+	"\x0fguestbook.proto\x12\x02pb\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1bbuf/validate/validate.proto\"3\n" +
 	"\x0eGetPostRequest\x12!\n" +
 	"\apost_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x06postId\"l\n" +
 	"\x11CreatePostRequest\x12$\n" +
@@ -403,11 +410,12 @@ const file_guestbook_proto_rawDesc = "" +
 	"page_token\x18\x02 \x01(\tR\tpageToken\"[\n" +
 	"\x11ListPostsResponse\x12\x1e\n" +
 	"\x05posts\x18\x01 \x03(\v2\b.pb.PostR\x05posts\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"I\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"d\n" +
 	"\x04Post\x12!\n" +
 	"\apost_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x06postId\x12\x1e\n" +
 	"\x04body\x18\x02 \x01(\tB\n" +
-	"\xbaH\ar\x05\x10\x01\x18\x80\x01R\x04body2\xc6\x03\n" +
+	"\xbaH\ar\x05\x10\x01\x18\x80\x01R\x04body\x12\x19\n" +
+	"\x05valid\x18\x03 \x01(\bB\x03\xe0A\x03R\x05valid2\xc6\x03\n" +
 	"\x10GuestbookService\x12G\n" +
 	"\aGetPost\x12\x12.pb.GetPostRequest\x1a\b.pb.Post\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/api/v1/post/{post_id}\x12F\n" +
 	"\n" +

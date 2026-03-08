@@ -35,7 +35,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 			config := &domain.Config{}
 			postID := domain.NewPostID("550e8400-e29b-41d4-a716-446655440000")
 			body := domain.NewPostBody("example")
-			post := domain.NewPost(postID, body)
+			post := domain.NewPost(postID, body, nil)
 			mockUsecase := &UsecaseMock{
 				GetFunc: func(ctx context.Context, id *domain.PostID) (*domain.Post, error) {
 					assert.Equal(t, "550e8400-e29b-41d4-a716-446655440000", id.String())
@@ -57,6 +57,7 @@ func Test_guestbookServiceServerImpl_GetPost(t *testing.T) {
 				want: &pb.Post{
 					PostId: "550e8400-e29b-41d4-a716-446655440000",
 					Body:   "example",
+					Valid:  true,
 				},
 				wantErr: false,
 			}
@@ -126,7 +127,7 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			config := &domain.Config{}
-			res := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewPostBody("example"))
+			res := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewPostBody("example"), nil)
 			mockUsecase := &UsecaseMock{
 				CreateFunc: func(ctx context.Context, post *domain.Post) (*domain.Post, error) {
 					return res, nil
@@ -149,6 +150,7 @@ func Test_guestbookServiceServerImpl_CreatePost(t *testing.T) {
 				want: &pb.Post{
 					PostId: "550e8400-e29b-41d4-a716-446655440000",
 					Body:   "example",
+					Valid:  true,
 				},
 				wantErr: false,
 			}
@@ -194,7 +196,7 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 		func() testCase {
 			ctx := context.Background()
 			config := &domain.Config{}
-			post := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewPostBody("example-value"))
+			post := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewPostBody("example-value"), nil)
 			mockUsecase := &UsecaseMock{
 				UpdateFunc: func(ctx context.Context, p *domain.Post) (*domain.Post, error) {
 					return post, nil
@@ -218,6 +220,7 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 				want: &pb.Post{
 					PostId: "550e8400-e29b-41d4-a716-446655440000",
 					Body:   "example-value",
+					Valid:  true,
 				},
 				wantErr: false,
 			}
