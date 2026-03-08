@@ -51,6 +51,9 @@ test/unit:
 test/functional:
 	$(GO_BINARY) test $(args) -race -cover $(TEST_DIRS)
 
+test/integration:
+	$(GO_BINARY) test $(args) -race -cover -tags integration $(CODE_DIRS)
+
 .PHONY: clean
 clean:
 	$(GO_BINARY) clean
