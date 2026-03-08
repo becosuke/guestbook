@@ -339,8 +339,8 @@ func Test_guestbookServiceServerImpl_ListPosts(t *testing.T) {
 				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440001"), domain.NewPostBody("example2"), domain.NewPostBody(""), now, time.Time{}, time.Time{}),
 			}
 			mockUsecase := &UsecaseMock{
-				RangeFunc: func(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, *domain.PaginationID, error) {
-					return posts, nil, nil
+				RangeFunc: func(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, domain.PaginationID, error) {
+					return posts, domain.PaginationID{}, nil
 				},
 			}
 			return testCase{
@@ -372,7 +372,7 @@ func Test_guestbookServiceServerImpl_ListPosts(t *testing.T) {
 			}
 			nextPaginationID := domain.NewPaginationID("660e8400-e29b-41d4-a716-446655440000")
 			mockUsecase := &UsecaseMock{
-				RangeFunc: func(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, *domain.PaginationID, error) {
+				RangeFunc: func(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, domain.PaginationID, error) {
 					return posts, nextPaginationID, nil
 				},
 			}
@@ -401,8 +401,8 @@ func Test_guestbookServiceServerImpl_ListPosts(t *testing.T) {
 			ctx := context.Background()
 			config := &domain.Config{}
 			mockUsecase := &UsecaseMock{
-				RangeFunc: func(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, *domain.PaginationID, error) {
-					return nil, nil, domain.ErrInvalidArgument
+				RangeFunc: func(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, domain.PaginationID, error) {
+					return nil, domain.PaginationID{}, domain.ErrInvalidArgument
 				},
 			}
 			return testCase{

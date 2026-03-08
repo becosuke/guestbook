@@ -8,6 +8,6 @@ import (
 )
 
 type Paginator interface {
-	GetPagination(context.Context, *domain.PaginationID) (*domain.Pagination, error)
+	GetPagination(context.Context, domain.PaginationID) (*domain.Pagination, error)
 	SavePagination(context.Context, *domain.Pagination) error
 }

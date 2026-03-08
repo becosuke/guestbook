@@ -1,32 +1,37 @@
 package domain
 
-type PaginationID string
+import "github.com/google/uuid"
 
-func NewPaginationID(paginationID string) *PaginationID {
-	p := PaginationID(paginationID)
-	return &p
+type PaginationID uuid.UUID
+
+func NewPaginationID(paginationID string) PaginationID {
+	if paginationID == "" {
+		return PaginationID(uuid.Nil)
+	}
+	return PaginationID(uuid.MustParse(paginationID))
 }
 
-func (p *PaginationID) String() string {
-	if p == nil {
-		return ""
-	}
-	return string(*p)
+func (p PaginationID) String() string {
+	return uuid.UUID(p).String()
+}
+
+func (p PaginationID) IsZero() bool {
+	return uuid.UUID(p) == uuid.Nil
 }
 
 type Pagination struct {
-	paginationID *PaginationID
+	paginationID PaginationID
 	cursor       []byte
 }
 
-func NewPagination(paginationID *PaginationID, cursor []byte) *Pagination {
+func NewPagination(paginationID PaginationID, cursor []byte) *Pagination {
 	return &Pagination{
 		paginationID: paginationID,
 		cursor:       cursor,
 	}
 }
 
-func (p *Pagination) PaginationID() *PaginationID {
+func (p *Pagination) PaginationID() PaginationID {
 	return p.paginationID
 }
 

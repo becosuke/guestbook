@@ -25,7 +25,7 @@ var _ Repositories = &RepositoriesMock{}
 //			DeletePostFunc: func(contextMoqParam context.Context, postID domain.PostID) error {
 //				panic("mock out the DeletePost method")
 //			},
-//			GetPaginationFunc: func(contextMoqParam context.Context, paginationID *domain.PaginationID) (*domain.Pagination, error) {
+//			GetPaginationFunc: func(contextMoqParam context.Context, paginationID domain.PaginationID) (*domain.Pagination, error) {
 //				panic("mock out the GetPagination method")
 //			},
 //			GetPostFunc: func(contextMoqParam context.Context, postID domain.PostID) (*domain.Post, error) {
@@ -54,7 +54,7 @@ type RepositoriesMock struct {
 	DeletePostFunc func(contextMoqParam context.Context, postID domain.PostID) error
 
 	// GetPaginationFunc mocks the GetPagination method.
-	GetPaginationFunc func(contextMoqParam context.Context, paginationID *domain.PaginationID) (*domain.Pagination, error)
+	GetPaginationFunc func(contextMoqParam context.Context, paginationID domain.PaginationID) (*domain.Pagination, error)
 
 	// GetPostFunc mocks the GetPost method.
 	GetPostFunc func(contextMoqParam context.Context, postID domain.PostID) (*domain.Post, error)
@@ -89,7 +89,7 @@ type RepositoriesMock struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// PaginationID is the paginationID argument value.
-			PaginationID *domain.PaginationID
+			PaginationID domain.PaginationID
 		}
 		// GetPost holds details about calls to the GetPost method.
 		GetPost []struct {
@@ -204,13 +204,13 @@ func (mock *RepositoriesMock) DeletePostCalls() []struct {
 }
 
 // GetPagination calls GetPaginationFunc.
-func (mock *RepositoriesMock) GetPagination(contextMoqParam context.Context, paginationID *domain.PaginationID) (*domain.Pagination, error) {
+func (mock *RepositoriesMock) GetPagination(contextMoqParam context.Context, paginationID domain.PaginationID) (*domain.Pagination, error) {
 	if mock.GetPaginationFunc == nil {
 		panic("RepositoriesMock.GetPaginationFunc: method is nil but Repositories.GetPagination was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
-		PaginationID    *domain.PaginationID
+		PaginationID    domain.PaginationID
 	}{
 		ContextMoqParam: contextMoqParam,
 		PaginationID:    paginationID,
@@ -227,11 +227,11 @@ func (mock *RepositoriesMock) GetPagination(contextMoqParam context.Context, pag
 //	len(mockedRepositories.GetPaginationCalls())
 func (mock *RepositoriesMock) GetPaginationCalls() []struct {
 	ContextMoqParam context.Context
-	PaginationID    *domain.PaginationID
+	PaginationID    domain.PaginationID
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		PaginationID    *domain.PaginationID
+		PaginationID    domain.PaginationID
 	}
 	mock.lockGetPagination.RLock()
 	calls = mock.calls.GetPagination

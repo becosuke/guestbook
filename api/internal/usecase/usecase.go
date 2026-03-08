@@ -41,7 +41,7 @@ func (impl *Usecase) get(ctx context.Context, postID domain.PostID) (*domain.Pos
 	return result, nil
 }
 
-func (impl *Usecase) Range(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, *domain.PaginationID, error) {
+func (impl *Usecase) Range(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, domain.PaginationID, error) {
 	pageSize := int32(10)
 	if pageOption.PageSize() != nil {
 		pageSize = int32(*pageOption.PageSize())
@@ -51,18 +51,18 @@ func (impl *Usecase) Range(ctx context.Context, pageOption *domain.PageOption) (
 	if pageOption.PageToken() != nil && string(*pageOption.PageToken()) != "" {
 		pagination, err := impl.repos.GetPagination(ctx, domain.NewPaginationID(string(*pageOption.PageToken())))
 		if err != nil {
-			return nil, nil, err
+			return nil, domain.PaginationID{}, err
 		}
 		c, err := domain.UnmarshalPostCursor(pagination.Cursor())
 		if err != nil {
-			return nil, nil, err
+			return nil, domain.PaginationID{}, err
 		}
 		cursor = c
 	}
 
 	results, err := impl.repos.RangePosts(ctx, pageSize+1, cursor)
 	if err != nil {
-		return nil, nil, err
+		return nil, domain.PaginationID{}, err
 	}
 
 	if int32(len(results)) > pageSize {
@@ -72,18 +72,18 @@ func (impl *Usecase) Range(ctx context.Context, pageOption *domain.PageOption) (
 		nextCursor := domain.NewPostCursor(lastPost.PostID().String(), lastPost.CreateTime())
 		cursorBytes, err := nextCursor.Marshal()
 		if err != nil {
-			return nil, nil, err
+			return nil, domain.PaginationID{}, err
 		}
 
-		nextPaginationID := domain.NewPaginationID(uuid.New().String())
+		nextPaginationID := domain.PaginationID(uuid.New())
 		pagination := domain.NewPagination(nextPaginationID, cursorBytes)
 		if err := impl.repos.SavePagination(ctx, pagination); err != nil {
-			return nil, nil, err
+			return nil, domain.PaginationID{}, err
 		}
 		return results, nextPaginationID, nil
 	}
 
-	return results, nil, nil
+	return results, domain.PaginationID{}, nil
 }
 
 func (impl *Usecase) Create(ctx context.Context, post *domain.Post) (*domain.Post, error) {

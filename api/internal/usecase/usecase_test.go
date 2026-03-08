@@ -184,9 +184,9 @@ func TestUsecase_Range(t *testing.T) {
 				t.Errorf("Usecase.Range() = %v, want %v", got, tt.want)
 			}
 			if tt.wantPaginationID {
-				assert.NotNil(t, paginationID)
+				assert.False(t, paginationID.IsZero())
 			} else {
-				assert.Nil(t, paginationID)
+				assert.True(t, paginationID.IsZero())
 			}
 		})
 	}
