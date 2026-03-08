@@ -60,6 +60,10 @@ func (impl *guestbookServiceServer) UpdatePost(ctx context.Context, req *pb.Upda
 	res, err := impl.usecase.Update(ctx, impl.postResourceToDomain(req.GetPost()))
 	if err != nil {
 		switch {
+		case errors.Is(err, domain.ErrFailedPrecondition):
+			return nil, status.New(codes.FailedPrecondition, err.Error()).Err()
+		case errors.Is(err, domain.ErrNotFound):
+			return nil, status.New(codes.NotFound, err.Error()).Err()
 		case errors.Is(err, domain.ErrInvalidData), errors.Is(err, domain.ErrInvalidArgument):
 			return nil, status.New(codes.Internal, err.Error()).Err()
 		default:
