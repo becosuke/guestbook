@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	"github.com/becosuke/guestbook/api/internal/domain"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
@@ -57,6 +58,10 @@ func (impl *guestbookServiceServer) CreatePost(ctx context.Context, req *pb.Crea
 }
 
 func (impl *guestbookServiceServer) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest) (*pb.Post, error) {
+	if err := validateUpdateMask(req.GetUpdateMask()); err != nil {
+		return nil, err
+	}
+
 	res, err := impl.usecase.Update(ctx, impl.postResourceToDomain(req.GetPost()))
 	if err != nil {
 		switch {
@@ -71,6 +76,22 @@ func (impl *guestbookServiceServer) UpdatePost(ctx context.Context, req *pb.Upda
 		}
 	}
 	return impl.postDomainToResource(res), nil
+}
+
+var validUpdateMaskPaths = map[string]bool{
+	"body": true,
+}
+
+func validateUpdateMask(mask *fieldmaskpb.FieldMask) error {
+	if mask == nil || len(mask.GetPaths()) == 0 {
+		return nil
+	}
+	for _, path := range mask.GetPaths() {
+		if !validUpdateMaskPaths[path] {
+			return status.Errorf(codes.InvalidArgument, "invalid update_mask path: %q", path)
+		}
+	}
+	return nil
 }
 
 func (impl *guestbookServiceServer) ListPosts(ctx context.Context, req *pb.ListPostsRequest) (*pb.ListPostsResponse, error) {

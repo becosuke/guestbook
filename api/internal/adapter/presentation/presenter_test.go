@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/becosuke/guestbook/api/internal/domain"
@@ -207,7 +208,7 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 				},
 			}
 			return testCase{
-				name: "normal",
+				name: "normal without update_mask",
 				fields: fields{
 					config:  config,
 					usecase: mockUsecase,
@@ -228,6 +229,63 @@ func Test_guestbookServiceServerImpl_UpdatePost(t *testing.T) {
 					CreateTime: timestamppb.New(time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)),
 				},
 				wantErr: false,
+			}
+		}(),
+		func() testCase {
+			ctx := context.Background()
+			config := &domain.Config{}
+			post := domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewPostBody("example-value"), domain.NewPostBody(""), time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC), time.Time{}, time.Time{})
+			mockUsecase := &UsecaseMock{
+				UpdateFunc: func(ctx context.Context, p *domain.Post) (*domain.Post, error) {
+					return post, nil
+				},
+			}
+			return testCase{
+				name: "normal with update_mask body",
+				fields: fields{
+					config:  config,
+					usecase: mockUsecase,
+				},
+				args: args{
+					ctx: ctx,
+					req: &pb.UpdatePostRequest{
+						Post: &pb.Post{
+							PostId: "550e8400-e29b-41d4-a716-446655440000",
+							Body:   "example-value",
+						},
+						UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"body"}},
+					},
+				},
+				want: &pb.Post{
+					PostId:     "550e8400-e29b-41d4-a716-446655440000",
+					Body:       "example-value",
+					Valid:      true,
+					CreateTime: timestamppb.New(time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)),
+				},
+				wantErr: false,
+			}
+		}(),
+		func() testCase {
+			ctx := context.Background()
+			config := &domain.Config{}
+			return testCase{
+				name: "error invalid update_mask path",
+				fields: fields{
+					config:  config,
+					usecase: &UsecaseMock{},
+				},
+				args: args{
+					ctx: ctx,
+					req: &pb.UpdatePostRequest{
+						Post: &pb.Post{
+							PostId: "550e8400-e29b-41d4-a716-446655440000",
+							Body:   "example-value",
+						},
+						UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"invalid_field"}},
+					},
+				},
+				want:    nil,
+				wantErr: true,
 			}
 		}(),
 	}

@@ -36,7 +36,7 @@ export async function createPost(body: string): Promise<Post> {
 
 export async function updatePost(postId: string, body: string): Promise<Post> {
   const res = await fetch(`${API_BASE_URL}/post/${postId}`, {
-    method: "PUT",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       post: { postId, body },
