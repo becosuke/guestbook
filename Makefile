@@ -41,9 +41,9 @@ schema-dump:
 example/post:
 	curl -v -X POST -H 'Content-Type: application/json' -d '{"post": {"body": "example"}}' 'http://localhost:50080/api/v1/post'
 
-.PHONY: example/put
-example/put:
-	curl -v -X PUT -H 'Content-Type: application/json' -d '{"post": {"body": "example-value"}}' 'http://localhost:50080/api/v1/post/100'
+.PHONY: example/patch
+example/patch:
+	curl -v -X PATCH -H 'Content-Type: application/json' -d '{"post": {"body": "example-value"}}' 'http://localhost:50080/api/v1/post/100'
 
 .PHONY: example/get
 example/get:
