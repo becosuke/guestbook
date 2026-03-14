@@ -10,6 +10,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
+	"github.com/becosuke/guestbook/api/internal/adapter/presentation/converter"
 	"github.com/becosuke/guestbook/api/internal/domain"
 	"github.com/becosuke/guestbook/api/internal/pkg/pb"
 )
@@ -30,7 +31,7 @@ func NewGuestbookServiceServer(config *domain.Config, logger *zap.Logger, usecas
 }
 
 func (impl *guestbookServiceServer) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb.Post, error) {
-	res, err := impl.usecase.Get(ctx, impl.postIDResourceToDomain(req.GetPostId()))
+	res, err := impl.usecase.Get(ctx, converter.PostIDResourceToDomain(req.GetPostId()))
 	if err != nil {
 		switch {
 		case errors.Is(err, domain.ErrNotFound):
@@ -41,11 +42,11 @@ func (impl *guestbookServiceServer) GetPost(ctx context.Context, req *pb.GetPost
 			return nil, status.New(codes.Unknown, err.Error()).Err()
 		}
 	}
-	return impl.postDomainToResource(res), nil
+	return converter.PostDomainToResource(res), nil
 }
 
 func (impl *guestbookServiceServer) CreatePost(ctx context.Context, req *pb.CreatePostRequest) (*pb.Post, error) {
-	res, err := impl.usecase.Create(ctx, impl.postResourceToDomain(req.GetPost()))
+	res, err := impl.usecase.Create(ctx, converter.PostResourceToDomain(req.GetPost()))
 	if err != nil {
 		switch {
 		case errors.Is(err, domain.ErrInvalidData), errors.Is(err, domain.ErrInvalidArgument):
@@ -54,7 +55,7 @@ func (impl *guestbookServiceServer) CreatePost(ctx context.Context, req *pb.Crea
 			return nil, status.New(codes.Unknown, err.Error()).Err()
 		}
 	}
-	return impl.postDomainToResource(res), nil
+	return converter.PostDomainToResource(res), nil
 }
 
 func (impl *guestbookServiceServer) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest) (*pb.Post, error) {
@@ -62,7 +63,7 @@ func (impl *guestbookServiceServer) UpdatePost(ctx context.Context, req *pb.Upda
 		return nil, err
 	}
 
-	res, err := impl.usecase.Update(ctx, impl.postResourceToDomain(req.GetPost()))
+	res, err := impl.usecase.Update(ctx, converter.PostResourceToDomain(req.GetPost()))
 	if err != nil {
 		switch {
 		case errors.Is(err, domain.ErrFailedPrecondition):
@@ -75,7 +76,7 @@ func (impl *guestbookServiceServer) UpdatePost(ctx context.Context, req *pb.Upda
 			return nil, status.New(codes.Unknown, err.Error()).Err()
 		}
 	}
-	return impl.postDomainToResource(res), nil
+	return converter.PostDomainToResource(res), nil
 }
 
 var validUpdateMaskPaths = map[string]bool{
@@ -95,7 +96,7 @@ func validateUpdateMask(mask *fieldmaskpb.FieldMask) error {
 }
 
 func (impl *guestbookServiceServer) ListPosts(ctx context.Context, req *pb.ListPostsRequest) (*pb.ListPostsResponse, error) {
-	pageOption := impl.pageOptionResourceToDomain(req.GetPageSize(), req.GetPageToken())
+	pageOption := converter.PageOptionResourceToDomain(req.GetPageSize(), req.GetPageToken())
 	posts, nextPaginationID, err := impl.usecase.Range(ctx, pageOption)
 	if err != nil {
 		switch {
@@ -110,7 +111,7 @@ func (impl *guestbookServiceServer) ListPosts(ctx context.Context, req *pb.ListP
 
 	pbPosts := make([]*pb.Post, 0, len(posts))
 	for _, post := range posts {
-		pbPosts = append(pbPosts, impl.postDomainToResource(post))
+		pbPosts = append(pbPosts, converter.PostDomainToResource(post))
 	}
 
 	resp := &pb.ListPostsResponse{
@@ -123,7 +124,7 @@ func (impl *guestbookServiceServer) ListPosts(ctx context.Context, req *pb.ListP
 }
 
 func (impl *guestbookServiceServer) DeletePost(ctx context.Context, req *pb.DeletePostRequest) (*emptypb.Empty, error) {
-	err := impl.usecase.Delete(ctx, impl.postIDResourceToDomain(req.GetPostId()))
+	err := impl.usecase.Delete(ctx, converter.PostIDResourceToDomain(req.GetPostId()))
 	if err != nil {
 		return nil, err
 	}
