@@ -19,7 +19,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	infraconfig "github.com/becosuke/guestbook/api/internal/adapter/infrastructure/config"
-	"github.com/becosuke/guestbook/api/internal/adapter/infrastructure/interceptor"
+	"github.com/becosuke/guestbook/api/internal/adapter/presentation/interceptor"
 	"github.com/becosuke/guestbook/api/internal/adapter/presentation"
 	"github.com/becosuke/guestbook/api/internal/adapter/repository"
 	"github.com/becosuke/guestbook/api/internal/domain"
