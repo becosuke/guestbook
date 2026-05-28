@@ -1,6 +1,11 @@
 GO_VERSION=1.25.7
 GO_BINARY=go
 
+.DEFAULT_GOAL := all
+
+.PHONY: all
+all: build up
+
 .PHONY: build
 build: build/api build/view
 
@@ -26,6 +31,18 @@ buf-generate: buf-dep-update
 .PHONY: buf-dep-update
 buf-dep-update:
 	buf dep update
+
+.PHONY: up
+up:
+	docker compose up -d
+
+.PHONY: down
+down:
+	docker compose down
+
+.PHONY: logs
+logs:
+	docker compose logs -f
 
 .PHONY: reset-db
 reset-db:
