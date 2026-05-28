@@ -39,7 +39,7 @@ REST のルーティングは gRPC-Gateway によって proto 上の `google.api
 | ------------------- | ------ | ----------------------------------------------------- |
 | `post.body`         | string | 本文。1〜128 文字。必須。                              |
 | `post.post_id`      | string | クライアントから指定しても無視される（サーバ採番）。   |
-| `idempotency_key`   | string | 冪等キー。指定する場合 UUID 形式（現状は受理のみ）。   |
+| `idempotency_key`   | string | 冪等キー。**必須・UUID 形式**（空文字も拒否される）。  |
 
 ### レスポンス
 
@@ -47,12 +47,14 @@ REST のルーティングは gRPC-Gateway によって proto 上の `google.api
 
 ### 注意
 
-- `idempotency_key` は **受理時点では冪等性を保証する処理に使われていない**（受け口のみ提供）
-- 同一クライアントが連続して送ると毎回新しい `post_id` の投稿が作成される
+- `idempotency_key` は **受理されるだけで冪等性を保証する処理には使われていない**。
+  サーバ側で重複検知も抑止も行わないため、同一クライアントが連続して送ると毎回新しい `post_id` の投稿が作成される。
+- それでも proto バリデーション上は **空文字を含めて省略不可** なので、クライアントは毎回ダミーでも UUID を生成して詰める必要がある。
 
 ## UpdatePost
 
-既存 `Post` の本文を差し替える。**直前 1 世代** の本文を `previous_body` に退避する。
+既存 `Post` の本文を差し替える。書き直し前の本文を `previous_body` に退避する。
+**1 投稿につき書き直しは 1 回まで**。
 
 ### リクエスト
 
@@ -60,7 +62,7 @@ REST のルーティングは gRPC-Gateway によって proto 上の `google.api
 | ------------------- | ----------------------------- | -------------------------------------------------------------------- |
 | `post.post_id`      | string                        | 更新対象。必須（メッセージレベル CEL バリデーションで空文字を拒否）。 |
 | `post.body`         | string                        | 新しい本文。1〜128 文字。                                             |
-| `idempotency_key`   | string                        | 冪等キー。指定する場合 UUID 形式（現状は受理のみ）。                   |
+| `idempotency_key`   | string                        | 冪等キー。**必須・UUID 形式**（空文字も拒否される）。                  |
 | `update_mask`       | `google.protobuf.FieldMask`   | 更新対象パス。`body` のみ受理。空または未指定でも可。                   |
 
 ### update_mask の受理パス
@@ -71,13 +73,15 @@ REST のルーティングは gRPC-Gateway によって proto 上の `google.api
 ### レスポンス
 
 - 成功: 更新後の `Post`（`previous_body` に旧本文、`update_time` が更新される）
-- 対象が論理削除済み: `FAILED_PRECONDITION`
-- 対象が存在しない: `NOT_FOUND`
+- 対象が **既に 1 度書き直し済み**: `FAILED_PRECONDITION`
+- 対象が **論理削除済み、もしくは存在しない**: `NOT_FOUND`
 
 ### 制約
 
-- 「2 世代以上前」の本文は失われる（履歴テーブルを持たない設計）
-- `update_mask` を空にしても `body` の更新は実施される
+- `repository/post_commander.go` の UPDATE 文は `CreateTime = UpdateTime` を WHERE 条件に含む。
+  初回更新で `UpdateTime` だけが更新されると等値が崩れ、以降の `UpdatePost` は更新行 0 件となり拒否される。
+- 結果として `previous_body` に入るのは「最初に書かれた本文」固定になり、それ以降の世代は発生しない。
+- `update_mask` を空にしても `body` の更新は実施される。
 
 ## DeletePost
 
@@ -88,7 +92,7 @@ REST のルーティングは gRPC-Gateway によって proto 上の `google.api
 | フィールド          | 型     | 説明                                                |
 | ------------------- | ------ | --------------------------------------------------- |
 | `post_id`           | string | 削除対象の UUID。必須。                              |
-| `idempotency_key`   | string | 冪等キー。指定する場合 UUID 形式(現状は受理のみ)。   |
+| `idempotency_key`   | string | 冪等キー。**必須・UUID 形式**（空文字も拒否される）。 |
 
 ### レスポンス
 
@@ -109,7 +113,7 @@ REST のルーティングは gRPC-Gateway によって proto 上の `google.api
 
 | フィールド    | 型     | 説明                                                                            |
 | ------------- | ------ | ------------------------------------------------------------------------------- |
-| `page_size`   | int32  | 1 ページの希望件数。1 以上。未指定（0）の場合はサーバデフォルト（10）を使用。      |
+| `page_size`   | int32  | 1 ページの希望件数。**0 以上**。`0`（または未指定）はサーバデフォルト（10 件）に置き換えられる。負数は `INVALID_ARGUMENT`。 |
 | `page_token`  | string | 次ページのトークン。空文字なら最初のページ。Opaque な値。                         |
 
 ### レスポンス

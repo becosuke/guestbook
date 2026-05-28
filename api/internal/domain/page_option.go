@@ -30,8 +30,11 @@ type PageToken string
 //   - レスポンスの next_page_token が空ならば「これ以上ページが無い」を意味する
 //
 // 各フィールドをポインタにしているのは「未指定（nil）」と「明示的に 0 や
-// 空文字を指定された」を区別するため。nil の場合は usecase 層が
-// サーバデフォルト（このプロジェクトでは page_size=10）を適用する。
+// 空文字を指定された」を区別するため。
+// 実運用では converter が常に非 nil で値を詰めるため、nil 経路はほぼ通らないが、
+// page_size に関しては protovalidate を int32.gte=0 にしてあるので 0 が
+// usecase まで素通りする。usecase 側で「nil または 0 ならサーバデフォルト
+// （page_size=10）を適用」と扱う契約になっている。
 type PageOption struct {
 	pageSize  *PageSize
 	pageToken *PageToken

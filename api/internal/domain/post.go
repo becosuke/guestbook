@@ -47,10 +47,12 @@ func (p PostID) String() string {
 type Post struct {
 	postID   PostID
 	postBody PostBody
-	// previousBody は直前の本文を 1 世代だけ保持する。
+	// previousBody は書き直し前の本文を保持する。
 	// AIP-148 的な「変更前後の値を返したい」要求と、無制限な履歴テーブルを
-	// 設けない方針との折衷案として、更新時に旧 PostBody をこのカラムへ
+	// 設けない方針との折衷として、更新時に旧 PostBody をこのカラムへ
 	// 退避させる戦略を取っている（実際の退避は repository 層の UPDATE 文で実施）。
+	// repository/post_commander.go の UpdatePost が 1 投稿につき書き直しを 1 回までに
+	// 制約しているため、ここに入るのは結果として「最初に書かれた本文」固定になる。
 	previousBody PostBody
 	createTime   time.Time
 	updateTime   time.Time

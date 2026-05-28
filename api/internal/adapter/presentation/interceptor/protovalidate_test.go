@@ -52,6 +52,14 @@ func TestProtovalidateUnaryServerInterceptor_ValidRequest(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "ok", resp)
 	assert.True(t, handlerCalled)
+
+	// ListPostsRequest with page_size=0 should pass validation (usecase substitutes the server default).
+	handlerCalled = false
+	listReq := &pb.ListPostsRequest{PageSize: 0}
+	resp, err = interceptor(context.Background(), listReq, &grpc.UnaryServerInfo{}, handler)
+	require.NoError(t, err)
+	assert.Equal(t, "ok", resp)
+	assert.True(t, handlerCalled)
 }
 
 func TestProtovalidateUnaryServerInterceptor_InvalidRequest(t *testing.T) {
@@ -108,11 +116,6 @@ func TestProtovalidateUnaryServerInterceptor_InvalidRequest(t *testing.T) {
 				Post:           &pb.Post{Body: "hello"},
 				IdempotencyKey: "not-a-uuid",
 			},
-			wantErr: true,
-		},
-		{
-			name:    "zero page_size in ListPostsRequest",
-			req:     &pb.ListPostsRequest{PageSize: 0},
 			wantErr: true,
 		},
 		{

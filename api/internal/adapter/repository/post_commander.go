@@ -43,6 +43,17 @@ func (impl *postCommanderImpl) CreatePost(ctx context.Context, post *domain.Post
 	return nil
 }
 
+// UpdatePost は投稿の本文を 1 度だけ書き換える。
+//
+// WHERE 句の `CreateTime = UpdateTime` は「まだ一度も書き直されていない」ことを示す
+// 前提条件として使う。INSERT 時は CreateTime / UpdateTime がどちらも NOW() で同値、
+// 初回の UPDATE で UpdateTime のみが NOW() に書き換わるため、以後この等値は崩れる。
+// 結果として 2 度目以降の UpdatePost は対象行に当たらず、1 投稿につき書き直しは
+// 1 回までという仕様を SQL レベルで担保する。
+//
+// 0 行更新になった場合の振り分け:
+//   - 未削除のレコードがある → 既に 1 度書き直し済み → ErrFailedPrecondition
+//   - 未削除のレコードがない → 存在しない or 論理削除済み → ErrNotFound
 func (impl *postCommanderImpl) UpdatePost(ctx context.Context, post *domain.Post) error {
 	ct, err := impl.pool.Exec(ctx,
 		`UPDATE Posts SET PreviousBody = PostBody, PostBody = $1, UpdateTime = NOW() WHERE PostId = $2 AND DeleteTime = '0001-01-01 00:00:00+00' AND CreateTime = UpdateTime`,

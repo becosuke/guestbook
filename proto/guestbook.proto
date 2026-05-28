@@ -67,7 +67,7 @@ message DeletePostRequest {
 }
 
 message ListPostsRequest {
-  int32 page_size = 1 [(buf.validate.field).int32.gt = 0];
+  int32 page_size = 1 [(buf.validate.field).int32.gte = 0];
   string page_token = 2;
 }
 

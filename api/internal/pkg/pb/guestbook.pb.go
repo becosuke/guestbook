@@ -442,7 +442,7 @@ const file_guestbook_proto_rawDesc = "" +
 	"\apost_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x06postId\x121\n" +
 	"\x0fidempotency_key\x18\x02 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x0eidempotencyKey\"W\n" +
 	"\x10ListPostsRequest\x12$\n" +
-	"\tpage_size\x18\x01 \x01(\x05B\a\xbaH\x04\x1a\x02 \x00R\bpageSize\x12\x1d\n" +
+	"\tpage_size\x18\x01 \x01(\x05B\a\xbaH\x04\x1a\x02(\x00R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x02 \x01(\tR\tpageToken\"[\n" +
 	"\x11ListPostsResponse\x12\x1e\n" +

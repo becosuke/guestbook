@@ -10,10 +10,10 @@
 | ----------------- | --------------------------- | -------- | -------------------------------------------------------------------- |
 | `post_id`         | `string` (UUID v4)          | 識別子   | 投稿の一意な ID。サーバ採番。                                         |
 | `body`            | `string` (1〜128 文字)      | 入力     | 投稿の本文。前後の空白は正規化されて保存される。                       |
-| `valid`           | `bool`                      | 出力専用 | `false` のとき論理削除済み。`false` の場合 `body` は空になる。         |
+| `valid`           | `bool`                      | 出力専用 | `false` のとき論理削除済み。論理削除されている場合は `body` / `create_time` / `update_time` / `previous_body` のいずれも空（未設定）として返す。 |
 | `create_time`     | `google.protobuf.Timestamp` | 出力専用 | 作成時刻（サーバ採番）。                                              |
-| `update_time`     | `google.protobuf.Timestamp` | 出力専用 | 最終更新時刻（サーバ採番）。新規作成直後は `create_time` と等しい。    |
-| `previous_body`   | `string`                    | 出力専用 | 直前 1 世代の本文。新規作成直後は空。論理削除済みでは空。              |
+| `update_time`     | `google.protobuf.Timestamp` | 出力専用 | 最終更新時刻（サーバ採番）。書き直し前は `create_time` と等しい。      |
+| `previous_body`   | `string`                    | 出力専用 | 書き直し前の本文。新規作成直後は空。論理削除済みでは空。               |
 
 `valid` / `create_time` / `update_time` / `previous_body` は `OUTPUT_ONLY`（AIP-203）であり、
 クライアントは作成・更新リクエストに値を含めても無視される（または拒否される）。
@@ -28,35 +28,38 @@
 ### 状態遷移
 
 ```
-              CreatePost
-              ┌──────────┐
-              ▼          │
-        ┌──────────┐     │
-        │ Created  │ ←───┘
-        └────┬─────┘
-             │ UpdatePost
-             ▼
-        ┌──────────┐
-        │ Updated  │ ←── UpdatePost（複数回可）
-        └────┬─────┘
-             │ DeletePost
-             ▼
-        ┌──────────┐
-        │ Deleted  │ ←── 終端状態（以降の Get/Update は失敗または論理削除を示す応答）
-        └──────────┘
+        CreatePost
+            │
+            ▼
+       ┌──────────┐
+       │ Created  │ ──── DeletePost ────┐
+       └────┬─────┘                     │
+            │ UpdatePost                │
+            ▼                           │
+       ┌──────────┐                     │
+       │ Updated  │ ──── DeletePost ───┐│
+       └────┬─────┘                    ││
+            │ UpdatePost を再度試みても ││
+            │ FailedPrecondition で拒否  ││
+            ▼                          ▼▼
+       ┌──────────┐               ┌──────────┐
+       │ Updated  │               │ Deleted  │ ←── 終端状態
+       │ (no-op)  │               └──────────┘
+       └──────────┘
 ```
 
-- `Created` / `Updated` の区別は `create_time == update_time` で判定できる（プロダクト的には同一状態として扱う）
-- `Deleted` 状態の投稿に対する `UpdatePost` は **拒否**（`FailedPrecondition`）
+- `Created` / `Updated` の区別は `create_time == update_time` で判定できる
+- **UpdatePost は 1 投稿につき 1 回しか成功しない**。`Updated` 状態の投稿に再度 `UpdatePost` を呼ぶと `FailedPrecondition`（詳細は [api-operations.md](./api-operations.md) と [validation-and-errors.md](./validation-and-errors.md) を参照）
+- `Deleted` 状態の投稿に対する `UpdatePost` は **拒否**（`NotFound`）
 - `Deleted` 状態の投稿に対する `DeletePost` は **拒否**（`NotFound`）
-- `Deleted` 状態の投稿に対する `GetPost` は `valid=false` の `Post` を返す
+- `Deleted` 状態の投稿に対する `GetPost` は `valid=false` の `Post` を返す（`body` 等の他フィールドはすべて空）
 - `Deleted` 状態の投稿は `ListPosts` の結果には含まれる（`valid=false` として）
 
 ### previous_body のセマンティクス
 
 - `Updated` 状態の投稿のみ `previous_body` に値が入る
-- 「直前 1 世代」のみを保持し、それより古い本文は失われる
-- AIP-148 が示す「変更前後の値を返す」要件を、無制限な履歴を持たずに最小限満たすための割り切り
+- 1 投稿につき書き直しは 1 回までのため、`previous_body` は **最初に書かれた本文（初期投稿の本文）** を保持することになる
+- AIP-148 が示す「変更前後の値を返す」要件を満たすための保持。書き直しが 1 回までという制約と組み合わさり、結果として「初期投稿 + いまの本文」の 2 点が常に揃う
 
 ### 永続化スキーマ
 

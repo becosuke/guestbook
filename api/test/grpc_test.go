@@ -454,10 +454,22 @@ func TestDeletePost_Validation(t *testing.T) {
 func TestListPosts_Validation(t *testing.T) {
 	ctx := context.Background()
 
-	t.Run("zero page_size", func(t *testing.T) {
-		_, err := testClient.ListPosts(ctx, &pb.ListPostsRequest{PageSize: 0})
-		br := requireInvalidArgument(t, err)
-		assert.NotEmpty(t, br.GetFieldViolations())
+	t.Run("zero page_size falls back to server default", func(t *testing.T) {
+		truncateTables(t)
+		// Insert more than the default (10) to confirm the server cap is applied.
+		const inserted = 12
+		for i := 0; i < inserted; i++ {
+			_, err := testClient.CreatePost(ctx, &pb.CreatePostRequest{
+				Post:           &pb.Post{Body: "default page size probe"},
+				IdempotencyKey: newUUID(),
+			})
+			require.NoError(t, err)
+		}
+
+		resp, err := testClient.ListPosts(ctx, &pb.ListPostsRequest{PageSize: 0})
+		require.NoError(t, err)
+		assert.Len(t, resp.GetPosts(), 10, "page_size=0 should fall back to the server default of 10")
+		assert.NotEmpty(t, resp.GetNextPageToken(), "more posts remain, so next_page_token should be set")
 	})
 
 	t.Run("negative page_size", func(t *testing.T) {

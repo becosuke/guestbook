@@ -40,10 +40,15 @@ func (impl *Usecase) get(ctx context.Context, postID domain.PostID) (*domain.Pos
 	return result, nil
 }
 
+// defaultPageSize は page_size が未指定（nil）または 0 のときに適用する件数。
+// AIP-158 が認める「サーバ側で最終件数を決めてよい」枠を利用して、クライアントに
+// デフォルトを暗黙適用する。
+const defaultPageSize int32 = 10
+
 func (impl *Usecase) Range(ctx context.Context, pageOption *domain.PageOption) ([]*domain.Post, domain.PaginationID, error) {
-	pageSize := int32(10)
-	if pageOption.PageSize() != nil {
-		pageSize = int32(*pageOption.PageSize())
+	pageSize := defaultPageSize
+	if ps := pageOption.PageSize(); ps != nil && int32(*ps) > 0 {
+		pageSize = int32(*ps)
 	}
 
 	var cursor *domain.PostCursor

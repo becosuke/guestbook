@@ -153,6 +153,30 @@ func TestUsecase_Range(t *testing.T) {
 		}(),
 		func() testCase {
 			ctx := context.Background()
+			pageSize := domain.PageSize(0)
+			pageOption := domain.NewPageOption(&pageSize, nil)
+			posts := []*domain.Post{
+				domain.NewPost(domain.NewPostID("550e8400-e29b-41d4-a716-446655440000"), domain.NewPostBody("example1"), domain.NewPostBody(""), now, time.Time{}, time.Time{}),
+			}
+			return testCase{
+				name: "zero page_size falls back to default",
+				repos: &interfaces.RepositoriesMock{
+					RangePostsFunc: func(ctx context.Context, ps int32, cursor *domain.PostCursor) ([]*domain.Post, error) {
+						assert.Equal(t, int32(11), ps, "page_size=0 should be replaced by default 10 (+1 for next-page detection)")
+						return posts, nil
+					},
+				},
+				args: args{
+					ctx:        ctx,
+					pageOption: pageOption,
+				},
+				want:             posts,
+				wantPaginationID: false,
+				wantErr:          false,
+			}
+		}(),
+		func() testCase {
+			ctx := context.Background()
 			pageSize := domain.PageSize(10)
 			pageOption := domain.NewPageOption(&pageSize, nil)
 			return testCase{
