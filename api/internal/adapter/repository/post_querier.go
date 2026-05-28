@@ -49,7 +49,7 @@ func (impl *postQuerierImpl) RangePosts(ctx context.Context, pageSize int32, cur
 	if cursor != nil {
 		rows, err = impl.pool.Query(ctx,
 			`SELECT PostId, PostBody, PreviousBody, CreateTime, UpdateTime, DeleteTime FROM Posts WHERE (CreateTime < $1) OR (CreateTime = $1 AND PostId > $2) ORDER BY CreateTime DESC, PostId ASC LIMIT $3`,
-			cursor.LastCreateTime, cursor.LastPostID, pageSize,
+			cursor.LastCreateTime(), cursor.LastPostID().String(), pageSize,
 		)
 	} else {
 		rows, err = impl.pool.Query(ctx,

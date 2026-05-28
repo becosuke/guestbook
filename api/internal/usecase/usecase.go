@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"time"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -69,13 +68,13 @@ func (impl *Usecase) Range(ctx context.Context, pageOption *domain.PageOption) (
 		lastPost := results[pageSize-1]
 		results = results[:pageSize]
 
-		nextCursor := domain.NewPostCursor(lastPost.PostID().String(), lastPost.CreateTime())
+		nextCursor := domain.NewPostCursor(lastPost.PostID(), lastPost.CreateTime())
 		cursorBytes, err := nextCursor.Marshal()
 		if err != nil {
 			return nil, domain.PaginationID{}, err
 		}
 
-		nextPaginationID := domain.PaginationID(uuid.New())
+		nextPaginationID := domain.NewPaginationID(uuid.NewString())
 		pagination := domain.NewPagination(nextPaginationID, cursorBytes)
 		if err := impl.repos.SavePagination(ctx, pagination); err != nil {
 			return nil, domain.PaginationID{}, err
@@ -87,13 +86,11 @@ func (impl *Usecase) Range(ctx context.Context, pageOption *domain.PageOption) (
 }
 
 func (impl *Usecase) Create(ctx context.Context, post *domain.Post) (*domain.Post, error) {
-	postID := domain.PostID(uuid.New())
-	post = domain.NewPost(postID, post.PostBody(), domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
-	err := impl.repos.CreatePost(ctx, post)
-	if err != nil {
+	newPost := domain.CreatePost(post.PostBody())
+	if err := impl.repos.CreatePost(ctx, newPost); err != nil {
 		return nil, err
 	}
-	return impl.get(ctx, postID)
+	return impl.get(ctx, newPost.PostID())
 }
 
 func (impl *Usecase) Update(ctx context.Context, post *domain.Post) (*domain.Post, error) {
