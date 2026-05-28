@@ -34,9 +34,11 @@ func (impl *guestbookServiceServer) GetPost(ctx context.Context, req *pb.GetPost
 	res, err := impl.usecase.Get(ctx, converter.PostIDResourceToDomain(req.GetPostId()))
 	if err != nil {
 		switch {
+		case errors.Is(err, domain.ErrInvalidArgument):
+			return nil, status.New(codes.InvalidArgument, err.Error()).Err()
 		case errors.Is(err, domain.ErrNotFound):
 			return nil, status.New(codes.NotFound, err.Error()).Err()
-		case errors.Is(err, domain.ErrInvalidData), errors.Is(err, domain.ErrInvalidArgument):
+		case errors.Is(err, domain.ErrInvalidData):
 			return nil, status.New(codes.Internal, err.Error()).Err()
 		default:
 			return nil, status.New(codes.Unknown, err.Error()).Err()
@@ -49,7 +51,9 @@ func (impl *guestbookServiceServer) CreatePost(ctx context.Context, req *pb.Crea
 	res, err := impl.usecase.Create(ctx, converter.PostResourceToDomain(req.GetPost()))
 	if err != nil {
 		switch {
-		case errors.Is(err, domain.ErrInvalidData), errors.Is(err, domain.ErrInvalidArgument):
+		case errors.Is(err, domain.ErrInvalidArgument):
+			return nil, status.New(codes.InvalidArgument, err.Error()).Err()
+		case errors.Is(err, domain.ErrInvalidData):
 			return nil, status.New(codes.Internal, err.Error()).Err()
 		default:
 			return nil, status.New(codes.Unknown, err.Error()).Err()
@@ -66,11 +70,13 @@ func (impl *guestbookServiceServer) UpdatePost(ctx context.Context, req *pb.Upda
 	res, err := impl.usecase.Update(ctx, converter.PostResourceToDomain(req.GetPost()))
 	if err != nil {
 		switch {
+		case errors.Is(err, domain.ErrInvalidArgument):
+			return nil, status.New(codes.InvalidArgument, err.Error()).Err()
 		case errors.Is(err, domain.ErrFailedPrecondition):
 			return nil, status.New(codes.FailedPrecondition, err.Error()).Err()
 		case errors.Is(err, domain.ErrNotFound):
 			return nil, status.New(codes.NotFound, err.Error()).Err()
-		case errors.Is(err, domain.ErrInvalidData), errors.Is(err, domain.ErrInvalidArgument):
+		case errors.Is(err, domain.ErrInvalidData):
 			return nil, status.New(codes.Internal, err.Error()).Err()
 		default:
 			return nil, status.New(codes.Unknown, err.Error()).Err()
@@ -100,9 +106,11 @@ func (impl *guestbookServiceServer) ListPosts(ctx context.Context, req *pb.ListP
 	posts, nextPaginationID, err := impl.usecase.Range(ctx, pageOption)
 	if err != nil {
 		switch {
+		case errors.Is(err, domain.ErrInvalidArgument):
+			return nil, status.New(codes.InvalidArgument, err.Error()).Err()
 		case errors.Is(err, domain.ErrNotFound):
 			return nil, status.New(codes.NotFound, err.Error()).Err()
-		case errors.Is(err, domain.ErrInvalidData), errors.Is(err, domain.ErrInvalidArgument):
+		case errors.Is(err, domain.ErrInvalidData):
 			return nil, status.New(codes.Internal, err.Error()).Err()
 		default:
 			return nil, status.New(codes.Unknown, err.Error()).Err()

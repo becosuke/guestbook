@@ -41,11 +41,15 @@
 | ---------------------------------- | -------------------- | ----------- |
 | protovalidate のルール違反         | `INVALID_ARGUMENT`   | 400         |
 | `update_mask` の不正パス           | `INVALID_ARGUMENT`   | 400         |
+| `ErrInvalidArgument`               | `INVALID_ARGUMENT`   | 400         |
 | `ErrNotFound`                      | `NOT_FOUND`          | 404         |
 | `ErrFailedPrecondition`            | `FAILED_PRECONDITION` | 400         |
 | `ErrAlreadyExists`                 | `ALREADY_EXISTS` *1  | 409         |
-| `ErrInvalidArgument` / `ErrInvalidData` | `INTERNAL`     | 500         |
+| `ErrInvalidData`                   | `INTERNAL`           | 500         |
 | 上記以外                           | `UNKNOWN`            | 500         |
+
+`ErrInvalidArgument` は「protovalidate を通過する形式上は妥当だが、ドメインルール上は受け付けられない値」が来たときに使う。
+状態遷移の前提条件違反は `ErrFailedPrecondition`、外部 IO 越しに観測したデータ破損は `ErrInvalidData` と使い分ける。
 
 *1: `ErrAlreadyExists` はリポジトリ層が PostgreSQL の unique violation を検知した際に返すが、
 現状の `CreatePost` ではサーバ採番のため通常のフローでは発生しない（保険的なマッピング）。
