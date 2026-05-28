@@ -57,16 +57,18 @@
 ### UpdatePost における Precondition / NotFound の使い分け
 
 `UpdatePost` の SQL は WHERE 句に `CreateTime = UpdateTime` を含むため、初回更新後のレコードには
-一致しない。0 行更新時の振り分けは次のとおり。
+一致しない。0 行更新時はレコードが存在するかで分岐し、振り分けは次のとおり。
 
 | 投稿の状態                                  | 返るエラー              |
 | ------------------------------------------- | ----------------------- |
 | 未削除で **まだ書き直されていない**         | （成功）                |
 | 未削除で **既に 1 度書き直し済み**          | `ErrFailedPrecondition` |
-| 論理削除済み、もしくはレコード自体が存在しない | `ErrNotFound`           |
+| **論理削除済み**                            | `ErrFailedPrecondition` |
+| レコード自体が存在しない                    | `ErrNotFound`           |
 
-つまり「削除済みリソースへの UpdatePost」は `FailedPrecondition` ではなく `NotFound` を返す。
-`FailedPrecondition` が出るのは 2 回目以降の書き直し要求のときに限られる。
+判断根拠と却下した代替案（`NOT_FOUND` / `INVALID_ARGUMENT`、ErrorDetails の扱い）は
+[../adr/000001-update-post-error-mapping.md](../adr/000001-update-post-error-mapping.md) に
+ADR として記録している。
 
 ## エラー詳細（`google.rpc.BadRequest`）
 

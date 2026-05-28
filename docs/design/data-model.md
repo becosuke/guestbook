@@ -49,11 +49,12 @@
 ```
 
 - `Created` / `Updated` の区別は `create_time == update_time` で判定できる
-- **UpdatePost は 1 投稿につき 1 回しか成功しない**。`Updated` 状態の投稿に再度 `UpdatePost` を呼ぶと `FailedPrecondition`（詳細は [api-operations.md](./api-operations.md) と [validation-and-errors.md](./validation-and-errors.md) を参照）
-- `Deleted` 状態の投稿に対する `UpdatePost` は **拒否**（`NotFound`）
+- **UpdatePost は 1 投稿につき 1 回しか成功しない**。`Updated` 状態の投稿に再度 `UpdatePost` を呼ぶと `FailedPrecondition`
+- `Deleted` 状態の投稿に対する `UpdatePost` は **拒否**（`FailedPrecondition`）。`Updated` 状態と同じエラーコードに集約されており、両者の区別は現状クライアントに通知していない（[validation-and-errors.md](./validation-and-errors.md) と [../adr/000001-update-post-error-mapping.md](../adr/000001-update-post-error-mapping.md) 参照）
 - `Deleted` 状態の投稿に対する `DeletePost` は **拒否**（`NotFound`）
 - `Deleted` 状態の投稿に対する `GetPost` は `valid=false` の `Post` を返す（`body` 等の他フィールドはすべて空）
 - `Deleted` 状態の投稿は `ListPosts` の結果には含まれる（`valid=false` として）
+- いずれの操作も `post_id` 自体に該当レコードが無い場合は `NotFound`
 
 ### previous_body のセマンティクス
 

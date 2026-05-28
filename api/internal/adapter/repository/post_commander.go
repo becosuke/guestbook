@@ -52,8 +52,13 @@ func (impl *postCommanderImpl) CreatePost(ctx context.Context, post *domain.Post
 // 1 回までという仕様を SQL レベルで担保する。
 //
 // 0 行更新になった場合の振り分け:
-//   - 未削除のレコードがある → 既に 1 度書き直し済み → ErrFailedPrecondition
-//   - 未削除のレコードがない → 存在しない or 論理削除済み → ErrNotFound
+//   - レコードが存在する  → 削除済み or 既に書き直し済み → ErrFailedPrecondition
+//   - レコードが存在しない → 該当 post_id 自体が無い         → ErrNotFound
+//
+// 「削除済み」と「既に書き直し済み」を ErrFailedPrecondition に集約しているため、
+// 両者を区別して通知したい場合は presentation 層で google.rpc.PreconditionFailure
+// （google.rpc.ErrorDetails の一種）を付与する必要がある。現状はそこまで使い分けず、
+// 識別性を犠牲にして単一の sentinel error にまとめている。
 func (impl *postCommanderImpl) UpdatePost(ctx context.Context, post *domain.Post) error {
 	ct, err := impl.pool.Exec(ctx,
 		`UPDATE Posts SET PreviousBody = PostBody, PostBody = $1, UpdateTime = NOW() WHERE PostId = $2 AND DeleteTime = '0001-01-01 00:00:00+00' AND CreateTime = UpdateTime`,
@@ -65,7 +70,7 @@ func (impl *postCommanderImpl) UpdatePost(ctx context.Context, post *domain.Post
 	if ct.RowsAffected() == 0 {
 		var exists bool
 		err := impl.pool.QueryRow(ctx,
-			`SELECT EXISTS(SELECT 1 FROM Posts WHERE PostId = $1 AND DeleteTime = '0001-01-01 00:00:00+00')`,
+			`SELECT EXISTS(SELECT 1 FROM Posts WHERE PostId = $1)`,
 			post.PostID().String(),
 		).Scan(&exists)
 		if err != nil {

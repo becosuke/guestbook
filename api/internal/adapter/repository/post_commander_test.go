@@ -79,7 +79,22 @@ func TestUpdatePost(t *testing.T) {
 
 		updated := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("should fail"), domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
 		err = testCommander.UpdatePost(ctx, updated)
-		assert.ErrorIs(t, err, domain.ErrNotFound)
+		assert.ErrorIs(t, err, domain.ErrFailedPrecondition)
+	})
+
+	t.Run("already updated post", func(t *testing.T) {
+		id := newUUID()
+		post := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("first"), domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
+		err := testCommander.CreatePost(ctx, post)
+		require.NoError(t, err)
+
+		firstUpdate := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("second"), domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
+		err = testCommander.UpdatePost(ctx, firstUpdate)
+		require.NoError(t, err)
+
+		secondUpdate := domain.NewPost(domain.NewPostID(id), domain.NewPostBody("third"), domain.NewPostBody(""), time.Time{}, time.Time{}, time.Time{})
+		err = testCommander.UpdatePost(ctx, secondUpdate)
+		assert.ErrorIs(t, err, domain.ErrFailedPrecondition)
 	})
 }
 

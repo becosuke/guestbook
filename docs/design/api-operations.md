@@ -73,8 +73,10 @@ REST のルーティングは gRPC-Gateway によって proto 上の `google.api
 ### レスポンス
 
 - 成功: 更新後の `Post`（`previous_body` に旧本文、`update_time` が更新される）
-- 対象が **既に 1 度書き直し済み**: `FAILED_PRECONDITION`
-- 対象が **論理削除済み、もしくは存在しない**: `NOT_FOUND`
+- 対象が **既に 1 度書き直し済み**、または **論理削除済み**: `FAILED_PRECONDITION`
+- 対象が **存在しない**（`post_id` 自体が見つからない）: `NOT_FOUND`
+
+エラーコードの判断根拠は [../adr/000001-update-post-error-mapping.md](../adr/000001-update-post-error-mapping.md) を参照。
 
 ### 制約
 
@@ -82,6 +84,7 @@ REST のルーティングは gRPC-Gateway によって proto 上の `google.api
   初回更新で `UpdateTime` だけが更新されると等値が崩れ、以降の `UpdatePost` は更新行 0 件となり拒否される。
 - 結果として `previous_body` に入るのは「最初に書かれた本文」固定になり、それ以降の世代は発生しない。
 - `update_mask` を空にしても `body` の更新は実施される。
+- `FAILED_PRECONDITION` の 2 ケース（書き直し済み / 削除済み）はクライアントから区別できない。区別が必要になった場合は `google.rpc.PreconditionFailure` などの ErrorDetails を併送する方針で対応する。
 
 ## DeletePost
 
