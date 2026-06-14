@@ -67,7 +67,7 @@
 | レコード自体が存在しない                    | `ErrNotFound`           |
 
 判断根拠と却下した代替案（`NOT_FOUND` / `INVALID_ARGUMENT`、ErrorDetails の扱い）は
-[../adr/000001-update-post-error-mapping.md](../adr/000001-update-post-error-mapping.md) に
+[../adr/20260529-update-post-error-mapping.md](../adr/20260529-update-post-error-mapping.md) に
 ADR として記録している。
 
 ## エラー詳細（`google.rpc.BadRequest`）

@@ -10,17 +10,17 @@
 
 ## 運用
 
-- 1 決定につき 1 ファイル。`NNNNNN-kebab-case-title.md` の 6 桁連番形式（`api/configurations/database/migrations/` と同じ桁数）
+- 1 決定につき 1 ファイル。`YYYYMMDD-kebab-case-title.md` 形式（決定日ベース、同日複数の順序は問わない）
 - フォーマットは Michael Nygard の ADR テンプレート派生:
   - **Status** — proposed / accepted / superseded / deprecated と決定日
   - **Context** — なぜこの判断が必要になったか
   - **Decision** — 採用した内容（断定形）
   - **Alternatives considered** — 採用しなかった選択肢と、それを退けた理由
   - **Consequences** — 採用した結果として受け入れる帰結
-- 決定が覆ったときは新しい ADR を起こし、旧 ADR の Status を `superseded by NNNN` に書き換える
+- 決定が覆ったときは新しい ADR を起こし、旧 ADR の Status を `superseded by YYYYMMDD` に書き換える
 
 ## 一覧
 
-| 番号 | タイトル                                                    | Status   |
-| ---- | ----------------------------------------------------------- | -------- |
-| [000001](./000001-update-post-error-mapping.md) | UpdatePost の状態別エラーコード割り当て | Accepted |
+| 日付     | タイトル                                                    | Status   |
+| -------- | ----------------------------------------------------------- | -------- |
+| [20260529](./20260529-update-post-error-mapping.md) | UpdatePost の状態別エラーコード割り当て | Accepted |

@@ -76,7 +76,7 @@ REST のルーティングは gRPC-Gateway によって proto 上の `google.api
 - 対象が **既に 1 度書き直し済み**、または **論理削除済み**: `FAILED_PRECONDITION`
 - 対象が **存在しない**（`post_id` 自体が見つからない）: `NOT_FOUND`
 
-エラーコードの判断根拠は [../adr/000001-update-post-error-mapping.md](../adr/000001-update-post-error-mapping.md) を参照。
+エラーコードの判断根拠は [../adr/20260529-update-post-error-mapping.md](../adr/20260529-update-post-error-mapping.md) を参照。
 
 ### 制約
 
